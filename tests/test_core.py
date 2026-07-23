@@ -464,3 +464,49 @@ def test_public_registry_audit_reports_real_state() -> None:
     assert sites["arxiv"]["exhaustive"] is True
     assert sites["npm"]["exhaustive"] is True
     assert sites["wikipedia"]["browserless_replay"] is True
+
+
+def test_execute_flattens_nested_envelope_and_lifts_verification(
+    tmp_path: Path, monkeypatch
+) -> None:
+    paths = StatePaths(tmp_path)
+    Registry(paths).sync(str(bundled_registry()))
+    runtime = Runtime(paths)
+
+    def fake_call(operation: str, arguments: dict) -> dict:
+        return {
+            "operation": operation,
+            "data": {"name": "left-pad", "next_action": "npm.list_versions"},
+            "state_change": {"changed": False, "reversible": False, "idempotent": True},
+            "pagination": {"supported": False},
+            "warnings": [],
+            "verification": {"verified": True, "transport": "typed_adapter"},
+        }
+
+    monkeypatch.setattr(runtime, "call", fake_call)
+    response = runtime.execute("npm", "get_package", {"package": "left-pad"})
+
+    # data is the payload itself, not the internal envelope (no data.data).
+    assert response["data"] == {"name": "left-pad", "next_action": "npm.list_versions"}
+    assert response["verification"]["verified"] is True
+    assert response["verification"]["state_change"]["idempotent"] is True
+    assert response["result_meta"]["pagination"] == {"supported": False}
+    assert response["next_actions"] == ["npm.list_versions"]
+
+
+def test_execute_passes_through_flat_legacy_result(
+    tmp_path: Path, monkeypatch
+) -> None:
+    paths = StatePaths(tmp_path)
+    Registry(paths).sync(str(bundled_registry()))
+    runtime = Runtime(paths)
+
+    def fake_call(operation: str, arguments: dict) -> dict:
+        return {"results": [1, 2, 3], "verified": True}
+
+    monkeypatch.setattr(runtime, "call", fake_call)
+    response = runtime.execute("wikipedia", "search", {})
+
+    assert response["data"] == {"results": [1, 2, 3], "verified": True}
+    assert response["verification"] == {"verified": True}
+    assert "result_meta" not in response

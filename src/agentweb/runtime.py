@@ -508,6 +508,41 @@ class Runtime:
             )
             return response
 
+    @staticmethod
+    def _normalize_result_envelope(
+        result: dict[str, Any],
+    ) -> tuple[Any, dict[str, Any], dict[str, Any]]:
+        """Flatten the internal SITE.ACTION envelope into (data, verification, extra).
+
+        Contract and flow-capsule operations return a nested envelope
+        ({"operation", "data", "verification", "state_change", ...}); returning it
+        verbatim double-nests the payload as ``data.data`` and leaves the public
+        ``verification`` field empty. Flat legacy adapter results are passed through
+        unchanged with a best-effort verification scan so both tiers look identical.
+        """
+        standard_envelope = "operation" in result and "data" in result
+        if not standard_envelope:
+            scanned: dict[str, Any] = {
+                key: result[key]
+                for key in ("accepted", "verified", "changed", "state_changed")
+                if key in result
+            }
+            return result, scanned, {}
+        data = result["data"]
+        verification: dict[str, Any] = {}
+        inner = result.get("verification")
+        if isinstance(inner, dict):
+            verification.update(inner)
+        state_change = result.get("state_change")
+        if isinstance(state_change, dict):
+            verification["state_change"] = state_change
+        extra: dict[str, Any] = {
+            key: result[key]
+            for key in ("pagination", "warnings", "truncated", "truncation")
+            if key in result
+        }
+        return data, verification, extra
+
     def _execute_response(
         self,
         resolved: ResolvedTarget,
@@ -516,25 +551,28 @@ class Runtime:
         started: float,
     ) -> dict[str, Any]:
         result = self.call(f"{resolved.site}.{action}", arguments)
-        verification = {
-            key: result.get(key)
-            for key in ("accepted", "verified", "changed", "state_changed")
-            if key in result
-        }
+        data, verification, extra = self._normalize_result_envelope(result)
 
+        next_hints = data if isinstance(data, dict) else {}
         next_actions = [
             value
-            for key, value in result.items()
+            for key, value in next_hints.items()
             if key in {"next", "next_action", "next_operation", "next_tool"}
             and isinstance(value, str)
         ]
+        for source in (result, next_hints):
+            declared = source.get("next_actions")
+            if isinstance(declared, list):
+                next_actions.extend(
+                    item for item in declared if isinstance(item, str)
+                )
         response = {
             "ok": True,
             "site": resolved.site,
             "domain": resolved.domain,
             "operation": action,
             "profile": self.profile,
-            "data": result,
+            "data": data,
             "verification": verification,
             "meta": {
                 "elapsed_ms": round((time.monotonic() - started) * 1000, 1),
@@ -542,6 +580,8 @@ class Runtime:
             },
             "next_actions": next_actions,
         }
+        if extra:
+            response["result_meta"] = extra
         return response
 
     def resolve_action(self, target: str, action: str) -> str:
