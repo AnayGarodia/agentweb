@@ -81,17 +81,21 @@ def parse_json_or_file(value: str, *, expected: type, label: str) -> Any:
 def dynamic_site_call(
     argv: list[str], global_args: argparse.Namespace
 ) -> dict[str, Any]:
-    if len(argv) < 2:
+    if not argv:
         raise AgentWebError(
             "Use `agentweb DOMAIN ACTION --help` to select an operation"
         )
-    site, raw_action, *remaining = argv
-    action = raw_action.replace("-", "_")
     runtime = Runtime(
         profile=global_args.profile,
         fresh=global_args.fresh,
         mapping_mode=bool(getattr(global_args, "mapping_mode", False)),
     )
+    # `agentweb DOMAIN` and `agentweb DOMAIN --help` list the site's operations
+    # instead of treating the help flag as an action named "__help".
+    if len(argv) < 2 or argv[1] in {"-h", "--help", "help"}:
+        return runtime.capabilities(argv[0])
+    site, raw_action, *remaining = argv
+    action = raw_action.replace("-", "_")
     domain_first = "." in site or "://" in site
     resolved = runtime.resolve(site) if domain_first else None
     if resolved:
@@ -110,14 +114,30 @@ def dynamic_site_call(
     )
     for name in positionals:
         prop = properties[name]
-        options: dict[str, Any] = {"help": prop.get("description")}
-        if prop.get("type") == "integer":
-            options["type"] = int
-        elif prop.get("type") == "number":
-            options["type"] = float
+        conv = (
+            int
+            if prop.get("type") == "integer"
+            else float
+            if prop.get("type") == "number"
+            else None
+        )
+        pos_options: dict[str, Any] = {
+            "nargs": "?",
+            "metavar": name,
+            "help": prop.get("description"),
+        }
+        flag_options: dict[str, Any] = {"dest": name, "help": prop.get("description")}
+        if conv is not None:
+            pos_options["type"] = conv
+            flag_options["type"] = conv
         if prop.get("enum"):
-            options["choices"] = prop["enum"]
-        parser.add_argument(name, **options)
+            pos_options["choices"] = prop["enum"]
+            flag_options["choices"] = prop["enum"]
+        # Accept either the positional form (`page "Alan Turing"`) or the flag
+        # form (`page --title "Alan Turing"`) so copy-pasted examples work either
+        # way and there is no positional-vs-flag convention to memorize.
+        parser.add_argument(f"_positional_{name}", **pos_options)
+        parser.add_argument("--" + name.replace("_", "-"), **flag_options)
     for name, prop in properties.items():
         if name in positionals:
             continue
@@ -157,6 +177,16 @@ def dynamic_site_call(
             options["required"] = True
         parser.add_argument(flag, dest=name, **options)
     parsed = vars(parser.parse_args(remaining))
+    for name in positionals:
+        positional_value = parsed.pop(f"_positional_{name}", None)
+        if parsed.get(name) is None:
+            parsed[name] = positional_value
+    missing = [
+        name for name in positionals if name in required and parsed.get(name) is None
+    ]
+    if missing:
+        joined = ", ".join(name.replace("_", "-") for name in missing)
+        parser.error(f"the following arguments are required: {joined}")
     for name, prop in properties.items():
         if prop.get("type") != "array" or not parsed.get(name):
             continue
