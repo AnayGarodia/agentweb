@@ -54,6 +54,8 @@ Use AgentWeb to find three recent arXiv papers about coding agents.
 Use AgentWeb to compare the dependencies of React and Vue on npm.
 
 Use AgentWeb to research Alan Turing on Wikipedia and follow the most relevant links.
+
+Use AgentWeb to find software engineering jobs on LinkedIn in San Francisco.
 ```
 
 The agent handles discovery and commands. You should not need to translate your
@@ -119,7 +121,9 @@ errors are JSON, so agents do not need site-specific parsing code.
 
 ## What is included today?
 
-This public repository includes three ready-to-use examples:
+The installer currently includes LinkedIn public jobs and company lookup alongside
+the existing mapped sites. This public repository includes three fully open
+reference adapters:
 
 | Website | Examples |
 | --- | --- |

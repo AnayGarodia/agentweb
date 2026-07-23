@@ -65,7 +65,7 @@ An operation event has this fixed shape:
   "success": true,
   "duration_ms": 420.0,
   "interface": "mcp",
-  "agentweb_version": "0.18.3",
+  "agentweb_version": "0.19.0",
   "adapter_version": "0.8.5",
   "error_code": null,
   "from_cache": false
