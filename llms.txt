@@ -5,7 +5,7 @@ coding agents. The public repository contains the open core and reference adapte
 not the private automatic adapter factory or official maintained adapter catalog.
 
 Fast start:
-- Install: curl -fsSL https://raw.githubusercontent.com/AnayGarodia/agentweb/main/install.sh | sh
+- Install: curl -fsSL https://github.com/AnayGarodia/agentweb/raw/refs/heads/main/install.sh | sh
 - First prompt: Use AgentWeb to find the latest version of React on npm.
 - Discover: agentweb capabilities DOMAIN
 

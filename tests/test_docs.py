@@ -33,8 +33,8 @@ def test_readme_leads_with_a_copyable_install_and_real_call() -> None:
     readme = (ROOT / "README.md").read_text()
 
     install = (
-        "curl -fsSL https://raw.githubusercontent.com/AnayGarodia/agentweb/"
-        "main/install.sh | sh"
+        "curl -fsSL https://github.com/AnayGarodia/agentweb/"
+        "raw/refs/heads/main/install.sh | sh"
     )
     example = "Use AgentWeb to find the latest version of React on npm."
 

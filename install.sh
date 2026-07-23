@@ -27,7 +27,8 @@ if [ ! -x "$VENV/bin/python" ]; then
   "$PYTHON_BIN" -m venv "$VENV"
 fi
 
-"$VENV/bin/python" -m pip install --quiet --disable-pip-version-check --upgrade "$PACKAGE_SOURCE"
+PIP_NO_CACHE_DIR=1 "$VENV/bin/python" -m pip install \
+  --quiet --disable-pip-version-check --upgrade "$PACKAGE_SOURCE"
 
 ln -sfn "$VENV/bin/agentweb" "$BIN_DIR/agentweb"
 ln -sfn "$VENV/bin/sitepack" "$BIN_DIR/sitepack"

@@ -19,7 +19,7 @@ page again for a workflow that has already been mapped.
 AgentWeb needs macOS or Linux and Python 3.11 or newer.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/AnayGarodia/agentweb/main/install.sh | sh
+curl -fsSL https://github.com/AnayGarodia/agentweb/raw/refs/heads/main/install.sh | sh
 ```
 
 Restart Claude Code or Codex, then paste this prompt:

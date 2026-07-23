@@ -7,7 +7,7 @@ schemas into its prompt.
 Install it once for the current user:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/AnayGarodia/agentweb/main/install.sh | sh
+curl -fsSL https://github.com/AnayGarodia/agentweb/raw/refs/heads/main/install.sh | sh
 ```
 
 The installer detects Claude Code and Codex, registers AgentWeb with each one, and
