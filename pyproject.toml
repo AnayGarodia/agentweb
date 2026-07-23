@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agentweb-cli"
-version = "0.17.0.dev0"
+version = "0.18.0"
 description = "Turn websites into fast, structured commands for coding agents"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -45,7 +45,12 @@ include-package-data = true
 where = ["src"]
 
 [tool.setuptools.package-data]
-agentweb = ["builtin_registry/**/*.json", "builtin_registry/**/*.py"]
+agentweb = [
+  "builtin_registry/**/*.json",
+  "builtin_registry/**/*.py",
+  "dashboard/*.html",
+  "telemetry-defaults.json",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

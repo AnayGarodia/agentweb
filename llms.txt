@@ -16,6 +16,7 @@ Documentation:
 - docs/AGENT_HOSTS.md: Claude Code, Codex, generic CLI, and optional MCP setup
 - docs/BUILDING_ADAPTERS.md: public adapter format and release checklist
 - docs/SECURITY.md: sessions, write confirmation, host boundaries, registry trust
+- docs/ANALYTICS.md: localhost dashboard, metric definitions, privacy, and optional aggregate collection
 - docs/ARCHITECTURE.md: code map and request lifecycle
 - AGENTS.md: repository invariants and verification commands for coding agents
 

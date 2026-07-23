@@ -13,6 +13,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 from . import __version__
+from .analytics import Analytics
 from .capture import verify_flow_capsule
 from .registry import Registry, validate_manifest
 from .sdk import (
@@ -297,6 +298,7 @@ class Runtime:
         mapping_mode: bool | None = None,
         cancel_event: threading.Event | None = None,
         max_output_chars: int = 100_000,
+        interface: str = "cli",
     ) -> None:
         self.paths = paths or StatePaths.discover()
         self.paths.root.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -307,6 +309,7 @@ class Runtime:
         self.fresh = fresh
         self.cancellation = CancellationToken(cancel_event)
         self.max_output_chars = max_output_chars
+        self.interface = interface
         self.mapping_mode = (
             (
                 os.environ.get("AGENTWEB_MAPPING_MODE")
@@ -317,6 +320,7 @@ class Runtime:
             else mapping_mode
         )
         self.registry = Registry(self.paths)
+        self.analytics = Analytics(self.paths)
 
     def ensure_registry(self) -> None:
         installed = self.registry.installed()
@@ -1037,6 +1041,73 @@ class Runtime:
         return module.Adapter(context)
 
     def call(self, operation: str, arguments: dict[str, Any]) -> dict[str, Any]:
+        started = time.monotonic()
+        site: str | None = None
+        action: str | None = None
+        adapter_version: str | None = None
+        recorded_operation: str | None = None
+        try:
+            if "." in operation:
+                target, action = operation.rsplit(".", 1)
+                site = self.resolve(target).site
+                manifest = self.describe(site)
+                command = (manifest.get("commands") or {}).get(action) or {}
+                contract = (manifest.get("operation_contracts") or {}).get(action) or {}
+                risk = command.get("risk") or contract.get("risk") or {}
+                sensitive = bool(command.get("mutating")) or risk.get("level") not in {
+                    None,
+                    "read",
+                    "read_only",
+                }
+                recorded_operation = "account_write" if sensitive else action
+                adapter_version = str(
+                    (self.registry.installed().get(site) or {}).get("version") or ""
+                ) or None
+        except Exception:
+            # Invalid targets and manifests must never leak their raw value into analytics.
+            site = action = recorded_operation = adapter_version = None
+        try:
+            result = self._call_uninstrumented(operation, arguments)
+        except AgentWebError as exc:
+            self.analytics.record(
+                "operation_completed",
+                site=site,
+                operation=recorded_operation,
+                success=False,
+                duration_ms=(time.monotonic() - started) * 1000,
+                interface=self.interface,
+                adapter_version=adapter_version,
+                error_code=exc.code,
+            )
+            raise
+        except Exception:
+            self.analytics.record(
+                "operation_completed",
+                site=site,
+                operation=recorded_operation,
+                success=False,
+                duration_ms=(time.monotonic() - started) * 1000,
+                interface=self.interface,
+                adapter_version=adapter_version,
+                error_code="internal_error",
+            )
+            raise
+        meta = result.get("meta") if isinstance(result.get("meta"), dict) else {}
+        self.analytics.record(
+            "operation_completed",
+            site=site,
+            operation=recorded_operation,
+            success=True,
+            duration_ms=(time.monotonic() - started) * 1000,
+            interface=self.interface,
+            adapter_version=adapter_version,
+            from_cache=meta.get("from_cache"),
+        )
+        return result
+
+    def _call_uninstrumented(
+        self, operation: str, arguments: dict[str, Any]
+    ) -> dict[str, Any]:
         self.cancellation.check()
         if "." not in operation:
             raise AgentWebError(

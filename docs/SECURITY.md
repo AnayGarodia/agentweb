@@ -66,6 +66,25 @@ verification inputs, cookie files, authorization headers, or account identifiers
 The repository's `.gitignore` blocks common local artifacts, but it is not a
 security boundary.
 
+## Usage analytics
+
+AgentWeb records a random installation ID plus fixed operational metadata: event
+name, mapped site and operation, success, duration, interface, versions, cache use,
+and a structured error code. Account-changing operations are reduced to the generic
+name `account_write`.
+
+It does not accept or store prompts, operation arguments, website responses, URLs,
+exception messages, account identities, cookies, credentials, or IP addresses.
+Events are written to `~/.agentweb/analytics.sqlite3`. Remote delivery is disabled
+unless a PostHog project key is configured, and delivery runs outside the website
+operation so analytics cannot make that operation fail.
+
+Run `agentweb telemetry inspect` to see the complete event shape,
+`agentweb telemetry disable` to stop local and remote recording, or
+`agentweb telemetry reset-id` to replace the random identifier. The global
+dashboard's personal PostHog key remains in owner-only local state and is never
+sent to AgentWeb installations.
+
 ## Reporting a vulnerability
 
 Do not open a public issue for a vulnerability involving credential exposure,

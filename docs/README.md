@@ -9,6 +9,7 @@ Start with the [main README](../README.md), then use the
 retries, workflows, and writes.
 
 For Claude Code, Codex, or optional MCP setup, read [agent setup](AGENT_HOSTS.md).
+For local and aggregate usage measurement, read [usage analytics](ANALYTICS.md).
 
 ## I want to understand or change the code
 

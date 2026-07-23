@@ -39,6 +39,8 @@ echo "AgentWeb $($BIN_DIR/agentweb --version) is ready."
 echo "AgentWeb automatically connects any Claude Code or Codex installation it detects."
 echo "Restart your coding agent, then paste:"
 echo "  Use AgentWeb to find the latest version of React on npm."
+echo "Usage counts stay anonymous; prompts, arguments, results, URLs, and credentials are never recorded."
+echo "View or disable them with: agentweb dashboard | agentweb telemetry disable"
 
 case ":$PATH:" in
   *":$BIN_DIR:"*) ;;

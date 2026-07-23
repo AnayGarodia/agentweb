@@ -161,6 +161,7 @@ def dispatch(
             fresh=bool(arguments.pop("fresh", False)),
             mapping_mode=False,
             cancel_event=cancel_event,
+            interface="mcp",
         )
         try:
             if name == "sites_list":
@@ -173,6 +174,12 @@ def dispatch(
                     arguments["operation"], arguments.get("arguments") or {}
                 )
             elif name == "site_connect":
+                runtime.analytics.record(
+                    "connection_requested",
+                    site=runtime.resolve(arguments["site"]).site,
+                    success=True,
+                    interface="mcp",
+                )
                 value = connection_handoff(
                     runtime,
                     arguments["site"],

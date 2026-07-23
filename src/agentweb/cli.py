@@ -3,10 +3,12 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
 from . import __version__
+from .analytics import Analytics
 from .capture import (
     analyze_network_trace,
     build_flow_capsule,
@@ -20,6 +22,7 @@ from .connector import (
     install_agent,
     setup_detected_agents,
 )
+from .dashboard import serve_dashboard
 from .mcp import serve
 from .registry import (
     audit_registry,
@@ -355,6 +358,31 @@ def build_parser() -> argparse.ArgumentParser:
     clear = cache_sub.add_parser("clear")
     clear.add_argument("--site")
 
+    telemetry = subparsers.add_parser(
+        "telemetry", help="Inspect or control privacy-safe anonymous analytics"
+    )
+    telemetry_sub = telemetry.add_subparsers(
+        dest="telemetry_command", required=True
+    )
+    telemetry_sub.add_parser("status", help="Show telemetry state and privacy rules")
+    telemetry_sub.add_parser("enable", help="Enable local and configured remote analytics")
+    telemetry_sub.add_parser("disable", help="Disable all analytics recording")
+    telemetry_sub.add_parser("reset-id", help="Replace the anonymous installation ID")
+    telemetry_sub.add_parser("inspect", help="Show exactly what one event contains")
+    configure_posthog = telemetry_sub.add_parser(
+        "configure-posthog", help="Configure optional aggregate analytics delivery"
+    )
+    configure_posthog.add_argument("--project-key", required=True)
+    configure_posthog.add_argument(
+        "--host", default="https://us.i.posthog.com"
+    )
+
+    dashboard = subparsers.add_parser(
+        "dashboard", help="Open the private AgentWeb usage dashboard on localhost"
+    )
+    dashboard.add_argument("--port", type=int, default=0)
+    dashboard.add_argument("--no-open", action="store_true")
+
     subparsers.add_parser(
         "mcp", help="Run the scalable four-tool MCP server over stdio"
     )
@@ -426,6 +454,8 @@ def main(argv: list[str] | None = None) -> int:
         "onboard",
         "auth",
         "cache",
+        "telemetry",
+        "dashboard",
         "mcp",
         "mcp-config",
         "registry-build",
@@ -459,6 +489,11 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "mcp":
             return serve()
         paths = StatePaths.discover()
+        if args.command == "dashboard":
+            return serve_dashboard(
+                paths, port=args.port, open_browser=not args.no_open
+            )
+        analytics = Analytics(paths)
         runtime = Runtime(
             paths,
             profile=args.profile,
@@ -504,15 +539,46 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "call":
             result = runtime.call(args.operation, parse_json(args.input))
         elif args.command == "connect":
-            result = connect_site(
-                runtime,
-                args.site,
-                mode=args.mode,
-                timeout_seconds=args.timeout,
-                capture_now=args.capture_now,
+            connected_at = time.monotonic()
+            try:
+                result = connect_site(
+                    runtime,
+                    args.site,
+                    mode=args.mode,
+                    timeout_seconds=args.timeout,
+                    capture_now=args.capture_now,
+                )
+            except AgentWebError as exc:
+                try:
+                    connection_site = runtime.resolve(args.site).site
+                except AgentWebError:
+                    connection_site = None
+                analytics.record(
+                    "connection_completed",
+                    site=connection_site,
+                    success=False,
+                    duration_ms=(time.monotonic() - connected_at) * 1000,
+                    interface="cli",
+                    error_code=exc.code,
+                )
+                raise
+            analytics.record(
+                "connection_completed",
+                site=runtime.resolve(args.site).site,
+                success=bool(result.get("connected")),
+                duration_ms=(time.monotonic() - connected_at) * 1000,
+                interface="cli",
+                error_code=None if result.get("connected") else "connection_failed",
             )
         elif args.command == "install-agent":
             result = install_agent(args.agent, scope=args.scope, dry_run=args.dry_run)
+            if not args.dry_run:
+                analytics.record(
+                    "agent_connected",
+                    operation=args.agent,
+                    success=bool(result.get("installed", True)),
+                    interface="cli",
+                )
         elif args.command == "setup":
             result = {
                 **setup_detected_agents(runtime),
@@ -521,6 +587,18 @@ def main(argv: list[str] | None = None) -> int:
                 "sites": sorted(item["name"] for item in runtime.sites()),
                 "next": "Restart any detected coding agent, then ask it to use AgentWeb in normal language.",
             }
+            analytics.record(
+                "setup_completed",
+                success=bool(result.get("ready")),
+                interface="cli",
+            )
+            for connection in result.get("agent_connections") or []:
+                analytics.record(
+                    "agent_connected",
+                    operation=connection.get("agent"),
+                    success=bool(connection.get("installed")),
+                    interface="cli",
+                )
         elif args.command == "onboard":
             agent_result = install_agent(args.agent, scope=args.scope)
             sync_result = runtime.registry.sync()
@@ -597,6 +675,19 @@ def main(argv: list[str] | None = None) -> int:
                 }
         elif args.command == "cache":
             result = {"deleted": Cache(paths.cache_db).clear(args.site)}
+        elif args.command == "telemetry":
+            if args.telemetry_command == "status":
+                result = analytics.status()
+            elif args.telemetry_command == "enable":
+                result = analytics.set_enabled(True)
+            elif args.telemetry_command == "disable":
+                result = analytics.set_enabled(False)
+            elif args.telemetry_command == "reset-id":
+                result = analytics.reset_installation_id()
+            elif args.telemetry_command == "inspect":
+                result = analytics.inspect_event()
+            else:
+                result = analytics.configure_posthog(args.project_key, args.host)
         elif args.command == "capture-compile":
             try:
                 trace = json.loads(args.trace.read_text())

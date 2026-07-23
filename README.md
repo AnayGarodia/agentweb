@@ -66,6 +66,31 @@ agentweb install-agent codex --scope user
 See [agent setup](docs/AGENT_HOSTS.md) for the exact behavior Claude Code and Codex
 should follow around login, retries, and writes.
 
+## See whether AgentWeb is being used
+
+Open the private usage dashboard:
+
+```bash
+agentweb dashboard
+```
+
+It opens on `127.0.0.1` and immediately shows activity from this installation:
+people, first-task activation, repeat use, website actions, success rate, latency,
+common operations, agent paths, and failures. Connect a PostHog project from the
+same page when you want the localhost dashboard to combine anonymous events from
+public installations.
+
+AgentWeb never records prompts, arguments, URLs, website responses, account
+identities, cookies, or credentials. Inspect or disable analytics at any time:
+
+```bash
+agentweb telemetry inspect
+agentweb telemetry disable
+```
+
+Read [usage analytics](docs/ANALYTICS.md) for the exact event schema and global
+dashboard setup.
+
 ## What the agent does underneath
 
 ```bash
@@ -157,6 +182,7 @@ must never be committed.
 | Understand the code | [Architecture](docs/ARCHITECTURE.md) |
 | Build a website adapter | [Adapter guide](docs/BUILDING_ADAPTERS.md) |
 | Understand sessions and safety | [Security](docs/SECURITY.md) |
+| Understand usage analytics | [Analytics](docs/ANALYTICS.md) |
 | Contribute code | [Contributing](CONTRIBUTING.md) |
 
 Coding agents working on this repository should read [AGENTS.md](AGENTS.md).
