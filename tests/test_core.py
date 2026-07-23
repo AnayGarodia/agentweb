@@ -313,6 +313,37 @@ def test_agent_skills_embed_absolute_cli_path_for_fresh_sessions(
         assert str(executable.resolve()) in text
         assert "AgentWeb returns bounded structured JSON" in text
         assert "connect DOMAIN" in text
+        assert "ask whether the user wants to log in or sign up" in text
+
+
+def test_agent_setup_preserves_github_managed_portable_skill(
+    tmp_path: Path,
+) -> None:
+    executable = tmp_path / "bin" / "agentweb"
+    executable.parent.mkdir()
+    executable.write_text("#!/bin/sh\n")
+    skill = tmp_path / ".codex" / "skills" / "agentweb" / "SKILL.md"
+    skill.parent.mkdir(parents=True)
+    portable = """---
+name: agentweb
+description: Portable AgentWeb skill
+metadata:
+  github-repo: https://github.com/AnayGarodia/agentweb
+  github-ref: main
+---
+
+# AgentWeb
+
+Keep this source-managed content.
+"""
+    skill.write_text(portable)
+
+    result = connector.install_agent_skills(str(executable), home=tmp_path)
+
+    assert skill.read_text() == portable
+    assert result["preserved"] == {"codex": str(skill)}
+    claude_skill = Path(result["skills"]["claude"])
+    assert str(executable.resolve()) in claude_skill.read_text()
 
 
 def test_detected_agent_setup_registers_claude_and_codex(

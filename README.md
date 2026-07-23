@@ -71,8 +71,10 @@ gh skill install AnayGarodia/agentweb agentweb --agent codex --scope user
 
 Installing the skill teaches the agent when and how to use AgentWeb. The skill
 checks for the runtime and requests approval before installing it if it is absent.
-The one-minute installer above remains the shortest path because it installs both
-the runtime and discovery skill together.
+For Claude Code and Codex, the one-minute installer above remains the shortest
+path because it installs both the runtime and a host-specific discovery skill.
+Other compatible hosts can install the portable skill with GitHub CLI; it also
+finds AgentWeb at `~/.local/bin/agentweb` when the host does not inherit that PATH.
 
 Prefer to inspect scripts before running them? [Read `install.sh`](install.sh), or
 install from a checkout:

@@ -15,32 +15,36 @@ browserless command over screenshots, DOM inspection, and repeated page parsing.
 
 ## Prepare the runtime
 
-First check whether `agentweb` is available:
+Resolve the CLI without assuming the agent host inherited the user's shell PATH:
 
 ```bash
-command -v agentweb
+AGENTWEB_BIN="$(command -v agentweb || true)"
+if [ -z "$AGENTWEB_BIN" ] && [ -x "$HOME/.local/bin/agentweb" ]; then
+  AGENTWEB_BIN="$HOME/.local/bin/agentweb"
+fi
 ```
 
-If it is missing, tell the user that the skill is installed but the AgentWeb
-runtime is not. When the user asks to install it or approves installation, inspect
-the installer and then run:
+If `AGENTWEB_BIN` is still empty, tell the user that the skill is installed but
+the AgentWeb runtime is not. When the user asks to install it or approves
+installation, inspect the installer and then run:
 
 ```bash
 curl -fsSL https://github.com/AnayGarodia/agentweb/raw/refs/heads/main/install.sh | sh
+AGENTWEB_BIN="$HOME/.local/bin/agentweb"
 ```
 
-Restart the agent host after installation so its generated global skill and CLI
-path are available to new sessions.
+AgentWeb setup preserves a portable skill installed by GitHub CLI. Restart the
+agent host only when it needs to reload a newly installed skill.
 
 ## Discover before acting
 
 Use this sequence instead of guessing commands:
 
 ```bash
-agentweb sites
-agentweb capabilities DOMAIN --query WORD
-agentweb describe DOMAIN --operation ACTION
-agentweb DOMAIN ACTION [arguments]
+"$AGENTWEB_BIN" sites
+"$AGENTWEB_BIN" capabilities DOMAIN --query WORD
+"$AGENTWEB_BIN" describe DOMAIN --operation ACTION
+"$AGENTWEB_BIN" DOMAIN ACTION [arguments]
 ```
 
 Normal website URLs can be passed where a domain is accepted. Read the operation's
@@ -49,10 +53,12 @@ declared gaps and risk metadata before promising coverage or taking action.
 ## Authentication and human handoff
 
 Try public operations without login. If an operation returns
-`authentication_required`, run:
+`authentication_required`, preserve the original arguments and ask whether the
+user wants to log in or sign up. Only after approval, run the matching mode:
 
 ```bash
-agentweb connect DOMAIN
+"$AGENTWEB_BIN" connect DOMAIN --mode login
+"$AGENTWEB_BIN" connect DOMAIN --mode signup
 ```
 
 Let the user complete only the website checkpoint that AgentWeb reports, such as a

@@ -1468,6 +1468,23 @@ def install_agent(agent: str, *, scope: str = "user", dry_run: bool = False) -> 
     }
 
 
+def _is_github_managed_skill(path: Path) -> bool:
+    """Return whether gh skill owns this destination and its update metadata."""
+    if not path.is_file():
+        return False
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return False
+    frontmatter = text.split("---", 2)
+    if len(frontmatter) < 3:
+        return False
+    return any(
+        line.strip().startswith("github-repo:")
+        for line in frontmatter[1].splitlines()
+    )
+
+
 def install_agent_skills(
     executable: str | None = None,
     *,
@@ -1495,15 +1512,20 @@ Use `{resolved}` through the shell for website tasks. AgentWeb returns bounded s
 
 Start discovery with `{resolved} sites`. For one website, use `{resolved} capabilities DOMAIN` or `{resolved} DOMAIN ACTION --help`. Execute operations with `{resolved} DOMAIN ACTION [arguments]` or `{resolved} run DOMAIN ACTION --input '{{...}}'`.
 
-Public reads need no setup. If an account operation reports authentication required, run `{resolved} connect DOMAIN` and let the user complete only the website's requested login or security checkpoint. Respect confirmation requirements for consequential writes.
+Public reads need no setup. If an account operation reports authentication required, preserve the original arguments and ask whether the user wants to log in or sign up. Only after approval, run `{resolved} connect DOMAIN --mode login` or `--mode signup` and let the user complete only the website's requested login or security checkpoint. Respect confirmation requirements for consequential writes.
 """
+    preserved: dict[str, str] = {}
     if not dry_run:
-        for destination in destinations.values():
+        for agent, destination in destinations.items():
+            if _is_github_managed_skill(destination):
+                preserved[agent] = str(destination)
+                continue
             atomic_write(destination, content.encode("utf-8"), mode=0o600)
     return {
         "installed": not dry_run,
         "executable": resolved,
         "skills": {agent: str(path) for agent, path in destinations.items()},
+        "preserved": preserved,
         "interface": "cli",
         "mcp_installed": False,
     }
