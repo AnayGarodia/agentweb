@@ -211,7 +211,7 @@ def parse_global_args(argv: list[str]) -> tuple[argparse.Namespace, list[str]]:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="agentweb",
-        description="Sync complete website interfaces and expose them to agents.",
+        description="Use websites through fast, structured commands for coding agents.",
     )
     parser.add_argument("--profile", default="default", help="Local account profile")
     parser.add_argument("--fresh", action="store_true", help="Bypass read cache")
@@ -223,17 +223,17 @@ def build_parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers(dest="command")
 
-    sync = subparsers.add_parser("sync", help="Install or update every mapped site")
+    sync = subparsers.add_parser("sync", help="Install or update website adapters")
     sync.add_argument("--registry", help="Registry directory or HTTPS URL")
     sync.add_argument(
         "--public-key",
         help="Trusted Ed25519 public key path or base64 value required for remote registries",
     )
-    subparsers.add_parser("sites", help="List installed site adapters")
+    subparsers.add_parser("sites", help="List websites available to AgentWeb")
     subparsers.add_parser("profiles", help="List local named account profiles")
     capabilities = subparsers.add_parser(
         "capabilities",
-        help="Resolve a site name, domain, or URL and list its agent operations",
+        help="List the actions available for a website",
     )
     capabilities.add_argument("target")
     capabilities.add_argument("--query")
@@ -285,7 +285,7 @@ def build_parser() -> argparse.ArgumentParser:
     call.add_argument("operation")
     call.add_argument("--input", default="{}")
 
-    connect = subparsers.add_parser("connect", help="Sign in once in managed Chrome")
+    connect = subparsers.add_parser("connect", help="Sign in to a website once")
     connect.add_argument("site")
     connect.add_argument(
         "--mode", choices=["login", "signup", "session"], default="login"

@@ -1,3 +1,3 @@
-"""AgentWeb: make every website directly usable by agents."""
+"""AgentWeb turns websites into structured commands for coding agents."""
 
 __version__ = "0.17.0.dev0"

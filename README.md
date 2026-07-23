@@ -1,40 +1,39 @@
 # AgentWeb
 
-AgentWeb gives coding agents a fast command-line interface to websites.
+**Use websites from coding agents without making the agent click through them.**
 
-Instead of repeatedly opening a browser, finding controls, and reading pages, an
-agent can discover a website's available actions once and call them as structured
-commands:
+AgentWeb turns a website into simple commands that return clean JSON:
 
 ```bash
-agentweb npmjs.com search-packages --query "react router" --limit 3
 agentweb arxiv.org search-papers --query "graph neural networks" --limit 3
+agentweb npmjs.com get-version --package react --version latest
 agentweb wikipedia.org page --title "Alan Turing"
 ```
 
-The result is JSON, so the agent receives the useful data rather than screenshots,
-HTML, or instructions for where to click.
+An agent can discover what a website supports, call the right command, and use the
+result directly. It does not need to inspect screenshots, find buttons, or parse a
+page again for a workflow that has already been mapped.
 
-> **Project boundary:** this repository is the Apache-2.0 licensed AgentWeb core.
-> It includes the CLI, runtime, security model, adapter format, registry tooling,
-> and three reference adapters. AgentWeb's private adapter factory and the
-> separately distributed official adapter catalog are not part of this repository.
+## Try it in one minute
 
-## Why AgentWeb exists
+AgentWeb needs macOS or Linux and Python 3.11 or newer.
 
-Browser tools are useful for teaching an integration and completing genuinely
-human checkpoints. They are unnecessarily slow and expensive for a workflow that
-has already been understood. AgentWeb turns the repeatable part into a named,
-versioned operation that any connected agent can reuse.
+```bash
+curl -fsSL https://raw.githubusercontent.com/AnayGarodia/agentweb/main/install.sh | sh
+```
 
-This does not remove website security. A site may still require a login, CAPTCHA,
-passkey, one-time code, consent screen, or payment confirmation. AgentWeb exposes
-that requirement clearly and keeps each user's authorization on their own device.
+Then run a real command:
 
-## Install for development
+```bash
+agentweb npmjs.com get-version --package react --version latest
+```
 
-AgentWeb requires Python 3.11 or newer. Until the first public-core release, install
-directly from the repository:
+You should receive JSON containing React's current npm version and package details.
+The installer uses an isolated environment under `~/.local/share/agentweb`; it
+does not change your system Python packages.
+
+Prefer to inspect scripts before running them? [Read `install.sh`](install.sh), or
+install from a checkout:
 
 ```bash
 git clone https://github.com/AnayGarodia/agentweb.git
@@ -43,129 +42,95 @@ python3 -m pip install -e .
 agentweb setup
 ```
 
-For an isolated install with `uv`:
+## Give it to your agent
 
-```bash
-uv tool install --from . agentweb-cli
-agentweb setup
+Tell Claude Code, Codex, or another coding agent:
+
+```text
+Use the AgentWeb CLI for supported websites. Run `agentweb capabilities DOMAIN`
+to see what is available, then call the matching `agentweb DOMAIN ACTION` command.
 ```
 
-Check the installation:
-
-```bash
-agentweb --version
-agentweb sites
-agentweb capabilities npmjs.com --query search
-```
-
-## The agent's normal loop
-
-An agent only needs four ideas:
-
-```bash
-# 1. Find actions for a domain or URL
-agentweb capabilities arxiv.org --query paper
-
-# 2. Read the exact schema when necessary
-agentweb describe arxiv --operation search_papers
-
-# 3. Run the action using domain-first syntax
-agentweb arxiv.org search-papers --query "attention is all you need" --limit 1
-
-# 4. Connect an account only after a protected action asks for it
-agentweb connect example.com
-```
-
-The CLI accepts a site name, a domain, or a supported URL. Action names may use
-hyphens or underscores. Every successful call emits JSON. Every expected failure
-also emits structured JSON on stderr with a stable error code, whether retrying is
-safe, and the next useful action when one exists.
-
-For exact examples and decision rules, read [Using AgentWeb as an agent](docs/AGENT_GUIDE.md).
-
-## Included reference adapters
-
-The public core intentionally ships only three reference integrations:
-
-| Website | What it demonstrates |
-| --- | --- |
-| npm | A broad JSON API, package files, downloads, and provenance |
-| arXiv | Search, XML feeds, identifiers, citations, and file downloads |
-| Wikipedia | A mature read-only adapter with URL routing and semantic evidence |
-
-List the exact operations available in your installed version instead of relying
-on this table:
-
-```bash
-agentweb sites
-agentweb capabilities wikipedia.org
-agentweb audit
-```
-
-Official maintained adapters may be installed from a separate signed registry.
-AgentWeb verifies the registry signature and every bundle hash before installing
-anything. A remote registry can be selected explicitly:
-
-```bash
-agentweb sync https://registry.example/agentweb \
-  --public-key ./registry-public-key.pem
-```
-
-## Login and local data
-
-Public actions should not ask you to log in. Protected actions return an
-`authentication_required` response that tells the agent what to ask the user to
-do. The user then runs one connection command and completes the website's normal
-login:
-
-```bash
-agentweb connect example.com
-agentweb auth status example.com
-agentweb auth disconnect example.com --confirm
-```
-
-Sessions, cookies, tokens, caches, and browser profiles stay under
-`~/.agentweb` by default. Set `AGENTWEB_HOME` to use a different local state
-directory. AgentWeb does not put personal sessions inside adapter bundles.
-
-Read [Security and trust](docs/SECURITY.md) before using an authenticated or
-write-capable third-party adapter.
-
-## Mutating actions
-
-Operations that create, change, send, purchase, vote, publish, or delete require
-an explicit confirmation field. Discovering or reading an operation never counts
-as confirmation. Agents should inspect the current state and important totals,
-then run the write only after the user's request clearly authorizes it.
-
-An idempotency key prevents a successful action from being accidentally repeated:
-
-```bash
-agentweb task example.com create-item \
-  --input '{"name":"demo","confirm":true}' \
-  --idempotency-key create-demo-1
-```
-
-## Using AgentWeb from an agent host
-
-The CLI is the primary interface because every coding agent can run it without
-loading a large tool schema into every prompt. MCP remains available as a compact
-compatibility layer:
+That is enough for an agent with shell access. Optional agent-specific setup is
+also available:
 
 ```bash
 agentweb install-agent claude --scope user
 agentweb install-agent codex --scope user
-agentweb mcp-config
 ```
 
-Agents should prefer the CLI when shell access exists. See
-[Agent host setup](docs/AGENT_HOSTS.md) for Claude Code, Codex, and generic hosts.
+See [agent setup](docs/AGENT_HOSTS.md) for the exact behavior Claude Code and Codex
+should follow around login, retries, and writes.
 
-## Building a community adapter
+## The three commands to understand
 
-The public repository supports deliberate, reviewable adapter development. It
-contains a safe request/session SDK, manifest validation, redacted trace analysis,
-flow-capsule verification, scaffolding, registry hashing, and signing.
+```bash
+# Which websites are installed?
+agentweb sites
+
+# What can this website do?
+agentweb capabilities arxiv.org
+
+# Do it.
+agentweb arxiv.org search-papers --query "attention" --limit 3
+```
+
+If an argument is unclear, inspect only that action:
+
+```bash
+agentweb describe arxiv.org --operation search_papers
+```
+
+Commands accept normal domains and many normal website URLs. Results and expected
+errors are JSON, so agents do not need site-specific parsing code.
+
+## What is included today?
+
+This public repository includes three ready-to-use examples:
+
+| Website | Examples |
+| --- | --- |
+| npm | Search packages, versions, downloads, dependencies, provenance, and files |
+| arXiv | Search papers, metadata, authors, categories, BibTeX, PDFs, and source |
+| Wikipedia | Search, pages, links, categories, revisions, images, and pageviews |
+
+Run `agentweb capabilities DOMAIN` for the current, exact list.
+
+AgentWeb's larger maintained website catalog is distributed separately. This
+repository is the open core: the command-line tool, runtime, login/session system,
+adapter format, signed updater, tests, and reference adapters. The automatic system
+used to map and repair the official catalog is not in this repository.
+
+## How it works
+
+```text
+website mapped once -> versioned AgentWeb adapter -> reusable commands for every agent
+```
+
+Each adapter describes the website's actions, inputs, output, login needs, and
+known gaps. AgentWeb keeps the common behavior in one runtime: domains, sessions,
+request limits, confirmation for writes, structured errors, and safe updates.
+
+The browser can still appear when the website itself requires a person to log in,
+solve a CAPTCHA, use a passkey, enter a one-time code, accept legal terms, or
+confirm payment. It is not the normal path for already-mapped actions.
+
+## Login only when needed
+
+Try public commands without logging in. If an account action needs authorization,
+AgentWeb returns `authentication_required`. Then the user runs:
+
+```bash
+agentweb connect example.com
+```
+
+Sessions stay on that user's device under `~/.agentweb`. They are not bundled into
+an adapter or shared with other users. Read [security and trust](docs/SECURITY.md)
+before installing an authenticated third-party adapter.
+
+## Build an adapter
+
+The open core includes the public pieces needed to build and distribute an adapter:
 
 ```bash
 agentweb adapter-new example --base-url https://example.com --root ./registry
@@ -173,38 +138,30 @@ agentweb registry-build ./registry
 agentweb audit example --root ./registry
 ```
 
-The private AgentWeb factory that automatically inventories large websites,
-coordinates mapping, generates operations, runs the full release matrix, detects
-drift, and repairs official adapters is intentionally not included.
+Start with [building an adapter](docs/BUILDING_ADAPTERS.md). The documentation is
+explicit about login, write confirmation, evidence, incomplete coverage, and what
+must never be committed.
 
-Read [Building an adapter](docs/BUILDING_ADAPTERS.md) before submitting one.
+## Documentation
 
-## Repository map
+| If you want to… | Read… |
+| --- | --- |
+| Use AgentWeb from an agent | [Agent guide](docs/AGENT_GUIDE.md) |
+| Connect Claude Code or Codex | [Agent setup](docs/AGENT_HOSTS.md) |
+| Understand the code | [Architecture](docs/ARCHITECTURE.md) |
+| Build a website adapter | [Adapter guide](docs/BUILDING_ADAPTERS.md) |
+| Understand sessions and safety | [Security](docs/SECURITY.md) |
+| Contribute code | [Contributing](CONTRIBUTING.md) |
 
-```text
-src/agentweb/                 CLI, runtime, SDK, registry, auth, and storage
-src/agentweb/builtin_registry Reference adapters included with the public core
-src/sitepack/                 Compatibility namespace for older installs
-docs/                         Human and agent documentation
-tests/                        Core and reference-adapter tests
-installer/                    Reproducible standalone installer template
-```
+Coding agents working on this repository should read [AGENTS.md](AGENTS.md).
+`llms.txt` provides a compact machine-readable map of the documentation.
 
-Start with [Architecture](docs/ARCHITECTURE.md) when changing the runtime and with
-[Contributing](CONTRIBUTING.md) when preparing a pull request. Coding agents should
-also read [AGENTS.md](AGENTS.md), which is a short map of repository invariants and
-verification commands.
+## Current status
 
-## What AgentWeb does not promise
+AgentWeb is an early public preview. Websites can change endpoints, revoke
+sessions, add verification, or rate-limit requests. AgentWeb reports an adapter's
+known gaps and verification state instead of claiming that every action will work
+forever.
 
-Websites change. They can revoke sessions, rotate tokens, rate-limit callers, alter
-private endpoints, or add new security checks. An adapter is evidence about a
-tested version of a website, not ownership of that website. AgentWeb reports known
-coverage and verification state instead of silently claiming that every operation
-will always work.
-
-## License
-
-The AgentWeb core and the reference adapters in this repository are licensed under
-the [Apache License 2.0](LICENSE). Official adapter bundles, trademarks, hosted
-services, and the private adapter factory may use separate terms.
+The public core is licensed under [Apache-2.0](LICENSE). Official adapter bundles,
+hosted services, and the private mapping system may use separate terms.

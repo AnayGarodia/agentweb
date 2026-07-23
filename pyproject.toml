@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "agentweb-cli"
 version = "0.17.0.dev0"
-description = "Browserless website APIs compiled once and replayed by every agent"
+description = "Turn websites into fast, structured commands for coding agents"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"

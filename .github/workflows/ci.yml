@@ -36,3 +36,11 @@ jobs:
       - run: python -m build
       - name: Reject private factory modules and unexpected adapters
         run: python scripts/check_public_release.py dist/*.whl
+      - name: Test the one-command installer path
+        env:
+          AGENTWEB_INSTALL_ROOT: ${{ runner.temp }}/agentweb-install
+          AGENTWEB_BIN_DIR: ${{ runner.temp }}/agentweb-bin
+        run: |
+          AGENTWEB_PACKAGE_SOURCE="$(find dist -name '*.whl' -print -quit)" ./install.sh
+          "$AGENTWEB_BIN_DIR/agentweb" sites
+          "$AGENTWEB_BIN_DIR/agentweb" capabilities npmjs.com --query version

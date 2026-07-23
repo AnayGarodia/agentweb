@@ -4,9 +4,22 @@ AgentWeb's CLI is the primary integration. A coding agent with shell access can
 discover and call every installed adapter without loading hundreds of operation
 schemas into its prompt.
 
+Install it once for the current user:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/AnayGarodia/agentweb/main/install.sh | sh
+```
+
+Then verify that the same shell environment used by the agent can run:
+
+```bash
+agentweb sites
+```
+
 ## Claude Code
 
-Install AgentWeb, then make the command available to Claude Code:
+Claude Code can call `agentweb` directly through its shell. The optional installer
+adds a persistent AgentWeb instruction for it:
 
 ```bash
 agentweb install-agent claude --scope user
@@ -22,6 +35,8 @@ only after authentication_required. Reconfirm writes after authorization.
 ```
 
 ## Codex
+
+Codex can also call `agentweb` directly. Optional persistent setup:
 
 ```bash
 agentweb install-agent codex --scope user
@@ -67,3 +82,9 @@ agentweb capabilities npmjs.com --query package
 
 If a desktop app cannot find a command that works in your terminal, restart the
 app after installation so it receives the updated `PATH`.
+
+If `agentweb` is still not found, add the installer directory explicitly:
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
