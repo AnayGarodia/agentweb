@@ -910,6 +910,16 @@ def _payload_shape(value: Any, path: str = "") -> list[dict[str, str]]:
     return fields[:500]
 
 
+def payload_shape(value: Any) -> list[dict[str, str]]:
+    """Structural ``(path, type)`` fingerprint of a response payload.
+
+    Public wrapper over the shape used by flow-capsule drift detection so other
+    verification paths (e.g. response oracles) share one definition of "the same
+    response shape".
+    """
+    return _payload_shape(value)
+
+
 def verify_flow_capsule(
     capsule: dict[str, Any], result: dict[str, Any] | None = None
 ) -> dict[str, Any]:
