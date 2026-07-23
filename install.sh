@@ -35,7 +35,9 @@ ln -sfn "$VENV/bin/sitepack" "$BIN_DIR/sitepack"
 PATH="$BIN_DIR:$PATH" "$BIN_DIR/agentweb" setup >/dev/null
 
 echo "AgentWeb $($BIN_DIR/agentweb --version) is ready."
-echo "Try: agentweb npmjs.com get-version --package react --version latest"
+echo "AgentWeb automatically connects any Claude Code or Codex installation it detects."
+echo "Restart your coding agent, then paste:"
+echo "  Use AgentWeb to find the latest version of React on npm."
 
 case ":$PATH:" in
   *":$BIN_DIR:"*) ;;

@@ -36,8 +36,8 @@ def test_readme_leads_with_a_copyable_install_and_real_call() -> None:
         "curl -fsSL https://raw.githubusercontent.com/AnayGarodia/agentweb/"
         "main/install.sh | sh"
     )
-    example = "agentweb npmjs.com get-version --package react --version latest"
+    example = "Use AgentWeb to find the latest version of React on npm."
 
     assert install in readme
     assert example in readme
-    assert readme.index(install) < readme.index("## Give it to your agent")
+    assert readme.index(install) < readme.index("## Just ask for what you want")

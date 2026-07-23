@@ -22,15 +22,15 @@ AgentWeb needs macOS or Linux and Python 3.11 or newer.
 curl -fsSL https://raw.githubusercontent.com/AnayGarodia/agentweb/main/install.sh | sh
 ```
 
-Then run a real command:
+Restart Claude Code or Codex, then paste this prompt:
 
-```bash
-agentweb npmjs.com get-version --package react --version latest
+```text
+Use AgentWeb to find the latest version of React on npm.
 ```
 
-You should receive JSON containing React's current npm version and package details.
-The installer uses an isolated environment under `~/.local/share/agentweb`; it
-does not change your system Python packages.
+That is the intended experience. The installer detects Claude Code and Codex,
+connects AgentWeb automatically, and installs everything in an isolated environment
+under `~/.local/share/agentweb`. It does not change your system Python packages.
 
 Prefer to inspect scripts before running them? [Read `install.sh`](install.sh), or
 install from a checkout:
@@ -42,17 +42,21 @@ python3 -m pip install -e .
 agentweb setup
 ```
 
-## Give it to your agent
+## Just ask for what you want
 
-Tell Claude Code, Codex, or another coding agent:
+Once installed, prompts can be ordinary tasks:
 
 ```text
-Use the AgentWeb CLI for supported websites. Run `agentweb capabilities DOMAIN`
-to see what is available, then call the matching `agentweb DOMAIN ACTION` command.
+Use AgentWeb to find three recent arXiv papers about coding agents.
+
+Use AgentWeb to compare the dependencies of React and Vue on npm.
+
+Use AgentWeb to research Alan Turing on Wikipedia and follow the most relevant links.
 ```
 
-That is enough for an agent with shell access. Optional agent-specific setup is
-also available:
+The agent handles discovery and commands. You should not need to translate your
+request into CLI syntax. If the installer could not detect your coding agent, the
+manual connection commands are:
 
 ```bash
 agentweb install-agent claude --scope user
@@ -62,20 +66,22 @@ agentweb install-agent codex --scope user
 See [agent setup](docs/AGENT_HOSTS.md) for the exact behavior Claude Code and Codex
 should follow around login, retries, and writes.
 
-## The three commands to understand
+## What the agent does underneath
 
 ```bash
-# Which websites are installed?
+# See which websites are installed
 agentweb sites
 
-# What can this website do?
+# Discover what one website supports
 agentweb capabilities arxiv.org
 
-# Do it.
+# Run the selected action
 agentweb arxiv.org search-papers --query "attention" --limit 3
 ```
 
-If an argument is unclear, inspect only that action:
+Most users do not need to run these themselves. They are the predictable interface
+the coding agent uses. If an argument is unclear, the agent can inspect only that
+action:
 
 ```bash
 agentweb describe arxiv.org --operation search_papers

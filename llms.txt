@@ -6,7 +6,7 @@ not the private automatic adapter factory or official maintained adapter catalog
 
 Fast start:
 - Install: curl -fsSL https://raw.githubusercontent.com/AnayGarodia/agentweb/main/install.sh | sh
-- Verify: agentweb npmjs.com get-version --package react --version latest
+- First prompt: Use AgentWeb to find the latest version of React on npm.
 - Discover: agentweb capabilities DOMAIN
 
 Documentation:

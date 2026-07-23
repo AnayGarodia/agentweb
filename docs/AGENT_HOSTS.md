@@ -10,16 +10,18 @@ Install it once for the current user:
 curl -fsSL https://raw.githubusercontent.com/AnayGarodia/agentweb/main/install.sh | sh
 ```
 
-Then verify that the same shell environment used by the agent can run:
+The installer detects Claude Code and Codex, registers AgentWeb with each one, and
+performs website setup automatically. Restart the coding agent, then ask a normal
+question such as:
 
-```bash
-agentweb sites
+```text
+Use AgentWeb to find the latest version of React on npm.
 ```
 
 ## Claude Code
 
-Claude Code can call `agentweb` directly through its shell. The optional installer
-adds a persistent AgentWeb instruction for it:
+The main installer connects Claude Code automatically when `claude` is on `PATH`.
+If it was installed afterward or detection failed, connect it manually:
 
 ```bash
 agentweb install-agent claude --scope user
@@ -36,7 +38,8 @@ only after authentication_required. Reconfirm writes after authorization.
 
 ## Codex
 
-Codex can also call `agentweb` directly. Optional persistent setup:
+The main installer also connects Codex automatically when `codex` is on `PATH`.
+Manual fallback:
 
 ```bash
 agentweb install-agent codex --scope user

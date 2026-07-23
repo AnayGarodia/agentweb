@@ -18,6 +18,7 @@ from .connector import (
     connect_site,
     disconnect_site,
     install_agent,
+    setup_detected_agents,
 )
 from .mcp import serve
 from .registry import (
@@ -513,16 +514,12 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "install-agent":
             result = install_agent(args.agent, scope=args.scope, dry_run=args.dry_run)
         elif args.command == "setup":
-            sync_result = runtime.registry.sync()
-            installed = runtime.sites()
             result = {
-                "ready": True,
+                **setup_detected_agents(runtime),
                 "interface": "cli",
                 "command": "agentweb DOMAIN ACTION [arguments]",
-                "registry": sync_result,
-                "sites": sorted(item["name"] for item in installed),
-                "mcp_installed": False,
-                "mcp_note": "Optional compatibility only: run agentweb install-agent AGENT if explicitly wanted.",
+                "sites": sorted(item["name"] for item in runtime.sites()),
+                "next": "Restart any detected coding agent, then ask it to use AgentWeb in normal language.",
             }
         elif args.command == "onboard":
             agent_result = install_agent(args.agent, scope=args.scope)

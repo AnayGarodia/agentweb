@@ -3,10 +3,13 @@ from __future__ import annotations
 from http.cookiejar import Cookie
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
+from agentweb import connector
 from agentweb.capture import compile_network_trace, verify_flow_capsule
+from agentweb.cli import main as cli_main
 from agentweb.mcp import dispatch
 from agentweb.registry import (
     Registry,
@@ -233,6 +236,77 @@ def test_mcp_surface_stays_constant() -> None:
         "site_call",
         "site_connect",
     ]
+
+
+def test_setup_connects_detected_agents_automatically(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys
+) -> None:
+    class FakeRuntime:
+        @staticmethod
+        def sites() -> list[dict[str, str]]:
+            return [{"name": "npm"}, {"name": "arxiv"}, {"name": "wikipedia"}]
+
+    monkeypatch.setattr("agentweb.cli.StatePaths.discover", lambda: StatePaths(tmp_path))
+    monkeypatch.setattr("agentweb.cli.Runtime", lambda *args, **kwargs: FakeRuntime())
+    monkeypatch.setattr(
+        "agentweb.cli.setup_detected_agents",
+        lambda runtime: {
+            "ready": True,
+            "agentweb": "installed",
+            "registry": {"available": ["arxiv", "npm", "wikipedia"]},
+            "detected_agents": ["claude", "codex"],
+            "agent_connections": [
+                {"agent": "claude", "installed": True},
+                {"agent": "codex", "installed": True},
+            ],
+            "errors": [],
+        },
+    )
+
+    assert cli_main(["setup"]) == 0
+    result = json.loads(capsys.readouterr().out)
+
+    assert result["ready"] is True
+    assert result["detected_agents"] == ["claude", "codex"]
+    assert result["sites"] == ["arxiv", "npm", "wikipedia"]
+    assert "Restart any detected coding agent" in result["next"]
+
+
+def test_detected_agent_setup_registers_claude_and_codex(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class FakeRegistry:
+        @staticmethod
+        def sync() -> dict[str, list[str]]:
+            return {"available": ["npm"]}
+
+    class FakeRuntime:
+        registry = FakeRegistry()
+
+    binaries = {
+        "agentweb": "/tools/agentweb",
+        "claude": "/tools/claude",
+        "codex": "/tools/codex",
+    }
+    calls: list[list[str]] = []
+    monkeypatch.setattr(connector.shutil, "which", lambda name: binaries.get(name))
+    monkeypatch.setattr(
+        connector.subprocess,
+        "run",
+        lambda args, **kwargs: calls.append(args)
+        or SimpleNamespace(returncode=0, stdout="", stderr=""),
+    )
+
+    result = connector.setup_detected_agents(FakeRuntime())
+
+    assert result["ready"] is True
+    assert result["detected_agents"] == ["claude", "codex"]
+    assert [item["agent"] for item in result["agent_connections"]] == [
+        "claude",
+        "codex",
+    ]
+    assert ["/tools/claude", "mcp", "add", "--scope", "user", "agentweb", "--", "/tools/agentweb", "mcp"] in calls
+    assert ["/tools/codex", "mcp", "add", "agentweb", "--", "/tools/agentweb", "mcp"] in calls
 
 
 def test_scaffold_is_browserless_and_honest(tmp_path: Path) -> None:
