@@ -1,8 +1,11 @@
 # AgentWeb
 
-**Use websites from coding agents without making the agent click through them.**
+**Let coding agents *use* websites — read data and take real actions — without opening a browser.**
 
-AgentWeb turns a website into simple commands that return clean JSON:
+AgentWeb turns a website into simple, typed commands that return clean JSON. There
+are two kinds:
+
+**Read** — look things up:
 
 ```bash
 agentweb arxiv.org search-papers --query "graph neural networks" --limit 3
@@ -10,9 +13,25 @@ agentweb npmjs.com get-version --package react --version latest
 agentweb wikipedia.org page --title "Alan Turing"
 ```
 
-An agent can discover what a website supports, call the right command, and use the
-result directly. It does not need to inspect screenshots, find buttons, or parse a
-page again for a workflow that has already been mapped.
+**Act** — actually do things on your own accounts. Impactful or irreversible
+actions (checkout, posting, opening a PR) require an explicit `--confirm`:
+
+```bash
+agentweb spotify play --query "Massive Attack Teardrop"
+agentweb amazon add-to-cart --asin B0XXXXXXXX
+agentweb github create-pull-request --owner you --repo app --head fix --base main --confirm
+```
+
+An agent discovers what a site supports, calls the right command, and uses the
+result directly — no screenshots, no hunting for buttons, no re-parsing a page for
+a workflow that has already been mapped.
+
+**Actions are the point.** Reads are often a web search away; *doing* things — play
+a song, place an order, open a pull request, post a comment — is what a browserless
+interface uniquely unlocks. Every mapped action is typed, state-changing ones are
+confirmation-gated, and each is verified against the live site where possible;
+where a site offers no safe way to prove an action, AgentWeb says so instead of
+pretending.
 
 ## Try it in one minute
 
