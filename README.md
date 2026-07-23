@@ -121,9 +121,11 @@ errors are JSON, so agents do not need site-specific parsing code.
 
 ## What is included today?
 
-The installer currently includes LinkedIn public jobs and company lookup alongside
-the existing mapped sites. This public repository includes three fully open
-reference adapters:
+The installer currently includes LinkedIn public jobs, company lookup, and a normal
+one-time LinkedIn login for account sessions alongside the existing mapped sites.
+It also provisions an isolated Python automatically when the machine only has an
+older system Python. This public repository includes three fully open reference
+adapters:
 
 | Website | Examples |
 | --- | --- |
