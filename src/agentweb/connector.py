@@ -1474,7 +1474,9 @@ def _is_github_managed_skill(path: Path) -> bool:
         return False
     try:
         text = path.read_text(encoding="utf-8")
-    except OSError:
+    except (OSError, UnicodeError):
+        return False
+    if not text.startswith("---\n"):
         return False
     frontmatter = text.split("---", 2)
     if len(frontmatter) < 3:

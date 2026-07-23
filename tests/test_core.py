@@ -346,6 +346,20 @@ Keep this source-managed content.
     assert str(executable.resolve()) in claude_skill.read_text()
 
 
+def test_agent_setup_replaces_invalid_skill_content(tmp_path: Path) -> None:
+    executable = tmp_path / "bin" / "agentweb"
+    executable.parent.mkdir()
+    executable.write_text("#!/bin/sh\n")
+    skill = tmp_path / ".codex" / "skills" / "agentweb" / "SKILL.md"
+    skill.parent.mkdir(parents=True)
+    skill.write_bytes(b"\xff")
+
+    result = connector.install_agent_skills(str(executable), home=tmp_path)
+
+    assert result["preserved"] == {}
+    assert "AgentWeb returns bounded structured JSON" in skill.read_text()
+
+
 def test_detected_agent_setup_registers_claude_and_codex(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
