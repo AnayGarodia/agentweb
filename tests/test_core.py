@@ -269,10 +269,12 @@ def test_mcp_surface_stays_constant() -> None:
     ]
 
 
-def test_setup_connects_detected_agents_automatically(
+def test_setup_installs_cli_discovery_skills_without_mcp(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys
 ) -> None:
     class FakeRuntime:
+        registry = SimpleNamespace(sync=lambda: {"available": ["arxiv", "npm", "wikipedia"]})
+
         @staticmethod
         def sites() -> list[dict[str, str]]:
             return [{"name": "npm"}, {"name": "arxiv"}, {"name": "wikipedia"}]
@@ -280,27 +282,36 @@ def test_setup_connects_detected_agents_automatically(
     monkeypatch.setattr("agentweb.cli.StatePaths.discover", lambda: StatePaths(tmp_path))
     monkeypatch.setattr("agentweb.cli.Runtime", lambda *args, **kwargs: FakeRuntime())
     monkeypatch.setattr(
-        "agentweb.cli.setup_detected_agents",
-        lambda runtime: {
-            "ready": True,
-            "agentweb": "installed",
-            "registry": {"available": ["arxiv", "npm", "wikipedia"]},
-            "detected_agents": ["claude", "codex"],
-            "agent_connections": [
-                {"agent": "claude", "installed": True},
-                {"agent": "codex", "installed": True},
-            ],
-            "errors": [],
-        },
+        "agentweb.cli.install_agent_skills",
+        lambda: {"installed": True, "interface": "cli", "mcp_installed": False},
     )
 
     assert cli_main(["setup"]) == 0
     result = json.loads(capsys.readouterr().out)
 
     assert result["ready"] is True
-    assert result["detected_agents"] == ["claude", "codex"]
     assert result["sites"] == ["arxiv", "npm", "wikipedia"]
-    assert "Restart any detected coding agent" in result["next"]
+    assert result["mcp_installed"] is False
+    assert result["agent_discovery"]["installed"] is True
+
+
+def test_agent_skills_embed_absolute_cli_path_for_fresh_sessions(
+    tmp_path: Path,
+) -> None:
+    executable = tmp_path / "bin" / "agentweb"
+    executable.parent.mkdir()
+    executable.write_text("#!/bin/sh\n")
+
+    result = connector.install_agent_skills(str(executable), home=tmp_path)
+
+    assert result["mcp_installed"] is False
+    for agent in ("claude", "codex"):
+        skill = Path(result["skills"][agent])
+        assert skill.is_file()
+        text = skill.read_text()
+        assert str(executable.resolve()) in text
+        assert "AgentWeb returns bounded structured JSON" in text
+        assert "connect DOMAIN" in text
 
 
 def test_detected_agent_setup_registers_claude_and_codex(

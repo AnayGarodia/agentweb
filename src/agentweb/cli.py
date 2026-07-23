@@ -20,7 +20,7 @@ from .connector import (
     connect_site,
     disconnect_site,
     install_agent,
-    setup_detected_agents,
+    install_agent_skills,
 )
 from .dashboard import serve_dashboard
 from .mcp import serve
@@ -587,25 +587,23 @@ def main(argv: list[str] | None = None) -> int:
                     interface="cli",
                 )
         elif args.command == "setup":
+            sync_result = runtime.registry.sync()
+            skill_result = install_agent_skills()
             result = {
-                **setup_detected_agents(runtime),
+                "ready": True,
                 "interface": "cli",
                 "command": "agentweb DOMAIN ACTION [arguments]",
+                "registry": sync_result,
                 "sites": sorted(item["name"] for item in runtime.sites()),
-                "next": "Restart any detected coding agent, then ask it to use AgentWeb in normal language.",
+                "agent_discovery": skill_result,
+                "mcp_installed": False,
+                "next": "Start a new coding-agent session, then ask it to use AgentWeb in normal language.",
             }
             analytics.record(
                 "setup_completed",
                 success=bool(result.get("ready")),
                 interface="cli",
             )
-            for connection in result.get("agent_connections") or []:
-                analytics.record(
-                    "agent_connected",
-                    operation=connection.get("agent"),
-                    success=bool(connection.get("installed")),
-                    interface="cli",
-                )
         elif args.command == "onboard":
             agent_result = install_agent(args.agent, scope=args.scope)
             sync_result = runtime.registry.sync()

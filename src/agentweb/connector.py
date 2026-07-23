@@ -29,7 +29,7 @@ from .auth import (
 )
 from .runtime import Runtime
 from .sdk import ConfigurationRequired, AgentWebError
-from .storage import read_json, write_json
+from .storage import atomic_write, read_json, write_json
 
 
 Progress = Callable[[str], None]
@@ -1390,6 +1390,47 @@ def install_agent(agent: str, *, scope: str = "user", dry_run: bool = False) -> 
         "scope": scope if agent == "claude" else "global",
         "installed": True,
         "command": [executable, "mcp"],
+    }
+
+
+def install_agent_skills(
+    executable: str | None = None,
+    *,
+    home: Path | None = None,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """Teach shell-capable agents to discover the CLI without requiring MCP."""
+    discovered = executable or shutil.which("agentweb")
+    if not discovered:
+        raise AgentWebError("The agentweb executable is not on PATH")
+    resolved = str(Path(discovered).expanduser().resolve())
+    user_home = (home or Path.home()).expanduser()
+    destinations = {
+        "claude": user_home / ".claude" / "skills" / "agentweb" / "SKILL.md",
+        "codex": user_home / ".codex" / "skills" / "agentweb" / "SKILL.md",
+    }
+    content = f"""---
+name: agentweb
+description: Use mapped websites through the AgentWeb CLI instead of browser clicking. Use for any site shown by AgentWeb.
+---
+
+# AgentWeb
+
+Use `{resolved}` through the shell for website tasks. AgentWeb returns bounded structured JSON and should be preferred over browser use when a mapped operation exists.
+
+Start discovery with `{resolved} sites`. For one website, use `{resolved} capabilities DOMAIN` or `{resolved} DOMAIN ACTION --help`. Execute operations with `{resolved} DOMAIN ACTION [arguments]` or `{resolved} run DOMAIN ACTION --input '{{...}}'`.
+
+Public reads need no setup. If an account operation reports authentication required, run `{resolved} connect DOMAIN` and let the user complete only the website's requested login or security checkpoint. Respect confirmation requirements for consequential writes.
+"""
+    if not dry_run:
+        for destination in destinations.values():
+            atomic_write(destination, content.encode("utf-8"), mode=0o600)
+    return {
+        "installed": not dry_run,
+        "executable": resolved,
+        "skills": {agent: str(path) for agent, path in destinations.items()},
+        "interface": "cli",
+        "mcp_installed": False,
     }
 
 

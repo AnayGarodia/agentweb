@@ -28,9 +28,11 @@ Restart Claude Code or Codex, then paste this prompt:
 Use AgentWeb to find the latest version of React on npm.
 ```
 
-That is the intended experience. The installer detects Claude Code and Codex,
-connects AgentWeb automatically, and installs everything in an isolated environment
-under `~/.local/share/agentweb`. It does not change your system Python packages.
+That is the intended experience. The installer adds a global AgentWeb skill for
+Claude Code and Codex containing the CLI's absolute path, and installs everything
+in an isolated environment under `~/.local/share/agentweb`. New agent sessions can
+therefore discover AgentWeb even when the app does not inherit `~/.local/bin` in its
+PATH. It does not change your system Python packages or register MCP automatically.
 
 Prefer to inspect scripts before running them? [Read `install.sh`](install.sh), or
 install from a checkout:
