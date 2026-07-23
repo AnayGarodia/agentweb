@@ -55,6 +55,10 @@ agentweb = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+markers = [
+  "live: hits real production websites; requires AGENTWEB_LIVE_TESTS=1",
+  "browser: launches a real managed Chrome/Chromium; skipped without one",
+]
 
 [tool.ruff]
 target-version = "py311"

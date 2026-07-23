@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -13,16 +14,40 @@ from agentweb.storage import StatePaths
 from agentweb.web_runtime import WebRuntime
 
 
-try:
-    chrome_executable()
-    CHROME_AVAILABLE = True
-except AgentWebError:
-    CHROME_AVAILABLE = False
+def _real_chrome_available() -> bool:
+    """Only run the browser tests when a genuine Chrome/Chromium is present.
+
+    Some environments expose a ``google-chrome`` shim on PATH that merely
+    forwards a URL to an already-running browser and exits 0. Such a shim cannot
+    host a private debugging session, so probe the executable's ``--version``
+    output and require a real browser identifier.
+    """
+    try:
+        executable = chrome_executable()
+    except AgentWebError:
+        return False
+    try:
+        result = subprocess.run(
+            [executable, "--version"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return "chrom" in (result.stdout + result.stderr).lower()
 
 
-pytestmark = pytest.mark.skipif(
-    not CHROME_AVAILABLE, reason="Chrome or Chromium is required for web runtime tests"
-)
+CHROME_AVAILABLE = _real_chrome_available()
+
+
+pytestmark = [
+    pytest.mark.browser,
+    pytest.mark.skipif(
+        not CHROME_AVAILABLE,
+        reason="a real Chrome or Chromium is required for web runtime tests",
+    ),
+]
 
 
 class FixtureHandler(BaseHTTPRequestHandler):
