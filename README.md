@@ -1,9 +1,10 @@
 # AgentWeb
 
-**Let coding agents *use* websites — read data and take real actions — without opening a browser.**
+**Browserless website automation for coding agents: read data and take real
+actions through typed CLI commands that return clean JSON.**
 
-AgentWeb turns a website into simple, typed commands that return clean JSON. There
-are two kinds:
+AgentWeb maps reusable website actions once so agents do not need to click through
+the same interface or parse the same page again. There are two kinds:
 
 **Read** — look things up:
 
@@ -53,6 +54,25 @@ Claude Code and Codex containing the CLI's absolute path, and installs everythin
 in an isolated environment under `~/.local/share/agentweb`. New agent sessions can
 therefore discover AgentWeb even when the app does not inherit `~/.local/bin` in its
 PATH. It does not change your system Python packages or register MCP automatically.
+
+### Discover AgentWeb as an agent skill
+
+AgentWeb also publishes a portable
+[Agent Skills](https://agentskills.io/specification) entry point for discovery by
+GitHub Copilot, Claude Code, Codex, Cursor, Gemini CLI, and other compatible hosts.
+With GitHub CLI 2.90 or newer, an agent or developer can inspect it before
+installation:
+
+```bash
+gh skill search agentweb
+gh skill preview AnayGarodia/agentweb agentweb
+gh skill install AnayGarodia/agentweb agentweb --agent codex --scope user
+```
+
+Installing the skill teaches the agent when and how to use AgentWeb. The skill
+checks for the runtime and requests approval before installing it if it is absent.
+The one-minute installer above remains the shortest path because it installs both
+the runtime and discovery skill together.
 
 Prefer to inspect scripts before running them? [Read `install.sh`](install.sh), or
 install from a checkout:
@@ -243,7 +263,9 @@ must never be committed.
 | Contribute code | [Contributing](CONTRIBUTING.md) |
 
 Coding agents working on this repository should read [AGENTS.md](AGENTS.md).
-`llms.txt` provides a compact machine-readable map of the documentation.
+The installable [AgentWeb skill](skills/agentweb/SKILL.md) teaches agents
+when and how to use the CLI. `llms.txt` provides a compact machine-readable map of
+the documentation.
 
 ## Current status
 

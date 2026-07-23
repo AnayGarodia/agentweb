@@ -5,12 +5,22 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "agentweb-cli"
 version = "0.19.3"
-description = "Turn websites into fast, structured commands for coding agents"
+description = "Browserless, typed website actions for coding agents"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
 authors = [{name = "AgentWeb contributors"}]
-keywords = ["agents", "cli", "web", "automation", "mcp"]
+keywords = [
+  "agents",
+  "agent-skills",
+  "ai-agents",
+  "browserless",
+  "cli",
+  "coding-agents",
+  "mcp",
+  "web",
+  "website-automation",
+]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Programming Language :: Python :: 3",
