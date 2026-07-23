@@ -903,6 +903,7 @@ class Registry:
         source: str | None = None,
         *,
         trusted_public_key: str | None = None,
+        prune: bool = False,
     ) -> dict[str, Any]:
         with SYNC_LOCK:
             source = source or self.configured_source()
@@ -1037,17 +1038,24 @@ class Registry:
                         shutil.rmtree(previous_bundle)
                 changed.append(name)
 
-            removed = sorted(set(installed["sites"]) - seen_names)
-            for name in removed:
-                stale_entry = installed["sites"].pop(name, None) or {}
-                stale_manifest = stale_entry.get("manifest")
-                if stale_manifest:
-                    stale_bundle = Path(str(stale_manifest)).parent.resolve()
-                    if (
-                        self.paths.sites.resolve() in stale_bundle.parents
-                        and stale_bundle.is_dir()
-                    ):
-                        shutil.rmtree(stale_bundle)
+            # A registry is an additive source, not the complete universe of
+            # AgentWeb adapters. In particular, installing the public core over
+            # a richer private or third-party registry must not erase adapters
+            # that the incoming registry does not know about. Destructive
+            # mirroring remains available only as an explicit maintenance act.
+            removed: list[str] = []
+            if prune:
+                removed = sorted(set(installed["sites"]) - seen_names)
+                for name in removed:
+                    stale_entry = installed["sites"].pop(name, None) or {}
+                    stale_manifest = stale_entry.get("manifest")
+                    if stale_manifest:
+                        stale_bundle = Path(str(stale_manifest)).parent.resolve()
+                        if (
+                            self.paths.sites.resolve() in stale_bundle.parents
+                            and stale_bundle.is_dir()
+                        ):
+                            shutil.rmtree(stale_bundle)
             write_json(self.paths.installed, installed)
             try:
                 is_builtin = (

@@ -59,6 +59,37 @@ def test_reference_registry_contains_only_public_adapters(tmp_path: Path) -> Non
     }
 
 
+def test_sync_preserves_adapters_from_other_registries(tmp_path: Path) -> None:
+    state = tmp_path / "state"
+    state.mkdir()
+    paths = StatePaths(state)
+    external = tmp_path / "external-registry"
+    create_adapter(external, "example", "https://example.com")
+    build_index(external)
+
+    Registry(paths).sync(str(external))
+    result = Registry(paths).sync(str(bundled_registry()))
+
+    assert result["removed"] == []
+    assert set(result["available"]) == {"arxiv", "example", "npm", "wikipedia"}
+    assert "example" in {item["name"] for item in Runtime(paths).sites()}
+
+
+def test_sync_prune_explicitly_removes_adapters_not_in_source(tmp_path: Path) -> None:
+    state = tmp_path / "state"
+    state.mkdir()
+    paths = StatePaths(state)
+    external = tmp_path / "external-registry"
+    create_adapter(external, "example", "https://example.com")
+    build_index(external)
+
+    Registry(paths).sync(str(external))
+    result = Registry(paths).sync(str(bundled_registry()), prune=True)
+
+    assert result["removed"] == ["example"]
+    assert set(result["available"]) == {"arxiv", "npm", "wikipedia"}
+
+
 def test_domains_aliases_and_urls_resolve(tmp_path: Path) -> None:
     runtime = synced_runtime(tmp_path)
 

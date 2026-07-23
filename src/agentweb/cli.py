@@ -233,6 +233,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--public-key",
         help="Trusted Ed25519 public key path or base64 value required for remote registries",
     )
+    sync.add_argument(
+        "--prune",
+        action="store_true",
+        help="Remove installed adapters absent from this registry (off by default)",
+    )
     subparsers.add_parser("sites", help="List websites available to AgentWeb")
     subparsers.add_parser("profiles", help="List local named account profiles")
     capabilities = subparsers.add_parser(
@@ -502,7 +507,9 @@ def main(argv: list[str] | None = None) -> int:
         )
         if args.command == "sync":
             result = runtime.registry.sync(
-                args.registry, trusted_public_key=args.public_key
+                args.registry,
+                trusted_public_key=args.public_key,
+                prune=args.prune,
             )
         elif args.command == "sites":
             result = runtime.sites()
