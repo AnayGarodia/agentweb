@@ -189,6 +189,26 @@ Each adapter describes the website's actions, inputs, output, login needs, and
 known gaps. AgentWeb keeps the common behavior in one runtime: domains, sessions,
 request limits, confirmation for writes, structured errors, and safe updates.
 
+### Capture-once drift verification
+
+Any operation can earn a keyless, credential-free drift check without a developer
+key. Capture one real successful run as a **response oracle** — the redacted
+response *shape* plus optional named assertions, never any captured values — then
+replay it later to confirm the site has not changed underneath the adapter:
+
+```bash
+agentweb capture-oracle npmjs.com get_version \
+  --input '{"package":"react"}' --assert '$.data.version' --out react.oracle.json
+agentweb verify-capture react.oracle.json --strict   # capture_verified | drift
+```
+
+A single capture becomes a permanent regression oracle: when the site changes its
+response, `verify-capture` reports `drift` (and exits non-zero under `--strict`
+for CI) instead of silently returning degraded data. For a **mutating** operation
+the oracle records the read-back that confirms the effect, not the mutation, so
+replaying it never re-changes account state — `capture-oracle` refuses a mutating
+op unless you pass `--confirm`.
+
 ### Why Spotify uses the desktop app
 
 This is a Spotify-specific path built into its AgentWeb adapter. For simple

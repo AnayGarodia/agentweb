@@ -25,6 +25,7 @@ from .connector import (
 from .dashboard import serve_dashboard
 from .logs import configure_logging, logger
 from .mcp import serve
+from .oracle import build_response_oracle, verify_response_oracle
 from .registry import (
     audit_registry,
     build_index,
@@ -468,6 +469,45 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Validate structure without making requests",
     )
+    capture_oracle = subparsers.add_parser(
+        "capture-oracle",
+        help="Capture one successful execution as a keyless response-drift oracle",
+    )
+    capture_oracle.add_argument("site")
+    capture_oracle.add_argument("operation")
+    capture_oracle.add_argument("--input", default="{}")
+    capture_oracle.add_argument(
+        "--assert",
+        action="append",
+        dest="assert_paths",
+        metavar="JSONPATH",
+        help="Envelope JSONPath that must keep resolving on replay (repeatable)",
+    )
+    capture_oracle.add_argument("--out", type=Path)
+    capture_oracle.add_argument(
+        "--confirm",
+        action="store_true",
+        help="Allow capturing a mutating operation (records its read-back, not the mutation)",
+    )
+    verify_capture = subparsers.add_parser(
+        "verify-capture",
+        help="Replay a captured response oracle and report capture_verified or drift",
+    )
+    verify_capture.add_argument("oracle", type=Path)
+    verify_capture.add_argument(
+        "--input",
+        help="Override the captured input for this replay (JSON object)",
+    )
+    verify_capture.add_argument(
+        "--offline",
+        action="store_true",
+        help="Validate the oracle's structure without making a request",
+    )
+    verify_capture.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit non-zero when the replay drifts from the oracle (for CI/schedules)",
+    )
     return parser
 
 
@@ -501,6 +541,8 @@ def main(argv: list[str] | None = None) -> int:
         "adapter-new",
         "capture-compile",
         "verify",
+        "capture-oracle",
+        "verify-capture",
     }
     parser = build_parser()
     try:
@@ -774,6 +816,72 @@ def main(argv: list[str] | None = None) -> int:
                     },
                 )
                 result = verify_flow_capsule(capsule, replay)
+        elif args.command == "capture-oracle":
+            arguments = parse_json(args.input)
+            site = runtime.resolve(args.site).site
+            action = runtime.resolve_action(site, args.operation)
+            command = (runtime.describe(site).get("commands") or {}).get(action) or {}
+            risk = command.get("risk") or {}
+            level = str(risk.get("level") or "read")
+            is_write = level not in ("read", "public", "none", "")
+            confirmation = str(risk.get("confirmation") or "never")
+            mutating = is_write or confirmation in ("always", "on_write")
+            if mutating and not args.confirm:
+                raise AgentWebError(
+                    f"{args.site}.{args.operation} is a mutating operation. Capture the "
+                    "read-back that confirms its effect instead, or pass --confirm to "
+                    "record this operation's own response as the oracle.",
+                    code="oracle_capture_mutating",
+                )
+            envelope = runtime.execute(
+                args.site,
+                args.operation,
+                {**arguments, "confirm": True} if mutating else arguments,
+            )
+            oracle = build_response_oracle(
+                site,
+                args.operation,
+                arguments,
+                envelope,
+                mutating=mutating,
+                assert_paths=args.assert_paths or [],
+            )
+            if args.out:
+                args.out.parent.mkdir(parents=True, exist_ok=True)
+                args.out.write_text(json.dumps(oracle, indent=2, sort_keys=True) + "\n")
+                oracle = {**oracle, "written_to": str(args.out)}
+            result = oracle
+        elif args.command == "verify-capture":
+            try:
+                oracle = json.loads(args.oracle.read_text())
+            except (OSError, json.JSONDecodeError) as exc:
+                raise AgentWebError(f"Could not read response oracle: {exc}") from exc
+            structural = verify_response_oracle(oracle)
+            if not structural["passed"] or args.offline:
+                result = structural
+            elif oracle.get("mutating"):
+                result = {
+                    **structural,
+                    "note": (
+                        "Oracle is for a mutating operation; a live replay would re-run "
+                        "the read-back with a signed-in session. Re-run its read-back "
+                        "operation and pass its envelope to verify_response_oracle, or "
+                        "use --offline for structure-only validation."
+                    ),
+                }
+            else:
+                arguments = (
+                    parse_json(args.input)
+                    if args.input is not None
+                    else (oracle.get("input") or {})
+                )
+                envelope = runtime.execute(
+                    oracle["site"], oracle["operation"], arguments
+                )
+                result = verify_response_oracle(oracle, envelope)
+            if args.strict and not result.get("passed"):
+                emit(result, not args.compact)
+                return 1
         elif args.command == "mcp-config":
             result = {
                 "mcpServers": {
