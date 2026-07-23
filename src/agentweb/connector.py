@@ -19,6 +19,7 @@ from urllib.request import urlopen
 import websocket
 
 from .auth import (
+    ACTIVE_AUTH_STATES,
     AuthAttempt,
     AuthAttemptStore,
     AuthState,
@@ -433,6 +434,35 @@ def _auth_status_operation(manifest: dict[str, Any]) -> str | None:
     return None
 
 
+def _connection_verification(
+    manifest: dict[str, Any], mode: str
+) -> dict[str, Any]:
+    """Return the direct probe that proves a captured browser session is usable."""
+    if mode == "session":
+        protected = manifest.get("session_verification")
+        if isinstance(protected, dict) and protected.get("operation"):
+            return {
+                "operation": str(protected["operation"]),
+                "arguments": dict(protected.get("arguments") or {}),
+                "success": str(protected.get("success") or "connected_status"),
+            }
+    return {
+        "operation": _auth_status_operation(manifest),
+        "arguments": {},
+        "success": "connected_status",
+    }
+
+
+def _connection_verified(
+    result: dict[str, Any] | None, verification: dict[str, Any]
+) -> bool:
+    if result is None:
+        return False
+    if verification.get("success") == "response":
+        return True
+    return status_is_connected(result)
+
+
 def _safe_browser_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
     safe = {
         key: snapshot.get(key)
@@ -491,7 +521,8 @@ def _monitor_cookie_auth_attempt(
     client: CDP | None = None,
 ) -> dict[str, Any]:
     store = AuthAttemptStore(runtime.paths, site, runtime.profile)
-    status_operation = _auth_status_operation(manifest)
+    verification = _connection_verification(manifest, attempt.mode)
+    status_operation = verification.get("operation")
     auth_cookie_names = set(manifest.get("auth_cookie_names") or [])
     session_cookie_names = set(manifest.get("session_cookie_names") or [])
     allowed_domain = str(
@@ -517,6 +548,8 @@ def _monitor_cookie_auth_attempt(
     deadline = time.monotonic() + max(timeout_seconds, 1)
     reconnects = 0
     direct_rejections = 0
+    last_imported = 0
+    last_verification_error: dict[str, Any] | None = None
     last_snapshot: dict[str, Any] = {}
     last_inventory: list[dict[str, Any]] = []
     reported_checkpoint: str | None = None
@@ -643,35 +676,46 @@ def _monitor_cookie_auth_attempt(
             if ready:
                 store.update(attempt, state=AuthState.VERIFYING.value)
                 imported = import_cdp_cookies(runtime, site, observed)
+                last_imported = imported
                 status = None
-                verification_error = None
+                verification_error: dict[str, Any] | None = None
                 if status_operation:
                     for verification_attempt in range(2):
                         try:
-                            status = runtime.adapter(site).call(status_operation, {})
+                            status = runtime.adapter(site).call(
+                                str(status_operation),
+                                dict(verification.get("arguments") or {}),
+                            )
                             verification_error = None
                             break
                         except AgentWebError as exc:
-                            verification_error = str(exc)
+                            verification_error = exc.as_dict()
                             if verification_attempt == 0:
                                 time.sleep(0.5)
-                verified_connected = status_is_connected(status)
-                if capture_now or verified_connected:
+                else:
+                    verification_error = {
+                        "error": "verification_unavailable",
+                        "message": (
+                            f"{site} does not declare a direct authentication "
+                            "verification operation"
+                        ),
+                        "retryable": False,
+                    }
+                last_verification_error = verification_error
+                verified_connected = _connection_verified(status, verification)
+                if verified_connected:
                     authenticated_cookie_captured = bool(
                         names.intersection(auth_cookie_names)
                     )
                     verification_fields = connection_verification_fields(
                         status,
                         verified_connected=verified_connected,
-                        verification_error=verification_error,
+                        verification_error=(
+                            str(verification_error.get("message"))
+                            if verification_error
+                            else None
+                        ),
                         authenticated_cookie_captured=authenticated_cookie_captured,
-                    )
-                    connected = (
-                        True
-                        if attempt.mode == "session" and imported > 0
-                        else verified_connected
-                        if status is not None
-                        else authenticated_cookie_captured and not capture_now
                     )
                     _stop_auth_browser(attempt, process)
                     store.update(
@@ -688,7 +732,7 @@ def _monitor_cookie_auth_attempt(
                         "mode": attempt.mode,
                         "state": AuthState.CONNECTED.value,
                         "attempt_id": attempt.attempt_id,
-                        "connected": connected,
+                        "connected": True,
                         "cookies_imported": imported,
                         "account": status,
                         "account_verification": verification_fields[
@@ -696,6 +740,12 @@ def _monitor_cookie_auth_attempt(
                         ],
                         "warning": verification_fields["warning"],
                         "verification_error": verification_error,
+                        "verification_operation": status_operation,
+                        "verification_scope": (
+                            "protected_session"
+                            if attempt.mode == "session"
+                            else "account"
+                        ),
                         "browser_profile": "site_scoped_persistent",
                         "browser_profile_persisted": True,
                         "session_only": attempt.mode == "session",
@@ -714,21 +764,40 @@ def _monitor_cookie_auth_attempt(
                 if direct_rejections >= 2:
                     store.update(
                         attempt,
-                        state=AuthState.FAILED.value,
+                        state=AuthState.CAPTURED_UNVERIFIED.value,
                         browser=_safe_browser_snapshot(last_snapshot),
                         error="The imported browser session failed direct verification.",
                     )
-                    _stop_auth_browser(attempt, process)
-                    raise AgentWebError(
-                        f"{site} is signed in inside the managed browser, but the imported session was rejected by direct HTTP verification",
-                        code="browser_authenticated_direct_rejected",
-                        retryable=True,
-                        details={
-                            "browser": _safe_browser_snapshot(last_snapshot),
-                            "cookie_inventory": last_inventory,
-                            "verification_error": verification_error,
-                        },
-                    )
+                    return {
+                        "site": site,
+                        "profile": runtime.profile,
+                        "mode": attempt.mode,
+                        "state": AuthState.CAPTURED_UNVERIFIED.value,
+                        "attempt_id": attempt.attempt_id,
+                        "connected": False,
+                        "cookies_imported": imported,
+                        "cookies_captured": imported > 0,
+                        "human_action_required": True,
+                        "instruction": (
+                            f"{site} is open and its cookies were captured, but "
+                            "AgentWeb could not verify that direct account requests "
+                            "work. Complete any visible website checkpoint, then "
+                            "resume verification."
+                        ),
+                        "verification_operation": status_operation,
+                        "verification_error": verification_error,
+                        "browser_opened": True,
+                        "browser_retained": True,
+                        "resume_command": [
+                            "agentweb",
+                            "--profile",
+                            runtime.profile,
+                            "auth",
+                            "resume",
+                            site,
+                        ],
+                        "cookie_inventory": last_inventory,
+                    }
             time.sleep(1)
 
         checkpoint = HumanCheckpoint.from_snapshot(last_snapshot)
@@ -745,6 +814,8 @@ def _monitor_cookie_auth_attempt(
         state = (
             AuthState.HUMAN_REQUIRED.value
             if checkpoint
+            else AuthState.CAPTURED_UNVERIFIED.value
+            if last_imported
             else AuthState.AUTHORIZING.value
         )
         store.update(
@@ -760,13 +831,23 @@ def _monitor_cookie_auth_attempt(
             "state": state,
             "attempt_id": attempt.attempt_id,
             "connected": False,
+            "cookies_captured": last_imported > 0,
+            "cookies_imported": last_imported,
             "human_action_required": True,
             "checkpoint": checkpoint_value,
             "instruction": (
                 checkpoint.instruction
                 if checkpoint
+                else (
+                    f"{site} cookies were captured, but direct verification has "
+                    "not succeeded. Complete any visible website checkpoint, then "
+                    "resume verification."
+                )
+                if last_imported
                 else f"Finish signing in to {site} in the open window."
             ),
+            "verification_operation": status_operation,
+            "verification_error": last_verification_error,
             "browser_opened": True,
             "browser_retained": True,
             "expires_at": attempt.expires_at,
@@ -965,11 +1046,7 @@ def connect_site(
                 runtime.paths, site, runtime.profile
             )
             existing_attempt = existing_attempt_store.load()
-            if existing_attempt and existing_attempt.state in {
-                AuthState.AUTHORIZING.value,
-                AuthState.HUMAN_REQUIRED.value,
-                AuthState.VERIFYING.value,
-            }:
+            if existing_attempt and existing_attempt.state in ACTIVE_AUTH_STATES:
                 terminate_attempt(existing_attempt)
                 existing_attempt_store.update(
                     existing_attempt,
@@ -1031,11 +1108,7 @@ def connect_site(
             debugger_port=None,
             error="The authorization attempt expired before it was completed.",
         )
-    if active_attempt and active_attempt.state in {
-        AuthState.AUTHORIZING.value,
-        AuthState.HUMAN_REQUIRED.value,
-        AuthState.VERIFYING.value,
-    }:
+    if active_attempt and active_attempt.state in ACTIVE_AUTH_STATES:
         if process_is_alive(active_attempt.pid) and active_attempt.debugger_port:
             progress(f"Resuming the existing {site} authorization window.")
             return _monitor_cookie_auth_attempt(
@@ -1087,7 +1160,7 @@ def connect_site(
                 f"--user-data-dir={profile_dir}",
                 "--remote-debugging-address=127.0.0.1",
                 f"--remote-debugging-port={port}",
-                "--remote-allow-origins=*",
+                "--remote-allow-origins=http://127.0.0.1",
                 "--no-first-run",
                 "--no-default-browser-check",
                 "--new-window",
@@ -1207,8 +1280,7 @@ def connection_handoff(
     attempt = AuthAttemptStore(runtime.paths, site, runtime.profile).load()
     if (
         attempt
-        and attempt.state
-        in {AuthState.AUTHORIZING.value, AuthState.HUMAN_REQUIRED.value, AuthState.VERIFYING.value}
+        and attempt.state in ACTIVE_AUTH_STATES
         and process_is_alive(attempt.pid)
     ):
         resume_command = ["agentweb"]
@@ -1290,11 +1362,7 @@ def authentication_status(runtime: Runtime, site: str) -> dict[str, Any]:
 def cancel_authentication(runtime: Runtime, site: str) -> dict[str, Any]:
     store = AuthAttemptStore(runtime.paths, site, runtime.profile)
     attempt = store.load()
-    if not attempt or attempt.state not in {
-        AuthState.AUTHORIZING.value,
-        AuthState.HUMAN_REQUIRED.value,
-        AuthState.VERIFYING.value,
-    }:
+    if not attempt or attempt.state not in ACTIVE_AUTH_STATES:
         return {
             "site": site,
             "profile": runtime.profile,
@@ -1411,7 +1479,7 @@ def install_agent_skills(
     }
     content = f"""---
 name: agentweb
-description: Use mapped websites through the AgentWeb CLI instead of browser clicking. Use for any site shown by AgentWeb.
+description: Use mapped websites through the AgentWeb CLI instead of browser clicking. Use for Amazon, arXiv, GitHub, GST, Hacker News, Hugging Face, LinkedIn, npm, Spotify, Stack Overflow, Wikipedia, and any site shown by AgentWeb.
 ---
 
 # AgentWeb

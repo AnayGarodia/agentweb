@@ -1249,7 +1249,9 @@ class SiteAdapter:
             self._session = self.context.session(self.site_name)
         return self._session
 
-    def session_freshness(self, authenticated: bool) -> dict[str, Any]:
+    def session_freshness(
+        self, authenticated: bool, *, state: str | None = None
+    ) -> dict[str, Any]:
         """Describe what was verified now, without pretending cookies have a reliable TTL."""
         now = int(time.time())
         expiries = sorted(
@@ -1259,7 +1261,8 @@ class SiteAdapter:
         )
         earliest = expiries[0] if expiries else None
         return {
-            "state": "verified_now" if authenticated else "signed_out_or_expired",
+            "state": state
+            or ("verified_now" if authenticated else "signed_out_or_expired"),
             "checked_at_unix": now,
             "earliest_cookie_expiry_unix": earliest,
             "seconds_until_earliest_cookie_expiry": earliest - now if earliest else None,

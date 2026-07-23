@@ -15,11 +15,20 @@ class AuthState(StrEnum):
     DISCONNECTED = "disconnected"
     AUTHORIZING = "authorizing"
     HUMAN_REQUIRED = "human_required"
+    CAPTURED_UNVERIFIED = "captured_unverified"
     VERIFYING = "verifying"
     CONNECTED = "connected"
     CANCELLED = "cancelled"
     EXPIRED = "expired"
     FAILED = "failed"
+
+
+ACTIVE_AUTH_STATES = {
+    AuthState.AUTHORIZING.value,
+    AuthState.HUMAN_REQUIRED.value,
+    AuthState.CAPTURED_UNVERIFIED.value,
+    AuthState.VERIFYING.value,
+}
 
 
 class CheckpointKind(StrEnum):
@@ -145,8 +154,7 @@ class AuthAttemptStore:
         except (TypeError, ValueError):
             return None
         if (
-            attempt.state
-            in {AuthState.AUTHORIZING.value, AuthState.HUMAN_REQUIRED.value, AuthState.VERIFYING.value}
+            attempt.state in ACTIVE_AUTH_STATES
             and attempt.expires_at <= time.time()
         ):
             attempt.state = AuthState.EXPIRED.value
