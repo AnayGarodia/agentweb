@@ -25,7 +25,7 @@
     },
     {
       "files": {
-        "adapter.py": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+        "adapter.py": "d6052c15698dcd4839c3bbd7e17f8e452dbb0b3dc73ff9821783c20aeac94d29",
         "authoring-report.json": "ee3929c8bd588a5f7ab0b6504d340d265b35085ca9c3653c0652f11907b79f9e",
         "flows/audit_versions.json": "75c3819f3bcc8961e369acad3c2260862bc2a2b6c0d0afddd08075f0a5457123",
         "flows/download_tarball.json": "edda7f12f85dfbd544ae1fdc80dd55ebd0687e153d857269feff77bfb0e15c68",

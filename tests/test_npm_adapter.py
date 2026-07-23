@@ -79,6 +79,30 @@ def test_npm_manifest_is_a_public_reference_adapter(tmp_path: Path) -> None:
     ]
 
 
+def test_npm_http_calls_support_declared_legacy_runtime(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    adapter = npm_adapter(tmp_path)
+
+    def legacy_request(
+        _method,
+        url,
+        *,
+        params=None,
+        json_body=None,
+        headers=None,
+        cache_action=None,
+        cache_arguments=None,
+        cache_ttl=0,
+        impersonate=None,
+        allowed_redirect_domains=None,
+    ):
+        return response(url, {"name": "react", "version": "19.0.0"})
+
+    monkeypatch.setattr(adapter.session(), "request", legacy_request)
+    assert adapter.get_version("react", "latest")["data"]["version"] == "19.0.0"
+
+
 def test_npm_search_tolerates_normal_empty_and_missing_results(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

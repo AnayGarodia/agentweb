@@ -153,7 +153,6 @@ class Adapter(RequestRecipeAdapter):
             cache_ttl=cache_ttl if method == "GET" else 0,
             impersonate="chrome" if impersonate else None,
             allowed_redirect_domains=self.allowed_domains,
-            timeout_seconds=30,
         )
         if response.status < 400:
             return response
