@@ -16,7 +16,8 @@ page again for a workflow that has already been mapped.
 
 ## Try it in one minute
 
-AgentWeb needs macOS or Linux and Python 3.11 or newer.
+AgentWeb supports macOS and Linux. If Python 3.11 or newer is not already
+available, the installer provisions an isolated Python automatically.
 
 ```bash
 curl -fsSL https://github.com/AnayGarodia/agentweb/raw/refs/heads/main/install.sh | sh
@@ -121,19 +122,32 @@ errors are JSON, so agents do not need site-specific parsing code.
 
 ## What is included today?
 
-The installer currently includes LinkedIn public jobs, company lookup, and a normal
-one-time LinkedIn login for account sessions alongside the existing mapped sites.
-It also provisions an isolated Python automatically when the machine only has an
-older system Python. This public repository includes three fully open reference
-adapters:
+The installer currently ships these 11 mapped websites:
 
-| Website | Examples |
+| Website | Domain | What an agent can do |
+| --- | --- | --- |
+| Amazon | `amazon.com` | Search and compare products, inspect reviews and deals, manage a cart and addresses, read orders, and complete a confirmed checkout |
+| arXiv | `arxiv.org` | Search papers, inspect metadata and categories, get BibTeX, and download PDFs or source |
+| GitHub | `github.com` | Work with repositories, files, commits, branches, releases, issues, pull requests, users, and authenticated API requests |
+| GST | `gst.gov.in` | Search HSN/SAC data and browse practitioners, advisories, due dates, holidays, laws, statistics, and tools |
+| Hacker News | `news.ycombinator.com` | Read and search stories, comments, users, and activity; submit, edit, vote, flag, and favorite when signed in |
+| Hugging Face | `huggingface.co` | Explore models, datasets, Spaces, repositories, files, papers, documentation, collections, and community discussions |
+| LinkedIn | `linkedin.com` | Search public jobs, inspect jobs and companies, keep a normal website login, and call approved official API endpoints |
+| npm | `npmjs.com` | Search packages and inspect versions, dependencies, downloads, provenance, maintainers, tarballs, and package files |
+| Spotify | `open.spotify.com` | Search and play music, control the desktop player, and manage playback, devices, queues, libraries, and playlists after login |
+| Stack Overflow | `stackoverflow.com` | Search and read questions, answers, comments, users, and tags; ask, answer, comment, and vote when signed in |
+| Wikipedia | `wikipedia.org` | Search and read pages, links, categories, revisions, languages, images, nearby pages, and pageviews; edit or upload when signed in |
+
+Run `agentweb capabilities DOMAIN` for the current exact operation list and any
+declared gaps. The installer ships every site above.
+
+This public repository also includes three fully open reference adapters:
+
+| Reference adapter | Examples |
 | --- | --- |
 | npm | Search packages, versions, downloads, dependencies, provenance, and files |
 | arXiv | Search papers, metadata, authors, categories, BibTeX, PDFs, and source |
 | Wikipedia | Search, pages, links, categories, revisions, images, and pageviews |
-
-Run `agentweb capabilities DOMAIN` for the current, exact list.
 
 AgentWeb's larger maintained website catalog is distributed separately. This
 repository is the open core: the command-line tool, runtime, login/session system,
@@ -149,6 +163,22 @@ website mapped once -> versioned AgentWeb adapter -> reusable commands for every
 Each adapter describes the website's actions, inputs, output, login needs, and
 known gaps. AgentWeb keeps the common behavior in one runtime: domains, sessions,
 request limits, confirmation for writes, structured errors, and safe updates.
+
+### Why Spotify uses the desktop app
+
+This is a Spotify-specific path built into its AgentWeb adapter. For simple
+playback on macOS, AgentWeb resolves a song to a Spotify URI, sends an Apple Event
+to the installed Spotify app, and reads the player state back to verify what
+happened. Account features such as playlists, the library, queue, and remote
+devices use a saved Spotify Web Player session and Spotify Connect after one
+normal login.
+
+AgentWeb provides the common machinery for adapters to use direct website
+requests, official APIs, saved sessions, or local app bridges. It does not
+automatically control the desktop app for every website. A similar fast path can
+be added when another service exposes a usable local protocol, URL scheme, or
+operating-system automation interface, but it must be implemented and verified
+for that service.
 
 The browser can still appear when the website itself requires a person to log in,
 solve a CAPTCHA, use a passkey, enter a one-time code, accept legal terms, or
