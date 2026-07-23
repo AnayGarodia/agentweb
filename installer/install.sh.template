@@ -1,0 +1,145 @@
+#!/bin/sh
+set -eu
+
+VERSION="__VERSION__"
+EXPECTED_SHA256="__SHA256__"
+TEMP_DIR="$(mktemp -d 2>/dev/null || mktemp -d -t agentweb)"
+WHEEL_PATH="$TEMP_DIR/agentweb_cli-$VERSION-py3-none-any.whl"
+trap 'test -n "${TEMP_DIR:-}" && test -d "$TEMP_DIR" && rm -rf -- "$TEMP_DIR"' EXIT
+
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "AgentWeb requires Python 3.11 or newer." >&2
+  exit 1
+fi
+
+python3 - <<'PY'
+import sys
+if sys.version_info < (3, 11):
+    raise SystemExit("AgentWeb requires Python 3.11 or newer.")
+PY
+
+python3 - "$WHEEL_PATH" "$EXPECTED_SHA256" <<'PY'
+import base64
+import hashlib
+import pathlib
+import sys
+
+wheel = pathlib.Path(sys.argv[1])
+expected = sys.argv[2]
+payload = """__WHEEL_BASE64__"""
+data = base64.b64decode(payload)
+actual = hashlib.sha256(data).hexdigest()
+if actual != expected:
+    raise SystemExit(f"Embedded AgentWeb checksum mismatch: {actual}")
+wheel.write_bytes(data)
+PY
+
+export PATH="$HOME/.local/bin:$PATH"
+
+if ! command -v google-chrome >/dev/null 2>&1 \
+  && ! command -v google-chrome-stable >/dev/null 2>&1 \
+  && ! command -v chromium >/dev/null 2>&1 \
+  && ! command -v chromium-browser >/dev/null 2>&1 \
+  && [ ! -x "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" ] \
+  && [ ! -x "/Applications/Chromium.app/Contents/MacOS/Chromium" ]; then
+  echo "Installing Chrome for Testing for one-time site authorization and mapping mode..."
+  python3 - <<'PY'
+import json
+import os
+import platform
+import stat
+import tempfile
+import urllib.request
+import zipfile
+from pathlib import Path
+
+system = platform.system().lower()
+machine = platform.machine().lower()
+platforms = {
+    ("darwin", "arm64"): "mac-arm64",
+    ("darwin", "aarch64"): "mac-arm64",
+    ("darwin", "x86_64"): "mac-x64",
+    ("linux", "x86_64"): "linux64",
+    ("linux", "amd64"): "linux64",
+}
+target_platform = platforms.get((system, machine))
+if not target_platform:
+    raise SystemExit(f"AgentWeb cannot automatically install Chrome on {system}/{machine}")
+
+headers = {"User-Agent": "agentweb-installer"}
+manifest_url = "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json"
+with urllib.request.urlopen(urllib.request.Request(manifest_url, headers=headers), timeout=30) as response:
+    manifest = json.load(response)
+stable = manifest["channels"]["Stable"]
+download = next(
+    item for item in stable["downloads"]["chrome"] if item["platform"] == target_platform
+)
+with urllib.request.urlopen(urllib.request.Request(download["url"], headers=headers), timeout=120) as response:
+    payload = response.read()
+
+destination = (
+    Path.home() / ".local" / "share" / "agentweb" / "tools" / "chrome" / stable["version"]
+)
+with tempfile.TemporaryDirectory(prefix="agentweb-chrome-") as temporary:
+    temporary_path = Path(temporary)
+    archive = temporary_path / "chrome.zip"
+    archive.write_bytes(payload)
+    with zipfile.ZipFile(archive) as bundle:
+        for member in bundle.infolist():
+            resolved = (destination / member.filename).resolve()
+            if destination.resolve() not in resolved.parents and resolved != destination.resolve():
+                raise SystemExit("Unsafe path in Chrome archive")
+        destination.mkdir(parents=True, exist_ok=True)
+        bundle.extractall(destination)
+
+if system == "darwin":
+    executable = next(destination.glob("**/Google Chrome for Testing"))
+else:
+    executable = next(
+        item for item in destination.glob("**/chrome") if item.is_file()
+    )
+executable.chmod(executable.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+bin_dir = Path.home() / ".local" / "bin"
+bin_dir.mkdir(parents=True, exist_ok=True)
+link = bin_dir / "agentweb-chrome"
+if link.is_symlink() or link.exists():
+    link.unlink()
+link.symlink_to(executable)
+PY
+fi
+
+if command -v uv >/dev/null 2>&1; then
+  # Prefer the manager that owns the most common existing AgentWeb launcher.
+  # Installing into pipx while an older uv launcher remains first on PATH can
+  # otherwise report success without upgrading the executable an agent calls.
+  uv tool uninstall sitepack-lab >/dev/null 2>&1 || true
+  uv tool install --force "$WHEEL_PATH" >/dev/null
+elif command -v pipx >/dev/null 2>&1; then
+  pipx uninstall sitepack-lab >/dev/null 2>&1 || true
+  if ! pipx runpip agentweb-cli install --force-reinstall "$WHEEL_PATH" >/dev/null 2>&1; then
+    pipx install "$WHEEL_PATH" >/dev/null
+  fi
+else
+  echo "Installing pipx for the current user..."
+  python3 -m pip install --user pipx >/dev/null
+  python3 -m pipx ensurepath >/dev/null 2>&1 || true
+  python3 -m pipx install "$WHEEL_PATH" >/dev/null
+fi
+
+if ! command -v agentweb >/dev/null 2>&1; then
+  echo "AgentWeb installed, but its executable is not on PATH yet." >&2
+  echo "Add $HOME/.local/bin to PATH, then run any command such as: agentweb sites" >&2
+  exit 1
+fi
+
+INSTALLED_VERSION="$(agentweb --version)"
+if [ "$INSTALLED_VERSION" != "$VERSION" ]; then
+  echo "AgentWeb install verification failed: expected $VERSION, executable reports $INSTALLED_VERSION." >&2
+  exit 1
+fi
+
+agentweb setup >/dev/null
+agentweb sites >/dev/null
+
+echo "AgentWeb $VERSION CLI is ready: agentweb DOMAIN ACTION [arguments]"
+echo "Public website operations work immediately; login is requested only when needed."

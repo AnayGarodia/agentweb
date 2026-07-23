@@ -1,0 +1,6 @@
+AgentWeb
+Copyright 2026 AgentWeb contributors
+
+This repository contains the open AgentWeb core and reference adapters.
+Official maintained adapter bundles and the private adapter factory are
+separate products and are not licensed by this repository's Apache-2.0 license.

@@ -1,0 +1,52 @@
+{
+  "captured_at_unix": 1784750261.799933,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": null,
+    "page_transition": {
+      "after": "https://arxiv.org/pdf/1706.03762",
+      "before": "https://arxiv.org/"
+    },
+    "steps": [
+      {
+        "mime_type": "application/pdf",
+        "name": "1706_03762",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "download_pdf",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "id"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "filename": "{id}.pdf",
+        "method": "GET",
+        "name": "1706_03762",
+        "path": "https://arxiv.org/pdf/{id}",
+        "response_mode": "download"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "arxiv",
+  "verification": {
+    "contract_hash": "89a435ddf05529321efdbcfdec737c2f196d5d948b9a8cfb686f0485757e68cd",
+    "recipe_hash": "7fd00e56b1dca00a8106ba17a4c2ecb3c7a830dcbce712a5cf98f091976ebc10",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784750543.7076612
+  }
+}

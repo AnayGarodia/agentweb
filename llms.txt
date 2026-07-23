@@ -1,0 +1,24 @@
+# AgentWeb
+
+AgentWeb is a CLI and Python runtime that exposes versioned website operations to
+coding agents. The public repository contains the open core and reference adapters,
+not the private automatic adapter factory or official maintained adapter catalog.
+
+Start here:
+- README.md: purpose, installation, first commands, repository boundary
+- docs/AGENT_GUIDE.md: exact execution loop and error handling for agents
+- docs/AGENT_HOSTS.md: Claude Code, Codex, generic CLI, and optional MCP setup
+- docs/BUILDING_ADAPTERS.md: public adapter format and release checklist
+- docs/SECURITY.md: sessions, write confirmation, host boundaries, registry trust
+- docs/ARCHITECTURE.md: code map and request lifecycle
+- AGENTS.md: repository invariants and verification commands for coding agents
+
+Primary CLI sequence:
+1. agentweb sites
+2. agentweb capabilities DOMAIN --query WORD
+3. agentweb describe DOMAIN --operation ACTION
+4. agentweb DOMAIN ACTION [arguments]
+5. agentweb connect DOMAIN only when a protected operation requires authorization
+
+Always inspect declared gaps before promising complete website coverage. Never
+interpret a browser fallback as proof that a direct adapter operation has parity.

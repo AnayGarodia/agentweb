@@ -1,0 +1,4503 @@
+{
+  "aliases": [
+    "arxiv"
+  ],
+  "allowed_domains": [
+    "arxiv.org",
+    "export.arxiv.org",
+    "info.arxiv.org",
+    "rss.arxiv.org"
+  ],
+  "auth": {
+    "interaction": "not_required",
+    "strategy": "none"
+  },
+  "authoring": {
+    "browserless_parity": true,
+    "catalog_complete": true,
+    "exhaustive": true,
+    "matrix_verified": true,
+    "tool_quality_verified": true
+  },
+  "base_url": "https://arxiv.org",
+  "canonical_domain": "arxiv.org",
+  "commands": {
+    "download_pdf": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "research",
+      "description": "Download the rendered PDF for a known public arXiv paper and return a local file receipt with an integrity digest.",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.search_papers",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv service is temporarily unavailable.",
+          "next_operation": "arxiv.search_papers",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing valid inputs."
+        },
+        {
+          "code": "paper_not_found",
+          "field": "id",
+          "message": "arXiv did not find a public PDF for that identifier.",
+          "next_operation": "arxiv.get_papers",
+          "retryable": false,
+          "user_action": "Check the identifier with get_papers and retry with a valid public record."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "id": "1706.03762"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "A modern or legacy arXiv identifier, optionally including a version suffix.",
+            "maxLength": 80,
+            "pattern": "^[A-Za-z0-9.\\-/]+(?:v[0-9]+)?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "bytes": {
+            "description": "Exact number of downloaded bytes.",
+            "type": "integer"
+          },
+          "content_type": {
+            "description": "Content type reported by arXiv.",
+            "type": "string"
+          },
+          "filename": {
+            "description": "Safe local filename assigned by AgentWeb.",
+            "type": "string"
+          },
+          "path": {
+            "description": "Private local path where AgentWeb saved the file.",
+            "type": "string"
+          },
+          "sha256": {
+            "description": "SHA-256 digest for integrity checks.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "filename",
+          "path",
+          "bytes",
+          "sha256",
+          "content_type"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call downloads exactly one paper PDF.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this for metadata-only questions because get_papers is faster and smaller.",
+      "when_to_use": "Use this when an agent needs the complete paper contents or must pass the PDF to a document-processing tool."
+    },
+    "download_source": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "research",
+      "description": "Download the public source bundle for a known arXiv paper and return a local file receipt with an integrity digest.",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.search_papers",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv service is temporarily unavailable.",
+          "next_operation": "arxiv.search_papers",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing valid inputs."
+        },
+        {
+          "code": "source_not_available",
+          "field": "id",
+          "message": "arXiv did not provide a public source bundle for that identifier.",
+          "next_operation": "arxiv.download_pdf",
+          "retryable": false,
+          "user_action": "Download the PDF instead or verify the identifier with get_papers."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "id": "1706.03762"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "A modern or legacy arXiv identifier, optionally including a version suffix.",
+            "maxLength": 80,
+            "pattern": "^[A-Za-z0-9.\\-/]+(?:v[0-9]+)?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "bytes": {
+            "description": "Exact number of downloaded bytes.",
+            "type": "integer"
+          },
+          "content_type": {
+            "description": "Content type reported by arXiv.",
+            "type": "string"
+          },
+          "filename": {
+            "description": "Safe local filename assigned by AgentWeb.",
+            "type": "string"
+          },
+          "path": {
+            "description": "Private local path where AgentWeb saved the file.",
+            "type": "string"
+          },
+          "sha256": {
+            "description": "SHA-256 digest for integrity checks.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "filename",
+          "path",
+          "bytes",
+          "sha256",
+          "content_type"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call downloads exactly one available source bundle.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not assume every paper exposes source, and do not use this when only the rendered PDF is needed.",
+      "when_to_use": "Use this to inspect LaTeX, figures, ancillary files, or other submitter-provided source material."
+    },
+    "get_bibtex": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "research",
+      "description": "Retrieve arXiv's BibTeX citation text for a known public paper identifier.",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.search_papers",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv service is temporarily unavailable.",
+          "next_operation": "arxiv.search_papers",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing valid inputs."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "id": "1706.03762"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "A modern or legacy arXiv identifier, optionally including a version suffix.",
+            "maxLength": 80,
+            "pattern": "^[A-Za-z0-9.\\-/]+(?:v[0-9]+)?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "bibtex": {
+            "description": "BibTeX entry returned by arXiv.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "bibtex"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call returns one citation record.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this as authoritative published-journal metadata when the paper links to a later journal version.",
+      "when_to_use": "Use this when an agent needs a ready-to-save BibTeX entry for citation management or scholarly writing."
+    },
+    "get_category_feed": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "research",
+      "description": "Read and normalize the current public RSS announcements for an exact arXiv category.",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.search_papers",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv service is temporarily unavailable.",
+          "next_operation": "arxiv.search_papers",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing valid inputs."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "category": "cs.AI"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "description": "Exact arXiv category identifier, such as cs.AI or quant-ph.",
+            "pattern": "^[A-Za-z][A-Za-z0-9.-]{1,30}$",
+            "type": "string"
+          },
+          "cursor": {
+            "description": "Opaque cursor returned by the previous category-feed page.",
+            "type": "string"
+          },
+          "limit": {
+            "default": 10,
+            "description": "Maximum announcements to return, from 1 through 50.",
+            "maximum": 50,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "category"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "papers": {
+            "description": "Current announcements in the category feed.",
+            "items": {
+              "properties": {
+                "authors": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "categories": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "comment": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "journal_reference": {
+                  "type": "string"
+                },
+                "links": {
+                  "items": {
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "primary_category": {
+                  "type": "string"
+                },
+                "published": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "updated": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "authors",
+                "categories",
+                "links"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "title": {
+            "description": "Human-readable category feed title.",
+            "type": "string"
+          },
+          "updated": {
+            "description": "Feed publication or build timestamp.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "papers"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The current bounded RSS announcement window is returned; older history is not paginated by the feed.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this for historical or exhaustive category search; call list_category_papers instead.",
+      "when_to_use": "Use this for lightweight monitoring of newly announced papers in a known subject category."
+    },
+    "get_papers": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "research",
+      "description": "Retrieve normalized metadata for one or more exact arXiv identifiers, including version-specific records when requested.",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.search_papers",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv service is temporarily unavailable.",
+          "next_operation": "arxiv.search_papers",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing valid inputs."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "ids": "1706.03762v7,2106.09685v2"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "ids": {
+            "description": "One to fifty comma-separated arXiv identifiers, optionally including version suffixes such as 1706.03762v7.",
+            "maxLength": 1200,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9.\\-/]+(?:,[A-Za-z0-9.\\-/]+){0,49}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ids"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items_per_page": {
+            "description": "Number of papers requested for this page.",
+            "type": "integer"
+          },
+          "papers": {
+            "description": "Papers returned by arXiv in the requested order.",
+            "items": {
+              "properties": {
+                "authors": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "categories": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "comment": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "journal_reference": {
+                  "type": "string"
+                },
+                "links": {
+                  "items": {
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "primary_category": {
+                  "type": "string"
+                },
+                "published": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "updated": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "authors",
+                "categories",
+                "links"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "start_index": {
+            "description": "Zero-based offset of this page.",
+            "type": "integer"
+          },
+          "total_results": {
+            "description": "Total matching papers reported by arXiv.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "papers",
+          "total_results",
+          "start_index",
+          "items_per_page"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "This exact-identifier lookup accepts at most fifty identifiers in one bounded call.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this for topical discovery or for downloading paper files.",
+      "when_to_use": "Use this when the agent already knows up to fifty comma-separated arXiv identifiers and needs titles, abstracts, authors, categories, links, or version timestamps."
+    },
+    "list_author_papers": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "research",
+      "description": "Find public arXiv papers credited to a named author and return the newest matching records with normalized metadata.",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.search_papers",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv service is temporarily unavailable.",
+          "next_operation": "arxiv.search_papers",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing valid inputs."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "author": "Yoshua Bengio",
+            "limit": 10
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "description": "Author name to match, such as Yoshua Bengio.",
+            "maxLength": 200,
+            "minLength": 2,
+            "type": "string"
+          },
+          "limit": {
+            "default": 20,
+            "description": "Number of papers to return, from 1 through 100.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "description": "Zero-based result offset.",
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "author"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items_per_page": {
+            "description": "Number of papers requested for this page.",
+            "type": "integer"
+          },
+          "papers": {
+            "description": "Papers returned by arXiv in the requested order.",
+            "items": {
+              "properties": {
+                "authors": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "categories": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "comment": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "journal_reference": {
+                  "type": "string"
+                },
+                "links": {
+                  "items": {
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "primary_category": {
+                  "type": "string"
+                },
+                "published": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "updated": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "authors",
+                "categories",
+                "links"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "start_index": {
+            "description": "Zero-based offset of this page.",
+            "type": "integer"
+          },
+          "total_results": {
+            "description": "Total matching papers reported by arXiv.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "papers",
+          "total_results",
+          "start_index",
+          "items_per_page"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Use offset as a zero-based server-side cursor and limit for page size; total_results reports the complete match count.",
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not assume name matches uniquely identify one person; use returned titles, affiliations, and subjects to disambiguate.",
+      "when_to_use": "Use this when an agent has a human author name and wants that person's arXiv papers."
+    },
+    "list_bulk_data_resources": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "research",
+      "description": "List official arXiv bulk-access resources for metadata, PDFs, source archives, terms, and incremental harvesting.",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.search_papers",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv service is temporarily unavailable.",
+          "next_operation": "arxiv.search_papers",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing valid inputs."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "resources": {
+            "description": "Official bulk-data, terms, dataset, and harvesting resources.",
+            "items": {
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "url"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "resources"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The official bulk-access resource links are returned in one bounded call.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use bulk datasets when a bounded search or a handful of paper downloads will answer the request.",
+      "when_to_use": "Use this before a large corpus job that would be inefficient or impolite through per-paper API calls."
+    },
+    "list_categories": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "research",
+      "description": "List arXiv's complete public archive and subject-category catalog with canonical browsing links.",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.search_papers",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv service is temporarily unavailable.",
+          "next_operation": "arxiv.search_papers",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing valid inputs."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "categories": {
+            "description": "Archive and subject-category names with canonical arXiv URLs.",
+            "items": {
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "url"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "categories"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The complete current category catalog is returned in one bounded call.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use the returned links as a substitute for list_category_papers when paper records are needed.",
+      "when_to_use": "Use this to translate a human subject into the exact category identifier expected by category searches and feeds."
+    },
+    "list_category_papers": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "research",
+      "description": "List the newest public papers in an exact arXiv subject category with normalized metadata and stable offset pagination.",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.search_papers",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv service is temporarily unavailable.",
+          "next_operation": "arxiv.search_papers",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing valid inputs."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "category": "cs.AI",
+            "limit": 10
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "description": "Exact case-sensitive arXiv category identifier, such as cs.AI.",
+            "pattern": "^[A-Za-z][A-Za-z0-9.-]{1,30}$",
+            "type": "string"
+          },
+          "limit": {
+            "default": 20,
+            "description": "Number of papers to return, from 1 through 100.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "description": "Zero-based result offset.",
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "category"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items_per_page": {
+            "description": "Number of papers requested for this page.",
+            "type": "integer"
+          },
+          "papers": {
+            "description": "Papers returned by arXiv in the requested order.",
+            "items": {
+              "properties": {
+                "authors": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "categories": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "comment": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "journal_reference": {
+                  "type": "string"
+                },
+                "links": {
+                  "items": {
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "primary_category": {
+                  "type": "string"
+                },
+                "published": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "updated": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "authors",
+                "categories",
+                "links"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "start_index": {
+            "description": "Zero-based offset of this page.",
+            "type": "integer"
+          },
+          "total_results": {
+            "description": "Total matching papers reported by arXiv.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "papers",
+          "total_results",
+          "start_index",
+          "items_per_page"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Use offset as a zero-based server-side cursor and limit for page size; total_results reports the complete match count.",
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not pass a natural-language subject name; call list_categories first when the category code is unknown.",
+      "when_to_use": "Use this to monitor or browse a known category code such as cs.AI, quant-ph, math.CO, or astro-ph.GA."
+    },
+    "list_export_formats": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "research",
+      "description": "List the public format, source, help, and scholarly-resource links exposed by arXiv for a known paper.",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.search_papers",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv service is temporarily unavailable.",
+          "next_operation": "arxiv.search_papers",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing valid inputs."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "id": "1706.03762"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "A modern or legacy arXiv identifier, optionally including a version suffix.",
+            "maxLength": 80,
+            "pattern": "^[A-Za-z0-9.\\-/]+(?:v[0-9]+)?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "links": {
+            "description": "Public format and related-resource links exposed on the paper's format page.",
+            "items": {
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "url"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "links"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "All unique links on the paper format panel are returned in one bounded call.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not open these links in a browser when download_pdf, download_source, get_bibtex, or get_papers already provides the needed result.",
+      "when_to_use": "Use this when an agent needs to discover available source, format, or related-resource destinations before choosing one."
+    },
+    "list_site_resources": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "reference",
+      "description": "List official public arXiv information, help, policy, status, statistics, accessibility, and project-resource links.",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.list_site_resources",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv information service is temporarily unavailable.",
+          "next_operation": "arxiv.list_site_resources",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "resources": {
+            "description": "Official public arXiv informational resources.",
+            "items": {
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "url"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "resources"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The current top-level official resource catalog is returned in one bounded call.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this for research discovery, paper metadata, files, citations, or account actions.",
+      "when_to_use": "Use this when an agent needs official arXiv documentation or institutional information rather than paper records."
+    },
+    "read_site_resource": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "reference",
+      "description": "Read the normalized text of an official public arXiv information, help, policy, accessibility, statistics, or project page.",
+      "errors": [
+        {
+          "code": "resource_not_found",
+          "field": "url",
+          "message": "arXiv did not find that official public resource.",
+          "next_operation": "arxiv.list_site_resources",
+          "retryable": false,
+          "user_action": "Call list_site_resources again and use a current arXiv URL from its result."
+        },
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before reading another resource.",
+          "next_operation": "arxiv.read_site_resource",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same URL."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested official arXiv page is temporarily unavailable.",
+          "next_operation": "arxiv.read_site_resource",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same URL."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "url": "https://info.arxiv.org/help/bulk_data/index.html"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "url": {
+            "description": "Absolute HTTPS URL on arxiv.org or one of its subdomains, normally obtained from an AgentWeb arXiv resource-list operation.",
+            "maxLength": 2000,
+            "pattern": "^https://(?:[A-Za-z0-9-]+\\.)*arxiv\\.org/",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "content": {
+            "description": "Readable page text with navigation markup and HTML syntax removed.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "content"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "One official page is read per call; long text is bounded by AgentWeb's response budget.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this for paper records, PDFs, source bundles, external websites, account pages, or submission workflows.",
+      "when_to_use": "Use this after list_site_resources or list_bulk_data_resources returns an official arXiv URL whose complete text the agent needs."
+    },
+    "search_papers": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "research",
+      "description": "Search the complete public arXiv corpus with its expressive query language and return normalized paper metadata.",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.search_papers",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv service is temporarily unavailable.",
+          "next_operation": "arxiv.search_papers",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing valid inputs."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 10,
+            "order": "descending",
+            "query": "all:\"quantum error correction\"",
+            "sort": "relevance"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "default": 20,
+            "description": "Number of papers to return, from 1 through 100.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "description": "Zero-based result offset.",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "order": {
+            "default": "descending",
+            "description": "Return results in descending or ascending order.",
+            "enum": [
+              "descending",
+              "ascending"
+            ],
+            "type": "string"
+          },
+          "query": {
+            "description": "arXiv query such as all:\"quantum error correction\", ti:transformer, au:\"Yoshua Bengio\", cat:cs.AI, or a Boolean expression.",
+            "maxLength": 1000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "sort": {
+            "default": "relevance",
+            "description": "Sort by relevance, submission time, or last update.",
+            "enum": [
+              "relevance",
+              "submitted",
+              "updated"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items_per_page": {
+            "description": "Number of papers requested for this page.",
+            "type": "integer"
+          },
+          "papers": {
+            "description": "Papers returned by arXiv in the requested order.",
+            "items": {
+              "properties": {
+                "authors": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "categories": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "comment": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "journal_reference": {
+                  "type": "string"
+                },
+                "links": {
+                  "items": {
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "primary_category": {
+                  "type": "string"
+                },
+                "published": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "updated": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "authors",
+                "categories",
+                "links"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "start_index": {
+            "description": "Zero-based offset of this page.",
+            "type": "integer"
+          },
+          "total_results": {
+            "description": "Total matching papers reported by arXiv.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "papers",
+          "total_results",
+          "start_index",
+          "items_per_page"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Use offset as a zero-based server-side cursor and limit for page size; total_results reports the complete match count.",
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this when one or more exact arXiv identifiers are already known; call get_papers instead.",
+      "when_to_use": "Use this for topic discovery, exact field searches, Boolean combinations, category filters, identifier searches, and date ranges."
+    }
+  },
+  "cookie_domain": ".arxiv.org",
+  "coverage": {
+    "constraints": [
+      "Site permissions, rate limits, and anti-automation rules still apply"
+    ],
+    "human_boundaries": [
+      "Account creation and sign-in require credentials that are outside this anonymous public benchmark matrix.",
+      "Endorsement and moderation require privileged accounts that are unavailable to this public benchmark.",
+      "Manuscript submission changes public scholarly records and requires a registered author plus human review."
+    ],
+    "not_mapped": [],
+    "protocol_fallback": null,
+    "typed_fast_paths": [
+      "download_pdf",
+      "download_source",
+      "get_bibtex",
+      "get_category_feed",
+      "get_papers",
+      "list_author_papers",
+      "list_bulk_data_resources",
+      "list_categories",
+      "list_category_papers",
+      "list_export_formats",
+      "list_site_resources",
+      "read_site_resource",
+      "search_papers"
+    ],
+    "website_parity": "Mapping mode can inspect the remaining website while direct request recipes are compiled. Browser commands are never counted as runtime parity."
+  },
+  "description": "Complete agent interface for arxiv.org",
+  "entrypoint": "adapter.py",
+  "evidence_capsules": {
+    "get_category_feed": {
+      "contract": "get_category_feed",
+      "path": "flows/get_category_feed.json"
+    },
+    "get_papers": {
+      "contract": "get_papers",
+      "path": "flows/get_papers.json"
+    },
+    "list_author_papers": {
+      "contract": "list_author_papers",
+      "path": "flows/list_author_papers.json"
+    },
+    "list_category_papers": {
+      "contract": "list_category_papers",
+      "path": "flows/list_category_papers.json"
+    },
+    "search_papers": {
+      "contract": "search_papers",
+      "path": "flows/search_papers.json"
+    }
+  },
+  "flow_capsules": {
+    "download_pdf": {
+      "contract": "download_pdf",
+      "path": "flows/download_pdf.json"
+    },
+    "download_source": {
+      "contract": "download_source",
+      "path": "flows/download_source.json"
+    },
+    "get_bibtex": {
+      "contract": "get_bibtex",
+      "path": "flows/get_bibtex.json"
+    },
+    "list_bulk_data_resources": {
+      "contract": "list_bulk_data_resources",
+      "path": "flows/list_bulk_data_resources.json"
+    },
+    "list_categories": {
+      "contract": "list_categories",
+      "path": "flows/list_categories.json"
+    },
+    "list_export_formats": {
+      "contract": "list_export_formats",
+      "path": "flows/list_export_formats.json"
+    },
+    "list_site_resources": {
+      "contract": "list_site_resources",
+      "path": "flows/list_site_resources.json"
+    },
+    "read_site_resource": {
+      "contract": "read_site_resource",
+      "path": "flows/read_site_resource.json"
+    }
+  },
+  "name": "arxiv",
+  "operation_contracts": {
+    "download_pdf": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "404": "paper_not_found",
+          "429": "arxiv_rate_limited",
+          "500": "arxiv_unavailable",
+          "502": "arxiv_unavailable",
+          "503": "arxiv_unavailable",
+          "504": "arxiv_unavailable"
+        },
+        "include_steps": [
+          "1706_03762"
+        ],
+        "output": {
+          "fields": {
+            "bytes": "$.bytes",
+            "content_type": "$.content_type",
+            "filename": "$.filename",
+            "path": "$.path",
+            "sha256": "$.sha256"
+          }
+        },
+        "recipe_hash": "7fd00e56b1dca00a8106ba17a4c2ecb3c7a830dcbce712a5cf98f091976ebc10",
+        "step_options": {
+          "1706_03762": {
+            "filename": "{id}.pdf",
+            "path": "https://arxiv.org/pdf/{id}",
+            "response_mode": "download"
+          }
+        },
+        "type": "generated_recipe"
+      },
+      "capabilities": [
+        "download_pdf"
+      ],
+      "category": "research",
+      "contract_hash": "89a435ddf05529321efdbcfdec737c2f196d5d948b9a8cfb686f0485757e68cd",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.search_papers",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv service is temporarily unavailable.",
+          "next_operation": "arxiv.search_papers",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing valid inputs."
+        },
+        {
+          "code": "paper_not_found",
+          "field": "id",
+          "message": "arXiv did not find a public PDF for that identifier.",
+          "next_operation": "arxiv.get_papers",
+          "retryable": false,
+          "user_action": "Check the identifier with get_papers and retry with a valid public record."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "id": "1706.03762"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "A modern or legacy arXiv identifier, optionally including a version suffix.",
+            "maxLength": 80,
+            "pattern": "^[A-Za-z0-9.\\-/]+(?:v[0-9]+)?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "download_pdf",
+      "output_schema": {
+        "properties": {
+          "bytes": {
+            "description": "Exact number of downloaded bytes.",
+            "type": "integer"
+          },
+          "content_type": {
+            "description": "Content type reported by arXiv.",
+            "type": "string"
+          },
+          "filename": {
+            "description": "Safe local filename assigned by AgentWeb.",
+            "type": "string"
+          },
+          "path": {
+            "description": "Private local path where AgentWeb saved the file.",
+            "type": "string"
+          },
+          "sha256": {
+            "description": "SHA-256 digest for integrity checks.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "filename",
+          "path",
+          "bytes",
+          "sha256",
+          "content_type"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call downloads exactly one paper PDF.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Downloaded live from arXiv for every call.",
+        "max_items": 1,
+        "truncation": "Binary files are never text-truncated; the result contains one bounded receipt."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784750792.960595,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Download the rendered PDF for a known public arXiv paper and return a local file receipt with an integrity digest.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "download returns a local PDF path",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "89a435ddf05529321efdbcfdec737c2f196d5d948b9a8cfb686f0485757e68cd",
+            "input_names": [
+              "id"
+            ],
+            "passed": true,
+            "recipe_hash": "7fd00e56b1dca00a8106ba17a4c2ecb3c7a830dcbce712a5cf98f091976ebc10",
+            "verified_at_unix": 1784750543.7076612
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "download returns a local PDF path",
+            "path": "$.data.path",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for metadata-only questions because get_papers is faster and smaller.",
+      "when_to_use": "Use this when an agent needs the complete paper contents or must pass the PDF to a document-processing tool."
+    },
+    "download_source": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "404": "source_not_available",
+          "429": "arxiv_rate_limited",
+          "500": "arxiv_unavailable",
+          "502": "arxiv_unavailable",
+          "503": "arxiv_unavailable",
+          "504": "arxiv_unavailable"
+        },
+        "include_steps": [
+          "1706_03762"
+        ],
+        "output": {
+          "fields": {
+            "bytes": "$.bytes",
+            "content_type": "$.content_type",
+            "filename": "$.filename",
+            "path": "$.path",
+            "sha256": "$.sha256"
+          }
+        },
+        "recipe_hash": "3a15486c46efa99ec6dcd2135ef61033b76cc1a10ad937dce36661c1acf31985",
+        "step_options": {
+          "1706_03762": {
+            "filename": "{id}-source.tar",
+            "path": "https://arxiv.org/src/{id}",
+            "response_mode": "download"
+          }
+        },
+        "type": "generated_recipe"
+      },
+      "capabilities": [
+        "download_source"
+      ],
+      "category": "research",
+      "contract_hash": "c7e09fd9b30b8c4de0674c2b43c35a4cff10517c8f8b06c0a2db644dfc9c4d8a",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.search_papers",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv service is temporarily unavailable.",
+          "next_operation": "arxiv.search_papers",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing valid inputs."
+        },
+        {
+          "code": "source_not_available",
+          "field": "id",
+          "message": "arXiv did not provide a public source bundle for that identifier.",
+          "next_operation": "arxiv.download_pdf",
+          "retryable": false,
+          "user_action": "Download the PDF instead or verify the identifier with get_papers."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "id": "1706.03762"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "A modern or legacy arXiv identifier, optionally including a version suffix.",
+            "maxLength": 80,
+            "pattern": "^[A-Za-z0-9.\\-/]+(?:v[0-9]+)?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "download_source",
+      "output_schema": {
+        "properties": {
+          "bytes": {
+            "description": "Exact number of downloaded bytes.",
+            "type": "integer"
+          },
+          "content_type": {
+            "description": "Content type reported by arXiv.",
+            "type": "string"
+          },
+          "filename": {
+            "description": "Safe local filename assigned by AgentWeb.",
+            "type": "string"
+          },
+          "path": {
+            "description": "Private local path where AgentWeb saved the file.",
+            "type": "string"
+          },
+          "sha256": {
+            "description": "SHA-256 digest for integrity checks.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "filename",
+          "path",
+          "bytes",
+          "sha256",
+          "content_type"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call downloads exactly one available source bundle.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Downloaded live from arXiv for every call.",
+        "max_items": 1,
+        "truncation": "Binary source bundles are never text-truncated; the result contains one bounded receipt."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784750793.106362,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Download the public source bundle for a known arXiv paper and return a local file receipt with an integrity digest.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "download returns a local source path",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "c7e09fd9b30b8c4de0674c2b43c35a4cff10517c8f8b06c0a2db644dfc9c4d8a",
+            "input_names": [
+              "id"
+            ],
+            "passed": true,
+            "recipe_hash": "3a15486c46efa99ec6dcd2135ef61033b76cc1a10ad937dce36661c1acf31985",
+            "verified_at_unix": 1784750544.425062
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "download returns a local source path",
+            "path": "$.data.path",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not assume every paper exposes source, and do not use this when only the rendered PDF is needed.",
+      "when_to_use": "Use this to inspect LaTeX, figures, ancillary files, or other submitter-provided source material."
+    },
+    "get_bibtex": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "429": "arxiv_rate_limited",
+          "500": "arxiv_unavailable",
+          "502": "arxiv_unavailable",
+          "503": "arxiv_unavailable",
+          "504": "arxiv_unavailable"
+        },
+        "include_steps": [
+          "1706_03762"
+        ],
+        "output": {
+          "fields": {
+            "bibtex": "$"
+          }
+        },
+        "recipe_hash": "9825c8ae0013a8089fd48c5296053fd4cf8ce61af4720f9309cb651e9d1db2fc",
+        "step_options": {
+          "1706_03762": {
+            "path": "https://arxiv.org/bibtex/{id}"
+          }
+        },
+        "type": "generated_recipe"
+      },
+      "capabilities": [
+        "export_citation"
+      ],
+      "category": "research",
+      "contract_hash": "2f47b03b084049d10f113379816cd8baca60be07707d54546d3a085a68bf31c2",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.search_papers",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv service is temporarily unavailable.",
+          "next_operation": "arxiv.search_papers",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing valid inputs."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "id": "1706.03762"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "A modern or legacy arXiv identifier, optionally including a version suffix.",
+            "maxLength": 80,
+            "pattern": "^[A-Za-z0-9.\\-/]+(?:v[0-9]+)?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "get_bibtex",
+      "output_schema": {
+        "properties": {
+          "bibtex": {
+            "description": "BibTeX entry returned by arXiv.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "bibtex"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call returns one citation record.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live from arXiv for every call.",
+        "max_items": 1,
+        "truncation": "Citation text is bounded by AgentWeb's standard response budget."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784750793.279528,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Retrieve arXiv's BibTeX citation text for a known public paper identifier.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "citation contains a BibTeX record",
+                "passed": true,
+                "type": "contains"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "2f47b03b084049d10f113379816cd8baca60be07707d54546d3a085a68bf31c2",
+            "input_names": [
+              "id"
+            ],
+            "passed": true,
+            "recipe_hash": "9825c8ae0013a8089fd48c5296053fd4cf8ce61af4720f9309cb651e9d1db2fc",
+            "verified_at_unix": 1784750544.7237499
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "citation contains a BibTeX record",
+            "path": "$.data.bibtex",
+            "type": "contains",
+            "value": "@"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this as authoritative published-journal metadata when the paper links to a later journal version.",
+      "when_to_use": "Use this when an agent needs a ready-to-save BibTeX entry for citation management or scholarly writing."
+    },
+    "get_category_feed": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "429": "arxiv_rate_limited",
+          "500": "arxiv_unavailable",
+          "502": "arxiv_unavailable",
+          "503": "arxiv_unavailable",
+          "504": "arxiv_unavailable"
+        },
+        "include_steps": [
+          "cs_ai"
+        ],
+        "output": {
+          "collection": "papers",
+          "fields": {
+            "papers": {
+              "default": [],
+              "path": "$.entries"
+            },
+            "title": {
+              "default": "arXiv category feed",
+              "path": "$.title"
+            }
+          },
+          "pagination": {
+            "cursor_input": "cursor",
+            "default_limit": 10,
+            "limit_input": "limit",
+            "max_limit": 50
+          }
+        },
+        "recipe_hash": "66de0f430c27e42dc76e9784b8e07d86908c497254e3359f28168aa683eba357",
+        "step_options": {
+          "cs_ai": {
+            "path": "https://rss.arxiv.org/rss/{category}",
+            "response_mode": "xml_feed"
+          }
+        },
+        "type": "generated_recipe"
+      },
+      "capabilities": [
+        "category_feed"
+      ],
+      "category": "research",
+      "contract_hash": "d9ed3389e971e3efe9ed258b32387fc560efe02faf73fb93c5c8c62c474b2edc",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.search_papers",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv service is temporarily unavailable.",
+          "next_operation": "arxiv.search_papers",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing valid inputs."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "category": "cs.AI"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "description": "Exact arXiv category identifier, such as cs.AI or quant-ph.",
+            "pattern": "^[A-Za-z][A-Za-z0-9.-]{1,30}$",
+            "type": "string"
+          },
+          "cursor": {
+            "description": "Opaque cursor returned by the previous category-feed page.",
+            "type": "string"
+          },
+          "limit": {
+            "default": 10,
+            "description": "Maximum announcements to return, from 1 through 50.",
+            "maximum": 50,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "category"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "get_category_feed",
+      "output_schema": {
+        "properties": {
+          "papers": {
+            "description": "Current announcements in the category feed.",
+            "items": {
+              "properties": {
+                "authors": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "categories": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "comment": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "journal_reference": {
+                  "type": "string"
+                },
+                "links": {
+                  "items": {
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "primary_category": {
+                  "type": "string"
+                },
+                "published": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "updated": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "authors",
+                "categories",
+                "links"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "title": {
+            "description": "Human-readable category feed title.",
+            "type": "string"
+          },
+          "updated": {
+            "description": "Feed publication or build timestamp.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "papers"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The current bounded RSS announcement window is returned; older history is not paginated by the feed.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live from the public arXiv RSS service for every call.",
+        "max_items": 100,
+        "truncation": "AgentWeb reports a warning if an unusually large feed exceeds the response budget."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784754262.193012,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Read and normalize the current public RSS announcements for an exact arXiv category.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "feed returns current announcements",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "d9ed3389e971e3efe9ed258b32387fc560efe02faf73fb93c5c8c62c474b2edc",
+            "input_names": [
+              "category",
+              "limit"
+            ],
+            "passed": true,
+            "recipe_hash": "66de0f430c27e42dc76e9784b8e07d86908c497254e3359f28168aa683eba357",
+            "verified_at_unix": 1784754230.81582
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "feed returns current announcements",
+            "path": "$.data.papers",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for historical or exhaustive category search; call list_category_papers instead.",
+      "when_to_use": "Use this for lightweight monitoring of newly announced papers in a known subject category."
+    },
+    "get_papers": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "429": "arxiv_rate_limited",
+          "500": "arxiv_unavailable",
+          "502": "arxiv_unavailable",
+          "503": "arxiv_unavailable",
+          "504": "arxiv_unavailable"
+        },
+        "include_steps": [
+          "query"
+        ],
+        "output": {
+          "fields": {
+            "items_per_page": {
+              "default": 0,
+              "path": "$.items_per_page"
+            },
+            "papers": {
+              "default": [],
+              "path": "$.entries"
+            },
+            "start_index": {
+              "default": 0,
+              "path": "$.start_index"
+            },
+            "total_results": {
+              "default": 0,
+              "path": "$.total_results"
+            }
+          }
+        },
+        "recipe_hash": "5ee7d58f226d9d077f70e057cf98e5fcbc156ece10cc96846e04262560288dfb",
+        "step_options": {
+          "query": {
+            "response_mode": "xml_feed"
+          }
+        },
+        "type": "generated_recipe",
+        "variables": {
+          "id_list": "ids",
+          "max_results": {
+            "constant": 50
+          },
+          "start": {
+            "constant": 0
+          }
+        }
+      },
+      "capabilities": [
+        "get_paper_metadata",
+        "get_multiple_papers"
+      ],
+      "category": "research",
+      "contract_hash": "d10dc1a7f0190e500f9355eb40d98999f5a6af8e2473dce966bbbda94a96da6a",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.search_papers",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv service is temporarily unavailable.",
+          "next_operation": "arxiv.search_papers",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing valid inputs."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "ids": "1706.03762v7,2106.09685v2"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "ids": {
+            "description": "One to fifty comma-separated arXiv identifiers, optionally including version suffixes such as 1706.03762v7.",
+            "maxLength": 1200,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9.\\-/]+(?:,[A-Za-z0-9.\\-/]+){0,49}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ids"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "get_papers",
+      "output_schema": {
+        "properties": {
+          "items_per_page": {
+            "description": "Number of papers requested for this page.",
+            "type": "integer"
+          },
+          "papers": {
+            "description": "Papers returned by arXiv in the requested order.",
+            "items": {
+              "properties": {
+                "authors": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "categories": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "comment": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "journal_reference": {
+                  "type": "string"
+                },
+                "links": {
+                  "items": {
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "primary_category": {
+                  "type": "string"
+                },
+                "published": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "updated": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "authors",
+                "categories",
+                "links"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "start_index": {
+            "description": "Zero-based offset of this page.",
+            "type": "integer"
+          },
+          "total_results": {
+            "description": "Total matching papers reported by arXiv.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "papers",
+          "total_results",
+          "start_index",
+          "items_per_page"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "This exact-identifier lookup accepts at most fifty identifiers in one bounded call.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live from arXiv for every call.",
+        "max_items": 100,
+        "truncation": "The requested limit bounds papers; AgentWeb also reports a warning if its response budget truncates unusually large text."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784754262.146432,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Retrieve normalized metadata for one or more exact arXiv identifiers, including version-specific records when requested.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "known identifiers return metadata",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "d10dc1a7f0190e500f9355eb40d98999f5a6af8e2473dce966bbbda94a96da6a",
+            "input_names": [
+              "ids"
+            ],
+            "passed": true,
+            "recipe_hash": "5ee7d58f226d9d077f70e057cf98e5fcbc156ece10cc96846e04262560288dfb",
+            "verified_at_unix": 1784754229.804043
+          },
+          {
+            "assertions": [
+              {
+                "name": "unknown identifiers return no papers",
+                "passed": true,
+                "type": "equals"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "empty_result",
+            "cleanup": null,
+            "contract_hash": "d10dc1a7f0190e500f9355eb40d98999f5a6af8e2473dce966bbbda94a96da6a",
+            "input_names": [
+              "ids"
+            ],
+            "passed": true,
+            "recipe_hash": "5ee7d58f226d9d077f70e057cf98e5fcbc156ece10cc96846e04262560288dfb",
+            "verified_at_unix": 1784754259.438859
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "cases": [
+              "success"
+            ],
+            "name": "known identifiers return metadata",
+            "path": "$.data.papers",
+            "type": "non_empty"
+          },
+          {
+            "cases": [
+              "empty_result"
+            ],
+            "name": "unknown identifiers return no papers",
+            "path": "$.data.papers",
+            "type": "equals",
+            "value": []
+          }
+        ],
+        "required_cases": [
+          "success",
+          "empty_result"
+        ]
+      },
+      "when_not_to_use": "Do not use this for topical discovery or for downloading paper files.",
+      "when_to_use": "Use this when the agent already knows up to fifty comma-separated arXiv identifiers and needs titles, abstracts, authors, categories, links, or version timestamps."
+    },
+    "list_author_papers": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "429": "arxiv_rate_limited",
+          "500": "arxiv_unavailable",
+          "502": "arxiv_unavailable",
+          "503": "arxiv_unavailable",
+          "504": "arxiv_unavailable"
+        },
+        "include_steps": [
+          "query"
+        ],
+        "output": {
+          "fields": {
+            "items_per_page": {
+              "default": 0,
+              "path": "$.items_per_page"
+            },
+            "papers": {
+              "default": [],
+              "path": "$.entries"
+            },
+            "start_index": {
+              "default": 0,
+              "path": "$.start_index"
+            },
+            "total_results": {
+              "default": 0,
+              "path": "$.total_results"
+            }
+          }
+        },
+        "recipe_hash": "0d01f1f75c82279e3cfcb4fe31f0e4cf229992093870f12780025ad62e7d0640",
+        "step_options": {
+          "query": {
+            "query": {
+              "max_results": "{limit}",
+              "search_query": "au:\"{author}\"",
+              "sortBy": "submittedDate",
+              "sortOrder": "descending",
+              "start": "{offset}"
+            },
+            "response_mode": "xml_feed"
+          }
+        },
+        "type": "generated_recipe",
+        "variables": {
+          "limit": {
+            "default": 20,
+            "source": "limit"
+          },
+          "offset": {
+            "default": 0,
+            "source": "offset"
+          }
+        }
+      },
+      "capabilities": [
+        "browse_author"
+      ],
+      "category": "research",
+      "contract_hash": "71c1a061cd1bdd8e2c761eb4f7fac44e0658c5dc9b033446c5aedddc35af9cf7",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.search_papers",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv service is temporarily unavailable.",
+          "next_operation": "arxiv.search_papers",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing valid inputs."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "author": "Yoshua Bengio",
+            "limit": 10
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "author": {
+            "description": "Author name to match, such as Yoshua Bengio.",
+            "maxLength": 200,
+            "minLength": 2,
+            "type": "string"
+          },
+          "limit": {
+            "default": 20,
+            "description": "Number of papers to return, from 1 through 100.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "description": "Zero-based result offset.",
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "author"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_author_papers",
+      "output_schema": {
+        "properties": {
+          "items_per_page": {
+            "description": "Number of papers requested for this page.",
+            "type": "integer"
+          },
+          "papers": {
+            "description": "Papers returned by arXiv in the requested order.",
+            "items": {
+              "properties": {
+                "authors": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "categories": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "comment": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "journal_reference": {
+                  "type": "string"
+                },
+                "links": {
+                  "items": {
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "primary_category": {
+                  "type": "string"
+                },
+                "published": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "updated": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "authors",
+                "categories",
+                "links"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "start_index": {
+            "description": "Zero-based offset of this page.",
+            "type": "integer"
+          },
+          "total_results": {
+            "description": "Total matching papers reported by arXiv.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "papers",
+          "total_results",
+          "start_index",
+          "items_per_page"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Use offset as a zero-based server-side cursor and limit for page size; total_results reports the complete match count.",
+        "supported": true
+      },
+      "result": {
+        "freshness": "Fetched live from arXiv for every call.",
+        "max_items": 100,
+        "truncation": "The requested limit bounds papers; AgentWeb also reports a warning if its response budget truncates unusually large text."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784754262.176911,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Find public arXiv papers credited to a named author and return the newest matching records with normalized metadata.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "author lookup returns credited papers",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "71c1a061cd1bdd8e2c761eb4f7fac44e0658c5dc9b033446c5aedddc35af9cf7",
+            "input_names": [
+              "author",
+              "limit"
+            ],
+            "passed": true,
+            "recipe_hash": "0d01f1f75c82279e3cfcb4fe31f0e4cf229992093870f12780025ad62e7d0640",
+            "verified_at_unix": 1784754230.1916301
+          },
+          {
+            "assertions": [
+              {
+                "name": "author lookup returns credited papers",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "pagination",
+            "cleanup": null,
+            "contract_hash": "71c1a061cd1bdd8e2c761eb4f7fac44e0658c5dc9b033446c5aedddc35af9cf7",
+            "input_names": [
+              "author",
+              "limit",
+              "offset"
+            ],
+            "passed": true,
+            "recipe_hash": "0d01f1f75c82279e3cfcb4fe31f0e4cf229992093870f12780025ad62e7d0640",
+            "verified_at_unix": 1784754260.358351
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "author lookup returns credited papers",
+            "path": "$.data.papers",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "pagination"
+        ]
+      },
+      "when_not_to_use": "Do not assume name matches uniquely identify one person; use returned titles, affiliations, and subjects to disambiguate.",
+      "when_to_use": "Use this when an agent has a human author name and wants that person's arXiv papers."
+    },
+    "list_bulk_data_resources": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "429": "arxiv_rate_limited",
+          "500": "arxiv_unavailable",
+          "502": "arxiv_unavailable",
+          "503": "arxiv_unavailable",
+          "504": "arxiv_unavailable"
+        },
+        "include_steps": [
+          "index_html"
+        ],
+        "output": {
+          "collection": "resources",
+          "item_fields": {
+            "name": "$.text",
+            "url": "$.url"
+          },
+          "source": "$"
+        },
+        "recipe_hash": "833e4bae30101a5351ca46ee3c60fa289c43493e966708f7ab57555470dcef24",
+        "step_options": {
+          "index_html": {
+            "response_mode": "html_links",
+            "selector": ".md-content a[href]"
+          }
+        },
+        "type": "generated_recipe"
+      },
+      "capabilities": [
+        "bulk_data"
+      ],
+      "category": "research",
+      "contract_hash": "8b8b2d098b8ba2448e3abe1d9ed6f352340ffb500605c21058f699399117be5f",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.search_papers",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv service is temporarily unavailable.",
+          "next_operation": "arxiv.search_papers",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing valid inputs."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_bulk_data_resources",
+      "output_schema": {
+        "properties": {
+          "resources": {
+            "description": "Official bulk-data, terms, dataset, and harvesting resources.",
+            "items": {
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "url"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "resources"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The official bulk-access resource links are returned in one bounded call.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live from arXiv's official bulk-access documentation for every call.",
+        "max_items": 100,
+        "truncation": "AgentWeb returns at most one hundred unique content links and warns if the page contains more."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784750793.785532,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List official arXiv bulk-access resources for metadata, PDFs, source archives, terms, and incremental harvesting.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "bulk access page exposes official resources",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "8b8b2d098b8ba2448e3abe1d9ed6f352340ffb500605c21058f699399117be5f",
+            "input_names": [],
+            "passed": true,
+            "recipe_hash": "833e4bae30101a5351ca46ee3c60fa289c43493e966708f7ab57555470dcef24",
+            "verified_at_unix": 1784750546.226184
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "bulk access page exposes official resources",
+            "path": "$.data.resources",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use bulk datasets when a bounded search or a handful of paper downloads will answer the request.",
+      "when_to_use": "Use this before a large corpus job that would be inefficient or impolite through per-paper API calls."
+    },
+    "list_categories": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "429": "arxiv_rate_limited",
+          "500": "arxiv_unavailable",
+          "502": "arxiv_unavailable",
+          "503": "arxiv_unavailable",
+          "504": "arxiv_unavailable"
+        },
+        "include_steps": [
+          "request_1"
+        ],
+        "output": {
+          "collection": "categories",
+          "item_fields": {
+            "name": "$.text",
+            "url": "$.url"
+          },
+          "source": "$"
+        },
+        "recipe_hash": "1cf7e4ced852a488475eff969b8b2b3a2922d7c3832214df12b189602c5004a1",
+        "step_options": {
+          "request_1": {
+            "response_mode": "html_links",
+            "selector": "main a[href^='/archive/'], main a[id][href*='/list/']"
+          }
+        },
+        "type": "generated_recipe"
+      },
+      "capabilities": [
+        "browse_categories"
+      ],
+      "category": "research",
+      "contract_hash": "725011160d61cde233385e3777deda1dce751940450391836c31fadb0848edbc",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.search_papers",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv service is temporarily unavailable.",
+          "next_operation": "arxiv.search_papers",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing valid inputs."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_categories",
+      "output_schema": {
+        "properties": {
+          "categories": {
+            "description": "Archive and subject-category names with canonical arXiv URLs.",
+            "items": {
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "url"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "categories"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The complete current category catalog is returned in one bounded call.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live from the arXiv homepage for every call.",
+        "max_items": 250,
+        "truncation": "AgentWeb returns at most 250 unique archive and category links and warns if the site grows beyond that bound."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784750792.7721019,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List arXiv's complete public archive and subject-category catalog with canonical browsing links.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "category catalog contains public subjects",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "725011160d61cde233385e3777deda1dce751940450391836c31fadb0848edbc",
+            "input_names": [],
+            "passed": true,
+            "recipe_hash": "1cf7e4ced852a488475eff969b8b2b3a2922d7c3832214df12b189602c5004a1",
+            "verified_at_unix": 1784750542.445014
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "category catalog contains public subjects",
+            "path": "$.data.categories",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use the returned links as a substitute for list_category_papers when paper records are needed.",
+      "when_to_use": "Use this to translate a human subject into the exact category identifier expected by category searches and feeds."
+    },
+    "list_category_papers": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "429": "arxiv_rate_limited",
+          "500": "arxiv_unavailable",
+          "502": "arxiv_unavailable",
+          "503": "arxiv_unavailable",
+          "504": "arxiv_unavailable"
+        },
+        "include_steps": [
+          "query"
+        ],
+        "output": {
+          "fields": {
+            "items_per_page": {
+              "default": 0,
+              "path": "$.items_per_page"
+            },
+            "papers": {
+              "default": [],
+              "path": "$.entries"
+            },
+            "start_index": {
+              "default": 0,
+              "path": "$.start_index"
+            },
+            "total_results": {
+              "default": 0,
+              "path": "$.total_results"
+            }
+          }
+        },
+        "recipe_hash": "c8d0de7ae93527ee3719844f7bfffb806f4c45cecd88d7da4468513ad029dff4",
+        "step_options": {
+          "query": {
+            "query": {
+              "max_results": "{limit}",
+              "search_query": "cat:{category}",
+              "sortBy": "submittedDate",
+              "sortOrder": "descending",
+              "start": "{offset}"
+            },
+            "response_mode": "xml_feed"
+          }
+        },
+        "type": "generated_recipe",
+        "variables": {
+          "limit": {
+            "default": 20,
+            "source": "limit"
+          },
+          "offset": {
+            "default": 0,
+            "source": "offset"
+          }
+        }
+      },
+      "capabilities": [
+        "browse_category"
+      ],
+      "category": "research",
+      "contract_hash": "d7a8cf3a4d4662bc2ae65413655f9ea41c693518764015e50e9d67fcd05e0575",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.search_papers",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv service is temporarily unavailable.",
+          "next_operation": "arxiv.search_papers",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing valid inputs."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "category": "cs.AI",
+            "limit": 10
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "description": "Exact case-sensitive arXiv category identifier, such as cs.AI.",
+            "pattern": "^[A-Za-z][A-Za-z0-9.-]{1,30}$",
+            "type": "string"
+          },
+          "limit": {
+            "default": 20,
+            "description": "Number of papers to return, from 1 through 100.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "description": "Zero-based result offset.",
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "category"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_category_papers",
+      "output_schema": {
+        "properties": {
+          "items_per_page": {
+            "description": "Number of papers requested for this page.",
+            "type": "integer"
+          },
+          "papers": {
+            "description": "Papers returned by arXiv in the requested order.",
+            "items": {
+              "properties": {
+                "authors": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "categories": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "comment": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "journal_reference": {
+                  "type": "string"
+                },
+                "links": {
+                  "items": {
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "primary_category": {
+                  "type": "string"
+                },
+                "published": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "updated": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "authors",
+                "categories",
+                "links"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "start_index": {
+            "description": "Zero-based offset of this page.",
+            "type": "integer"
+          },
+          "total_results": {
+            "description": "Total matching papers reported by arXiv.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "papers",
+          "total_results",
+          "start_index",
+          "items_per_page"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Use offset as a zero-based server-side cursor and limit for page size; total_results reports the complete match count.",
+        "supported": true
+      },
+      "result": {
+        "freshness": "Fetched live from arXiv for every call.",
+        "max_items": 100,
+        "truncation": "The requested limit bounds papers; AgentWeb also reports a warning if its response budget truncates unusually large text."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784754262.162421,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List the newest public papers in an exact arXiv subject category with normalized metadata and stable offset pagination.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "category lookup returns recent papers",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "d7a8cf3a4d4662bc2ae65413655f9ea41c693518764015e50e9d67fcd05e0575",
+            "input_names": [
+              "category",
+              "limit"
+            ],
+            "passed": true,
+            "recipe_hash": "c8d0de7ae93527ee3719844f7bfffb806f4c45cecd88d7da4468513ad029dff4",
+            "verified_at_unix": 1784754230.047604
+          },
+          {
+            "assertions": [
+              {
+                "name": "category lookup returns recent papers",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "pagination",
+            "cleanup": null,
+            "contract_hash": "d7a8cf3a4d4662bc2ae65413655f9ea41c693518764015e50e9d67fcd05e0575",
+            "input_names": [
+              "category",
+              "limit",
+              "offset"
+            ],
+            "passed": true,
+            "recipe_hash": "c8d0de7ae93527ee3719844f7bfffb806f4c45cecd88d7da4468513ad029dff4",
+            "verified_at_unix": 1784754259.946319
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "category lookup returns recent papers",
+            "path": "$.data.papers",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "pagination"
+        ]
+      },
+      "when_not_to_use": "Do not pass a natural-language subject name; call list_categories first when the category code is unknown.",
+      "when_to_use": "Use this to monitor or browse a known category code such as cs.AI, quant-ph, math.CO, or astro-ph.GA."
+    },
+    "list_export_formats": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "429": "arxiv_rate_limited",
+          "500": "arxiv_unavailable",
+          "502": "arxiv_unavailable",
+          "503": "arxiv_unavailable",
+          "504": "arxiv_unavailable"
+        },
+        "include_steps": [
+          "1706_03762"
+        ],
+        "output": {
+          "collection": "links",
+          "item_fields": {
+            "name": "$.text",
+            "url": "$.url"
+          },
+          "source": "$"
+        },
+        "recipe_hash": "89398617d489c5f37ae915026157734a48072e2abe9013a557c55141394599d3",
+        "step_options": {
+          "1706_03762": {
+            "path": "https://arxiv.org/abs/{id}",
+            "response_mode": "html_links",
+            "selector": "main a[href]"
+          }
+        },
+        "type": "generated_recipe"
+      },
+      "capabilities": [
+        "export_formats",
+        "read_versions"
+      ],
+      "category": "research",
+      "contract_hash": "a8b7fda24f08ad3b658bae79bf83e28c8c6f6d2eb77f8a8b409723b93c6e2ade",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.search_papers",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv service is temporarily unavailable.",
+          "next_operation": "arxiv.search_papers",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing valid inputs."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "id": "1706.03762"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "A modern or legacy arXiv identifier, optionally including a version suffix.",
+            "maxLength": 80,
+            "pattern": "^[A-Za-z0-9.\\-/]+(?:v[0-9]+)?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_export_formats",
+      "output_schema": {
+        "properties": {
+          "links": {
+            "description": "Public format and related-resource links exposed on the paper's format page.",
+            "items": {
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "url"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "links"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "All unique links on the paper format panel are returned in one bounded call.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live from arXiv for every call.",
+        "max_items": 40,
+        "truncation": "AgentWeb returns at most forty unique format-page links and warns if more exist."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784750968.040771,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List the public format, source, help, and scholarly-resource links exposed by arXiv for a known paper.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "format page exposes usable links",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "a8b7fda24f08ad3b658bae79bf83e28c8c6f6d2eb77f8a8b409723b93c6e2ade",
+            "input_names": [
+              "id"
+            ],
+            "passed": true,
+            "recipe_hash": "89398617d489c5f37ae915026157734a48072e2abe9013a557c55141394599d3",
+            "verified_at_unix": 1784750967.882827
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "format page exposes usable links",
+            "path": "$.data.links",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not open these links in a browser when download_pdf, download_source, get_bibtex, or get_papers already provides the needed result.",
+      "when_to_use": "Use this when an agent needs to discover available source, format, or related-resource destinations before choosing one."
+    },
+    "list_site_resources": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "429": "arxiv_rate_limited",
+          "500": "arxiv_unavailable",
+          "502": "arxiv_unavailable",
+          "503": "arxiv_unavailable",
+          "504": "arxiv_unavailable"
+        },
+        "include_steps": [
+          "request_1"
+        ],
+        "output": {
+          "collection": "resources",
+          "item_fields": {
+            "name": "$.text",
+            "url": "$.url"
+          },
+          "source": "$"
+        },
+        "recipe_hash": "de603af22b1fbf74f5d373bd7c0b42ec64aba588adac8f9d1b733d71ae76ea54",
+        "step_options": {
+          "request_1": {
+            "path": "https://info.arxiv.org/",
+            "response_mode": "html_links",
+            "selector": "a[href]"
+          }
+        },
+        "type": "generated_recipe"
+      },
+      "capabilities": [
+        "site_resources"
+      ],
+      "category": "reference",
+      "contract_hash": "471bbd609089f244a7182f59c249e6b0d6b9299884be9389f826aa898b7fc1c9",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.list_site_resources",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv information service is temporarily unavailable.",
+          "next_operation": "arxiv.list_site_resources",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_site_resources",
+      "output_schema": {
+        "properties": {
+          "resources": {
+            "description": "Official public arXiv informational resources.",
+            "items": {
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "url"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "resources"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The current top-level official resource catalog is returned in one bounded call.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live from arXiv's public information site for every call.",
+        "max_items": 250,
+        "truncation": "AgentWeb returns at most 250 unique resource links and warns if the site exposes more."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784750793.948952,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List official public arXiv information, help, policy, status, statistics, accessibility, and project-resource links.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "official resource catalog is not empty",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "471bbd609089f244a7182f59c249e6b0d6b9299884be9389f826aa898b7fc1c9",
+            "input_names": [],
+            "passed": true,
+            "recipe_hash": "de603af22b1fbf74f5d373bd7c0b42ec64aba588adac8f9d1b733d71ae76ea54",
+            "verified_at_unix": 1784750628.798313
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "official resource catalog is not empty",
+            "path": "$.data.resources",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for research discovery, paper metadata, files, citations, or account actions.",
+      "when_to_use": "Use this when an agent needs official arXiv documentation or institutional information rather than paper records."
+    },
+    "read_site_resource": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "404": "resource_not_found",
+          "429": "arxiv_rate_limited",
+          "500": "arxiv_unavailable",
+          "502": "arxiv_unavailable",
+          "503": "arxiv_unavailable",
+          "504": "arxiv_unavailable"
+        },
+        "include_steps": [
+          "index_html"
+        ],
+        "output": {
+          "fields": {
+            "content": {
+              "path": "$",
+              "transform": "html_to_text"
+            }
+          }
+        },
+        "recipe_hash": "f19b09a08d7f25446030b567e1362a863f12c62a177e92bd74b4790d8a24a388",
+        "step_options": {
+          "index_html": {
+            "path": "{url}"
+          }
+        },
+        "type": "generated_recipe"
+      },
+      "capabilities": [
+        "read_site_information"
+      ],
+      "category": "reference",
+      "contract_hash": "a464974fd5bd937fda5e48241fdbebdd8458510afa5f2e36592a6e35dd31763f",
+      "errors": [
+        {
+          "code": "resource_not_found",
+          "field": "url",
+          "message": "arXiv did not find that official public resource.",
+          "next_operation": "arxiv.list_site_resources",
+          "retryable": false,
+          "user_action": "Call list_site_resources again and use a current arXiv URL from its result."
+        },
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before reading another resource.",
+          "next_operation": "arxiv.read_site_resource",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same URL."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested official arXiv page is temporarily unavailable.",
+          "next_operation": "arxiv.read_site_resource",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same URL."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "url": "https://info.arxiv.org/help/bulk_data/index.html"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "url": {
+            "description": "Absolute HTTPS URL on arxiv.org or one of its subdomains, normally obtained from an AgentWeb arXiv resource-list operation.",
+            "maxLength": 2000,
+            "pattern": "^https://(?:[A-Za-z0-9-]+\\.)*arxiv\\.org/",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "read_site_resource",
+      "output_schema": {
+        "properties": {
+          "content": {
+            "description": "Readable page text with navigation markup and HTML syntax removed.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "content"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "One official page is read per call; long text is bounded by AgentWeb's response budget.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live from the requested official arXiv page for every call.",
+        "max_items": 1,
+        "truncation": "AgentWeb reports a warning if the normalized page text exceeds the public response budget."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784751168.258237,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Read the normalized text of an official public arXiv information, help, policy, accessibility, statistics, or project page.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "official page text preserves its main subject",
+                "passed": true,
+                "type": "contains"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "a464974fd5bd937fda5e48241fdbebdd8458510afa5f2e36592a6e35dd31763f",
+            "input_names": [
+              "url"
+            ],
+            "passed": true,
+            "recipe_hash": "f19b09a08d7f25446030b567e1362a863f12c62a177e92bd74b4790d8a24a388",
+            "verified_at_unix": 1784751168.045331
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "official page text preserves its main subject",
+            "path": "$.data.content",
+            "type": "contains",
+            "value": "Bulk Access"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for paper records, PDFs, source bundles, external websites, account pages, or submission workflows.",
+      "when_to_use": "Use this after list_site_resources or list_bulk_data_resources returns an official arXiv URL whose complete text the agent needs."
+    },
+    "search_papers": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "429": "arxiv_rate_limited",
+          "500": "arxiv_unavailable",
+          "502": "arxiv_unavailable",
+          "503": "arxiv_unavailable",
+          "504": "arxiv_unavailable"
+        },
+        "include_steps": [
+          "query"
+        ],
+        "output": {
+          "fields": {
+            "items_per_page": {
+              "default": 0,
+              "path": "$.items_per_page"
+            },
+            "papers": {
+              "default": [],
+              "path": "$.entries"
+            },
+            "start_index": {
+              "default": 0,
+              "path": "$.start_index"
+            },
+            "total_results": {
+              "default": 0,
+              "path": "$.total_results"
+            }
+          }
+        },
+        "recipe_hash": "713faccb189d23b7e9a24e3d6b24f94106fabdd8bc273a8b291b6bf79fdb56a6",
+        "step_options": {
+          "query": {
+            "response_mode": "xml_feed"
+          }
+        },
+        "type": "generated_recipe",
+        "variables": {
+          "max_results": {
+            "default": 20,
+            "source": "limit"
+          },
+          "search_query": "query",
+          "sortby": {
+            "default": "relevance",
+            "source": "sort",
+            "values": {
+              "relevance": "relevance",
+              "submitted": "submittedDate",
+              "updated": "lastUpdatedDate"
+            }
+          },
+          "sortorder": {
+            "default": "descending",
+            "source": "order",
+            "values": {
+              "ascending": "ascending",
+              "descending": "descending"
+            }
+          },
+          "start": {
+            "default": 0,
+            "source": "offset"
+          }
+        }
+      },
+      "capabilities": [
+        "search_papers",
+        "advanced_search"
+      ],
+      "category": "research",
+      "contract_hash": "a30f31d0dc5703c7cb0eaaedda5bf32453352ab1f3d15ffc69dafba709ea3fdf",
+      "errors": [
+        {
+          "code": "arxiv_rate_limited",
+          "message": "arXiv is asking clients to slow down before making another request.",
+          "next_operation": "arxiv.search_papers",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation."
+        },
+        {
+          "code": "arxiv_unavailable",
+          "message": "The requested public arXiv service is temporarily unavailable.",
+          "next_operation": "arxiv.search_papers",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing valid inputs."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 10,
+            "order": "descending",
+            "query": "all:\"quantum error correction\"",
+            "sort": "relevance"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "default": 20,
+            "description": "Number of papers to return, from 1 through 100.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "description": "Zero-based result offset.",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "order": {
+            "default": "descending",
+            "description": "Return results in descending or ascending order.",
+            "enum": [
+              "descending",
+              "ascending"
+            ],
+            "type": "string"
+          },
+          "query": {
+            "description": "arXiv query such as all:\"quantum error correction\", ti:transformer, au:\"Yoshua Bengio\", cat:cs.AI, or a Boolean expression.",
+            "maxLength": 1000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "sort": {
+            "default": "relevance",
+            "description": "Sort by relevance, submission time, or last update.",
+            "enum": [
+              "relevance",
+              "submitted",
+              "updated"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "search_papers",
+      "output_schema": {
+        "properties": {
+          "items_per_page": {
+            "description": "Number of papers requested for this page.",
+            "type": "integer"
+          },
+          "papers": {
+            "description": "Papers returned by arXiv in the requested order.",
+            "items": {
+              "properties": {
+                "authors": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "categories": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "comment": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "id": {
+                  "type": "string"
+                },
+                "journal_reference": {
+                  "type": "string"
+                },
+                "links": {
+                  "items": {
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "primary_category": {
+                  "type": "string"
+                },
+                "published": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "updated": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "authors",
+                "categories",
+                "links"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "start_index": {
+            "description": "Zero-based offset of this page.",
+            "type": "integer"
+          },
+          "total_results": {
+            "description": "Total matching papers reported by arXiv.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "papers",
+          "total_results",
+          "start_index",
+          "items_per_page"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Use offset as a zero-based server-side cursor and limit for page size; total_results reports the complete match count.",
+        "supported": true
+      },
+      "result": {
+        "freshness": "Fetched live from arXiv for every call.",
+        "max_items": 100,
+        "truncation": "The requested limit bounds papers; AgentWeb also reports a warning if its response budget truncates unusually large text."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784754262.1326468,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Search the complete public arXiv corpus with its expressive query language and return normalized paper metadata.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "success returns paper records",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "a30f31d0dc5703c7cb0eaaedda5bf32453352ab1f3d15ffc69dafba709ea3fdf",
+            "input_names": [
+              "limit",
+              "query"
+            ],
+            "passed": true,
+            "recipe_hash": "713faccb189d23b7e9a24e3d6b24f94106fabdd8bc273a8b291b6bf79fdb56a6",
+            "verified_at_unix": 1784754229.635194
+          },
+          {
+            "assertions": [
+              {
+                "name": "unmatched query returns no papers",
+                "passed": true,
+                "type": "equals"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "empty_result",
+            "cleanup": null,
+            "contract_hash": "a30f31d0dc5703c7cb0eaaedda5bf32453352ab1f3d15ffc69dafba709ea3fdf",
+            "input_names": [
+              "limit",
+              "query"
+            ],
+            "passed": true,
+            "recipe_hash": "713faccb189d23b7e9a24e3d6b24f94106fabdd8bc273a8b291b6bf79fdb56a6",
+            "verified_at_unix": 1784754258.414454
+          },
+          {
+            "assertions": [
+              {
+                "name": "success returns paper records",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "pagination",
+            "cleanup": null,
+            "contract_hash": "a30f31d0dc5703c7cb0eaaedda5bf32453352ab1f3d15ffc69dafba709ea3fdf",
+            "input_names": [
+              "limit",
+              "offset",
+              "query"
+            ],
+            "passed": true,
+            "recipe_hash": "713faccb189d23b7e9a24e3d6b24f94106fabdd8bc273a8b291b6bf79fdb56a6",
+            "verified_at_unix": 1784754258.8874528
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "cases": [
+              "success",
+              "pagination"
+            ],
+            "name": "success returns paper records",
+            "path": "$.data.papers",
+            "type": "non_empty"
+          },
+          {
+            "cases": [
+              "empty_result"
+            ],
+            "name": "unmatched query returns no papers",
+            "path": "$.data.papers",
+            "type": "equals",
+            "value": []
+          }
+        ],
+        "required_cases": [
+          "success",
+          "empty_result",
+          "pagination"
+        ]
+      },
+      "when_not_to_use": "Do not use this when one or more exact arXiv identifiers are already known; call get_papers instead.",
+      "when_to_use": "Use this for topic discovery, exact field searches, Boolean combinations, category filters, identifier searches, and date ranges."
+    }
+  },
+  "runtime": {
+    "auth_interaction": "not_yet_mapped",
+    "browserless_replay": true
+  },
+  "url_routes": [
+    {
+      "arguments": {
+        "ids": {
+          "group": "id"
+        }
+      },
+      "operation": "get_papers",
+      "path_regex": "/abs/(?P<id>[A-Za-z0-9.\\-/]+)"
+    },
+    {
+      "arguments": {
+        "id": {
+          "group": "id"
+        }
+      },
+      "operation": "download_pdf",
+      "path_regex": "/pdf/(?P<id>[A-Za-z0-9.\\-/]+)\\.pdf"
+    },
+    {
+      "arguments": {
+        "id": {
+          "group": "id"
+        }
+      },
+      "operation": "download_pdf",
+      "path_regex": "/pdf/(?P<id>[A-Za-z0-9.\\-/]+)"
+    },
+    {
+      "arguments": {
+        "id": {
+          "group": "id"
+        }
+      },
+      "operation": "download_source",
+      "path_regex": "/src/(?P<id>[A-Za-z0-9.\\-/]+)"
+    },
+    {
+      "arguments": {
+        "id": {
+          "group": "id"
+        }
+      },
+      "operation": "get_bibtex",
+      "path_regex": "/bibtex/(?P<id>[A-Za-z0-9.\\-/]+)"
+    },
+    {
+      "arguments": {
+        "id": {
+          "group": "id"
+        }
+      },
+      "operation": "list_export_formats",
+      "path_regex": "/format/(?P<id>[A-Za-z0-9.\\-/]+)"
+    },
+    {
+      "arguments": {
+        "category": {
+          "group": "category"
+        }
+      },
+      "operation": "list_category_papers",
+      "path_regex": "/list/(?P<category>[A-Za-z][A-Za-z0-9.-]{1,30})/(?:recent|new|pastweek)"
+    },
+    {
+      "arguments": {
+        "category": {
+          "group": "category"
+        }
+      },
+      "host_regex": "rss\\.arxiv\\.org",
+      "operation": "get_category_feed",
+      "path_regex": "/rss/(?P<category>[A-Za-z][A-Za-z0-9.-]{1,30})"
+    },
+    {
+      "arguments": {
+        "url": {
+          "url": true
+        }
+      },
+      "host_regex": "info\\.arxiv\\.org",
+      "operation": "read_site_resource",
+      "path_regex": "/.*"
+    }
+  ],
+  "version": "0.1.4"
+}

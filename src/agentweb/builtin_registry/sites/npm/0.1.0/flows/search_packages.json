@@ -1,0 +1,84 @@
+{
+  "observed": {
+    "cases": [
+      "success",
+      "live_cli_success",
+      "live_mcp_success",
+      "empty_result",
+      "missing_optional",
+      "null_optional"
+    ],
+    "paths": [
+      "https://registry.npmjs.org/-/v1/search"
+    ],
+    "source": "reviewed npm public capability mapping"
+  },
+  "operation": "search_packages",
+  "recipe": {
+    "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+    "operation": "search_packages",
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "evidence_1",
+        "path": "https://registry.npmjs.org/-/v1/search"
+      }
+    ],
+    "type": "reviewed_python_binding"
+  },
+  "schema_version": 1,
+  "verification": {
+    "assertions": [
+      {
+        "name": "search returns a bounded package collection and total",
+        "passed": true,
+        "path": "$.data.packages"
+      }
+    ],
+    "contract_hash": "e6787d95c4a8d03c312e92c824f6ed755f4e4c57aff788e2fa1d5b20d0d5438c",
+    "recipe_hash": "107827884958f92b42e186f8dd722d0ec451b6722f3b209e6957154f9c9a7be2",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "exit_code": 0,
+      "interfaces": [
+        "domain_first_cli_current",
+        "generic_cli_compatibility",
+        "mcp_site_call"
+      ],
+      "name": "agentweb-npm-release-gate",
+      "runtime_matrix": {
+        "0.16.0": [
+          "adapter_import",
+          "generic_cli",
+          "mcp"
+        ],
+        "0.16.3": [
+          "adapter_import",
+          "generic_cli",
+          "mcp"
+        ],
+        "0.16.4": [
+          "adapter_import",
+          "generic_cli",
+          "mcp"
+        ],
+        "0.16.5": [
+          "adapter_import",
+          "domain_first_cli",
+          "mcp"
+        ]
+      },
+      "runtime_versions": [
+        "0.16.0",
+        "0.16.3",
+        "0.16.4",
+        "0.16.5"
+      ],
+      "version": "1"
+    },
+    "status": "passed",
+    "verified_at_unix": 1784757911.0
+  }
+}

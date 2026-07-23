@@ -1,0 +1,81 @@
+{
+  "observed": {
+    "cases": [
+      "success",
+      "live_cli_success",
+      "live_mcp_success"
+    ],
+    "paths": [
+      "https://registry.npmjs.org/{package}"
+    ],
+    "source": "reviewed npm public capability mapping"
+  },
+  "operation": "get_readme",
+  "recipe": {
+    "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+    "operation": "get_readme",
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "evidence_1",
+        "path": "https://registry.npmjs.org/{package}"
+      }
+    ],
+    "type": "reviewed_python_binding"
+  },
+  "schema_version": 1,
+  "verification": {
+    "assertions": [
+      {
+        "name": "README lookup reports bounded content and truncation",
+        "passed": true,
+        "path": "$.data.content"
+      }
+    ],
+    "contract_hash": "3cc8bfff867eb312aa0610aa5c38c36fb7e1bc06669c07f12d911e7f557d4d34",
+    "recipe_hash": "f8dd8303c3e5b514a12abe38ca997b444cf6b1f83c00e46b191031f915c35731",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "exit_code": 0,
+      "interfaces": [
+        "domain_first_cli_current",
+        "generic_cli_compatibility",
+        "mcp_site_call"
+      ],
+      "name": "agentweb-npm-release-gate",
+      "runtime_matrix": {
+        "0.16.0": [
+          "adapter_import",
+          "generic_cli",
+          "mcp"
+        ],
+        "0.16.3": [
+          "adapter_import",
+          "generic_cli",
+          "mcp"
+        ],
+        "0.16.4": [
+          "adapter_import",
+          "generic_cli",
+          "mcp"
+        ],
+        "0.16.5": [
+          "adapter_import",
+          "domain_first_cli",
+          "mcp"
+        ]
+      },
+      "runtime_versions": [
+        "0.16.0",
+        "0.16.3",
+        "0.16.4",
+        "0.16.5"
+      ],
+      "version": "1"
+    },
+    "status": "passed",
+    "verified_at_unix": 1784757911.0
+  }
+}

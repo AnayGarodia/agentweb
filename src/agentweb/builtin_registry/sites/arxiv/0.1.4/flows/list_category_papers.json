@@ -1,0 +1,65 @@
+{
+  "captured_at_unix": 1784750254.626336,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {
+      "bytes": 8236,
+      "format": "opaque",
+      "sha256": "30413e40430e51b662ddff4f576449aa4b560934b36682b514807fb2b1df2168",
+      "truncated": false
+    },
+    "page_transition": {
+      "after": "https://export.arxiv.org/api/query?search_query=cat%3Acs.AI&start=0&max_results=3&sortBy=submittedDate&sortOrder=descending",
+      "before": "https://export.arxiv.org/api/query?search_query=au%3A%22Yoshua+Bengio%22&start=0&max_results=3&sortBy=submittedDate&sortOrder=descending"
+    },
+    "steps": [
+      {
+        "mime_type": "text/plain",
+        "name": "query",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "list_category_papers",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "category",
+      "limit",
+      "offset"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "query",
+        "path": "https://export.arxiv.org/api/query",
+        "query": {
+          "max_results": "{limit}",
+          "search_query": "cat:{category}",
+          "sortBy": "submittedDate",
+          "sortOrder": "descending",
+          "start": "{offset}"
+        },
+        "response_mode": "xml_feed"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "arxiv",
+  "verification": {
+    "contract_hash": "d7a8cf3a4d4662bc2ae65413655f9ea41c693518764015e50e9d67fcd05e0575",
+    "recipe_hash": "c8d0de7ae93527ee3719844f7bfffb806f4c45cecd88d7da4468513ad029dff4",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784754259.946319
+  }
+}

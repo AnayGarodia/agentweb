@@ -1,0 +1,47 @@
+name: Bug report
+description: Report a reproducible AgentWeb core or reference-adapter defect
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: textarea
+    id: task
+    attributes:
+      label: Task and expected result
+      description: What did you ask the agent or CLI to do, and what should have happened?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual structured result
+      description: Remove cookies, tokens, account data, private URLs, addresses, and payment information.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: AgentWeb version
+      placeholder: Output of agentweb --version
+    validations:
+      required: true
+  - type: input
+    id: adapter
+    attributes:
+      label: Adapter and version
+      placeholder: npm 0.1.0, or core only
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include only sanitized commands and public inputs.
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety check
+      options:
+        - label: I removed secrets and personal information.
+          required: true
+        - label: This is not a security vulnerability; those are reported privately.
+          required: true

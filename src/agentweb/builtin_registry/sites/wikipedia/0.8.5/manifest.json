@@ -1,0 +1,706 @@
+{
+  "name": "wikipedia",
+  "version": "0.8.5",
+  "description": "Broad public Wikipedia research across search, pages, links, categories, history, languages, geography, users, and random discovery.",
+  "canonical_domain": "wikipedia.org",
+  "aliases": ["wikipedia", "wiki"],
+  "url_routes": [
+    {
+      "host_regex": "(?P<language>[a-z-]+)\\.wikipedia\\.org",
+      "path_regex": "/wiki/(?P<title>[^?#]+)",
+      "operation": "page",
+      "arguments": {"title": {"group": "title", "transform": "underscores_to_spaces"}, "language": {"group": "language"}}
+    }
+  ],
+  "base_url": "https://www.wikipedia.org",
+  "login_url": "https://en.wikipedia.org/w/index.php?title=Special:UserLogin",
+  "signup_url": "https://en.wikipedia.org/w/index.php?title=Special:CreateAccount",
+  "auth": {
+    "strategy": "cookie_session",
+    "interaction": "one_time_browser_authorization"
+  },
+  "cookie_domain": ".wikipedia.org",
+  "allowed_domains": [
+    "wikipedia.org",
+    "wikimedia.org"
+  ],
+  "runtime": {
+    "browserless_replay": true,
+    "auth_interaction": "not_yet_mapped"
+  },
+  "auth_cookie_names": [
+    "enwikiUserID",
+    "enwikiUserName",
+    "centralauth_User"
+  ],
+  "entrypoint": "adapter.py",
+  "coverage": {
+    "typed_fast_paths": [
+      "article search and extracts",
+      "article sections, categories, and images",
+      "outgoing links and backlinks",
+      "category members",
+      "revision history",
+      "language links",
+      "nearby geosearch",
+      "pageview history",
+      "public user contributions",
+      "random pages",
+      "language-specific public reads",
+      "account status",
+      "CSRF-protected page editing",
+      "multipart uploads",
+      "bounded read and write access to the MediaWiki Action API"
+    ],
+    "website_parity": "After one normal login or signup authorization, AgentWeb reuses the retained session and obtains MediaWiki CSRF tokens automatically. api_request covers Action API reads and mutations, upload handles multipart media, and the direct protocol surface covers REST and newly introduced same-site operations.",
+    "protocol_fallback": "direct_workflow",
+    "not_mapped": [],
+    "human_boundaries": [
+      "password, CAPTCHA, email verification, and terms consent during account authorization"
+    ],
+    "constraints": [
+      "MediaWiki permissions and abuse filters still apply",
+      "CAPTCHA and account verification require a visible human handoff"
+    ]
+  },
+  "commands": {
+    "search": {
+      "description": "Search Wikipedia article titles and text with compact snippets.",
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "query"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 10,
+            "description": "Maximum results",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code, such as en or hi"
+          }
+        }
+      }
+    },
+    "page": {
+      "description": "Read a Wikipedia page as bounded plain text with canonical metadata.",
+      "cache_ttl_seconds": 900,
+      "cli": {
+        "positionals": [
+          "title"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Article title"
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          },
+          "max_chars": {
+            "type": "integer",
+            "default": 8000,
+            "description": "Maximum extract characters"
+          }
+        }
+      }
+    },
+    "random": {
+      "description": "Return random article titles and links from a Wikipedia language edition.",
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "default": 5,
+            "description": "Maximum pages",
+            "minimum": 1,
+            "maximum": 20
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          }
+        }
+      }
+    },
+    "links": {
+      "description": "List main-namespace pages linked from an article.",
+      "cache_ttl_seconds": 600,
+      "cli": {
+        "positionals": [
+          "title"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Article title"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 50,
+            "description": "Maximum links",
+            "minimum": 1,
+            "maximum": 500
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          }
+        }
+      }
+    },
+    "backlinks": {
+      "description": "List main-namespace pages that link to an article.",
+      "cache_ttl_seconds": 600,
+      "cli": {
+        "positionals": [
+          "title"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Article title"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 50,
+            "description": "Maximum backlinks",
+            "minimum": 1,
+            "maximum": 500
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          }
+        }
+      }
+    },
+    "category_members": {
+      "description": "List pages and subcategories inside a Wikipedia category.",
+      "cache_ttl_seconds": 600,
+      "cli": {
+        "positionals": [
+          "category"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "category"
+        ],
+        "properties": {
+          "category": {
+            "type": "string",
+            "description": "Category title with or without Category prefix"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 50,
+            "description": "Maximum members",
+            "minimum": 1,
+            "maximum": 500
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          }
+        }
+      }
+    },
+    "revisions": {
+      "description": "List recent page revisions with editors, comments, sizes, and timestamps.",
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "title"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Article title"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "description": "Maximum revisions",
+            "minimum": 1,
+            "maximum": 500
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          }
+        }
+      }
+    },
+    "languages": {
+      "description": "List available language editions for an article.",
+      "cache_ttl_seconds": 900,
+      "cli": {
+        "positionals": [
+          "title"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Article title"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 100,
+            "description": "Maximum languages",
+            "minimum": 1,
+            "maximum": 500
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Source Wikipedia language code"
+          }
+        }
+      }
+    },
+    "nearby": {
+      "description": "Find geotagged Wikipedia pages near coordinates.",
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "latitude",
+          "longitude"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "latitude",
+          "longitude"
+        ],
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "description": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "description": "Longitude"
+          },
+          "radius": {
+            "type": "integer",
+            "default": 1000,
+            "description": "Radius in meters"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "description": "Maximum pages",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          }
+        }
+      }
+    },
+    "user_contributions": {
+      "description": "List a public Wikipedia user's recent contributions.",
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "username"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "username"
+        ],
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Wikipedia username"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "description": "Maximum contributions",
+            "minimum": 1,
+            "maximum": 500
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          }
+        }
+      }
+    },
+    "sections": {
+      "description": "List an article's section hierarchy and anchors.",
+      "cache_ttl_seconds": 900,
+      "cli": {
+        "positionals": [
+          "title"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string",
+            "default": "en"
+          }
+        }
+      }
+    },
+    "categories": {
+      "description": "List the visible categories assigned to an article.",
+      "cache_ttl_seconds": 900,
+      "cli": {
+        "positionals": [
+          "title"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 50,
+            "minimum": 1,
+            "maximum": 500
+          },
+          "language": {
+            "type": "string",
+            "default": "en"
+          }
+        }
+      }
+    },
+    "images": {
+      "description": "List image and media file pages used by an article.",
+      "cache_ttl_seconds": 900,
+      "cli": {
+        "positionals": [
+          "title"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 50,
+            "minimum": 1,
+            "maximum": 500
+          },
+          "language": {
+            "type": "string",
+            "default": "en"
+          }
+        }
+      }
+    },
+    "pageviews": {
+      "description": "Return daily public pageviews and a total for a date range.",
+      "cache_ttl_seconds": 3600,
+      "cli": {
+        "positionals": [
+          "title",
+          "start",
+          "end"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title",
+          "start",
+          "end"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "start": {
+            "type": "string",
+            "description": "Eight-digit YYYYMMDD date, for example 20260701; hyphens are not accepted."
+          },
+          "end": {
+            "type": "string",
+            "description": "Eight-digit YYYYMMDD date, for example 20260731; hyphens are not accepted."
+          },
+          "language": {
+            "type": "string",
+            "default": "en"
+          }
+        }
+      }
+    },
+    "api_query": {
+      "description": "Bounded read-only escape hatch for MediaWiki query, parse, opensearch, and help actions. Write actions are rejected.",
+      "cache_ttl_seconds": 60,
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "parameters"
+        ],
+        "properties": {
+          "parameters": {
+            "type": [
+              "object",
+              "array"
+            ],
+            "description": "A normal JSON object of MediaWiki parameters, such as {\"action\":\"opensearch\",\"search\":\"Alan Turing\"}. A legacy array of key=value strings is also accepted."
+          },
+          "language": {
+            "type": "string",
+            "default": "en"
+          },
+          "max_items": {
+            "type": "integer",
+            "default": 50,
+            "minimum": 1,
+            "maximum": 200
+          },
+          "max_string": {
+            "type": "integer",
+            "default": 4000,
+            "minimum": 100,
+            "maximum": 20000
+          },
+          "max_total_chars": {
+            "type": "integer",
+            "default": 20000,
+            "description": "Hard ceiling for the complete nested JSON response",
+            "minimum": 1000,
+            "maximum": 100000
+          }
+        }
+      }
+    },
+    "account_status": {
+      "description": "Verify the retained Wikipedia session and report the authenticated user, groups, rights, and block state.",
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string",
+            "default": "en"
+          }
+        }
+      }
+    },
+    "edit": {
+      "description": "Create or replace a Wikipedia page through the MediaWiki Action API. AgentWeb fetches the CSRF token automatically; confirm is mandatory.",
+      "cli": {
+        "positionals": [
+          "title",
+          "text",
+          "summary"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title",
+          "text",
+          "summary"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string",
+            "default": "en"
+          },
+          "section": {
+            "type": "string"
+          },
+          "minor": {
+            "type": "boolean",
+            "default": false
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      }
+    },
+    "api_request": {
+      "description": "Call a fixed-host MediaWiki Action API operation. Read actions use GET; mutations use POST, require confirm, reuse the retained login session, and fetch a fresh CSRF token automatically.",
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "parameters"
+        ],
+        "properties": {
+          "parameters": {
+            "type": "array",
+            "description": "Repeatable key=value API parameters"
+          },
+          "language": {
+            "type": "string",
+            "default": "en"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false
+          },
+          "max_items": {
+            "type": "integer",
+            "default": 100,
+            "minimum": 1,
+            "maximum": 500
+          },
+          "max_string": {
+            "type": "integer",
+            "default": 10000,
+            "minimum": 100,
+            "maximum": 50000
+          },
+          "max_total_chars": {
+            "type": "integer",
+            "default": 50000,
+            "minimum": 1000,
+            "maximum": 250000
+          }
+        }
+      }
+    },
+    "upload": {
+      "description": "Upload a local file through MediaWiki's multipart Action API. AgentWeb fetches the CSRF token automatically and never returns the local path; confirm is mandatory.",
+      "cli": {
+        "positionals": [
+          "path"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "path"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "filename": {
+            "type": "string"
+          },
+          "comment": {
+            "type": "string",
+            "default": "Uploaded through AgentWeb"
+          },
+          "description": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string",
+            "default": "en"
+          },
+          "ignore_warnings": {
+            "type": "boolean",
+            "default": false
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      }
+    }
+  }
+}

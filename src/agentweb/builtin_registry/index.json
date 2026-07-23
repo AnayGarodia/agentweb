@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "sites": [
+    {
+      "files": {
+        "adapter.py": "88f70ff348b6b90dde019884d7e7e62abd433dced5a26f374f45474ccf11716f",
+        "authoring-report.json": "7d096a4d91402b33ba5edec399bb9344d040153951f70ecaac0edad17129214f",
+        "flows/download_pdf.json": "d4243d91ada8954f23faa48760bf5eb7b501a9259121dfc290f96b81549f9a41",
+        "flows/download_source.json": "3aa0029487d929653acb5688018f531d18fee00ffabf5bc9e1aa3a2819f1dc48",
+        "flows/get_bibtex.json": "e1c65343abbd19e7a21cdb4b40e033034af28f037d2656a9992f331bcb9b752f",
+        "flows/get_category_feed.json": "8b8fa95ef35a891326c50d6745ea363785c2bbe9927f54807afc0cf4316425ae",
+        "flows/get_papers.json": "a5ea8036c7ddb68aaaa49209fcdbe30ae09b4115e7db6976647e01184603dcc1",
+        "flows/list_author_papers.json": "f6a4bbac0fb30d77372e507d902c2ad7c695e2753d6c8221253cf8c920864417",
+        "flows/list_bulk_data_resources.json": "ed34ef1bdd1cc9317291002faf4e76d1c4cd2fe53efc3537f8a2e34c71fc8b6d",
+        "flows/list_categories.json": "fc168f7609a894f7f50efa29fef015482a268efa0afa11b1b1185e48e26d3e8f",
+        "flows/list_category_papers.json": "5b4a0ed3e1ef80f40b5bdb60df9eb5cad3dc6506bf0d88a6480003629f32e097",
+        "flows/list_export_formats.json": "31cfaac50d04495d47a278bd20304848e7bc382a206150f3c6182411d161baeb",
+        "flows/list_site_resources.json": "d917a92d3f691a9cf737689515a8bef70379b2bfca255710d8236056acc17d88",
+        "flows/read_site_resource.json": "48df0b4acac510e7385cdead8fc0dc1199f1e274c3f689992357bc29ff0fe47a",
+        "flows/search_papers.json": "31f79a4b6dea5809316d59443ec610050aa5fe4c1b3a2470a2befdbb6a83f8c3",
+        "manifest.json": "2a677ea2662f82e7e99719486bd0aa74c28c46504de9e4907e2bfc01862d7c01"
+      },
+      "name": "arxiv",
+      "version": "0.1.4"
+    },
+    {
+      "files": {
+        "adapter.py": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+        "authoring-report.json": "ee3929c8bd588a5f7ab0b6504d340d265b35085ca9c3653c0652f11907b79f9e",
+        "flows/audit_versions.json": "75c3819f3bcc8961e369acad3c2260862bc2a2b6c0d0afddd08075f0a5457123",
+        "flows/download_tarball.json": "edda7f12f85dfbd544ae1fdc80dd55ebd0687e153d857269feff77bfb0e15c68",
+        "flows/get_download_count.json": "a8382babb08bd1f76ecc42c94cdf63c397c140a3733c9b2672cd9bfe5b8d9856",
+        "flows/get_download_history.json": "0d07c30c06fcb2baef97aa63e5aeda3e79e9e6bab56daefecda08d3614c7002d",
+        "flows/get_package.json": "9b99297a2929d1b770a4d18b4c87f9d1086f09cae224d310ad06294815366f96",
+        "flows/get_provenance.json": "3db398121cb6a37d7ca5ae49f8de8f3a8eccc9ca068ca13ec9e63b912a39ceee",
+        "flows/get_readme.json": "8f9a56197d2919d76d31f8c191da39f1b9df1e75bb2e605475a72e9311111b23",
+        "flows/get_registry_status.json": "a0de75554469495eb57e7fc148565c372bee7c5064e056a5360f0dafc84272e5",
+        "flows/get_version.json": "cd0bf66ed74a718832ff453599367bdf851aed701e0186cd998eb24405ddad8c",
+        "flows/list_dependencies.json": "14aaa20a2c39fe0347fd5994d7e4d8dc96f2731845368ac676e619cac369a624",
+        "flows/list_dependents.json": "e70c6fabb2a689f77d0f05d249e985ad24f1c33f8e17181f7a992d6552665a38",
+        "flows/list_maintainer_packages.json": "5ffb4cc20e23f92609d26d43f0a41d62a8096ebfe27250640f05b6b88f10210a",
+        "flows/list_package_files.json": "62357d4c77d74f9e8a5af15759026ca81c42038ab9d708bb3e03fb3240dc66db",
+        "flows/list_versions.json": "bf2163f490310f56bdf811cf4c162d70f6cd62e5bd053d0841ba6841d0a289c7",
+        "flows/read_package_file.json": "0f2df96641dbf7bc6f319b99e22ef1ea2ac5724fda5fddfff156f0f93de50123",
+        "flows/read_site_resource.json": "42e44fbd7e14cdf3d4a9a16e2d7ea740d208af27ee00fbdef4141df52bfa50c6",
+        "flows/search_packages.json": "892f88032732dae93730d6af173e9a3c3a676791995b5a66586d974b3aea395b",
+        "manifest.json": "6ef4b5e2837896ea989ab3ba877c6ef7daa206dd83c9138442f7cef365e007d3"
+      },
+      "name": "npm",
+      "version": "0.1.0"
+    },
+    {
+      "files": {
+        "adapter.py": "b4cedd273cb457500833913107d8932449c6e82e32b6a673f5104b06aef76fc2",
+        "evidence.json": "6cc2e8e863467ff3ca1590fefd5f727bc6465df329fa7d725466636165e9ecab",
+        "evidence/conformance.json": "c5ae80b005ccac2612d8ce3d1aa7f20cf217692d5ece1fe282e2563d02b12f40",
+        "evidence/wikipedia-public-2026-07-21.json": "6d08f768c3319959dc95bab6952189b3e1343c44e8504cfe038d07ba7d693ef7",
+        "manifest.json": "70d7eff5ab17733af7a65f3019b314a37b82a940d36ce872a50db1b335ea1a2d"
+      },
+      "name": "wikipedia",
+      "version": "0.8.5"
+    }
+  ]
+}

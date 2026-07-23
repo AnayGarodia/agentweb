@@ -1,0 +1,90 @@
+{
+  "observed": {
+    "cases": [
+      "success",
+      "live_cli_success",
+      "live_mcp_success",
+      "utf8_content",
+      "archive_bounds"
+    ],
+    "paths": [
+      "https://registry.npmjs.org/{package}/{version}",
+      "{tarball_url}"
+    ],
+    "source": "reviewed npm public capability mapping"
+  },
+  "operation": "read_package_file",
+  "recipe": {
+    "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+    "operation": "read_package_file",
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "evidence_1",
+        "path": "https://registry.npmjs.org/{package}/{version}"
+      },
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "evidence_2",
+        "path": "{tarball_url}"
+      }
+    ],
+    "type": "reviewed_python_binding"
+  },
+  "schema_version": 1,
+  "verification": {
+    "assertions": [
+      {
+        "name": "package file read returns content with a cryptographic digest",
+        "passed": true,
+        "path": "$.data.sha256"
+      }
+    ],
+    "contract_hash": "6c8e1abf3b47afe24912001a1e4f4c9cf7ef25dff98d8a62a9ecc31a24ae9850",
+    "recipe_hash": "cacf882c28fa824f74bc8a684ab0d11bd39d252c4712a2b0310f38e0874191d8",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "exit_code": 0,
+      "interfaces": [
+        "domain_first_cli_current",
+        "generic_cli_compatibility",
+        "mcp_site_call"
+      ],
+      "name": "agentweb-npm-release-gate",
+      "runtime_matrix": {
+        "0.16.0": [
+          "adapter_import",
+          "generic_cli",
+          "mcp"
+        ],
+        "0.16.3": [
+          "adapter_import",
+          "generic_cli",
+          "mcp"
+        ],
+        "0.16.4": [
+          "adapter_import",
+          "generic_cli",
+          "mcp"
+        ],
+        "0.16.5": [
+          "adapter_import",
+          "domain_first_cli",
+          "mcp"
+        ]
+      },
+      "runtime_versions": [
+        "0.16.0",
+        "0.16.3",
+        "0.16.4",
+        "0.16.5"
+      ],
+      "version": "1"
+    },
+    "status": "passed",
+    "verified_at_unix": 1784757911.0
+  }
+}

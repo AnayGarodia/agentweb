@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/AnayGarodia/agentweb/security/advisories/new
+    about: Report credential, isolation, signature, allowlist, or unintended-write vulnerabilities privately

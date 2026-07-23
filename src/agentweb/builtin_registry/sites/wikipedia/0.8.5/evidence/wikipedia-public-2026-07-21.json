@@ -1,0 +1,28 @@
+{
+  "captured_at": "2026-07-21",
+  "site": "wikipedia",
+  "flows": {
+    "search": {
+      "query": "Ada Lovelace",
+      "browser_first_title": "Ada Lovelace",
+      "direct_first_title": "Ada Lovelace",
+      "direct_page_id": 974,
+      "matched": true
+    },
+    "page": {
+      "title": "Ada Lovelace",
+      "browser_heading": "Ada Lovelace",
+      "direct_page_id": 974,
+      "direct_description": "English mathematician (1815–1852)",
+      "matched": true
+    },
+    "random": {
+      "language": "en",
+      "browser_title": "Momper Senate",
+      "direct_title": "Momper Senate",
+      "direct_page_id": 77333274,
+      "direct_elapsed_ms": 461.5,
+      "matched": true
+    }
+  }
+}

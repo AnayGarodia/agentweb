@@ -1,0 +1,60 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentweb-cli"
+version = "0.17.0.dev0"
+description = "Browserless website APIs compiled once and replayed by every agent"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+authors = [{name = "AgentWeb contributors"}]
+keywords = ["agents", "cli", "web", "automation", "mcp"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Internet :: WWW/HTTP",
+]
+dependencies = [
+  "beautifulsoup4>=4.12",
+  "cryptography>=45",
+  "curl-cffi>=0.15",
+  "websocket-client>=1.8",
+]
+
+[project.optional-dependencies]
+dev = ["build>=1.2", "pytest>=9", "ruff>=0.12"]
+
+[project.urls]
+Homepage = "https://github.com/AnayGarodia/agentweb"
+Documentation = "https://github.com/AnayGarodia/agentweb#readme"
+Issues = "https://github.com/AnayGarodia/agentweb/issues"
+
+[project.scripts]
+agentweb = "agentweb.cli:main"
+sitepack = "agentweb.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+agentweb = ["builtin_registry/**/*.json", "builtin_registry/**/*.py"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+
+[tool.ruff.lint.per-file-ignores]
+# Released adapter snapshots are immutable registry artifacts; keep their hashes stable.
+"src/agentweb/builtin_registry/sites/**/adapter.py" = ["F401", "F841"]

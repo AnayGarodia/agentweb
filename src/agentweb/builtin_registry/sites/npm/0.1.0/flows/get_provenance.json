@@ -1,0 +1,82 @@
+{
+  "observed": {
+    "cases": [
+      "success",
+      "live_cli_success",
+      "live_mcp_success",
+      "empty_result"
+    ],
+    "paths": [
+      "https://registry.npmjs.org/-/npm/v1/attestations/{package}@{version}"
+    ],
+    "source": "reviewed npm public capability mapping"
+  },
+  "operation": "get_provenance",
+  "recipe": {
+    "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+    "operation": "get_provenance",
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "evidence_1",
+        "path": "https://registry.npmjs.org/-/npm/v1/attestations/{package}@{version}"
+      }
+    ],
+    "type": "reviewed_python_binding"
+  },
+  "schema_version": 1,
+  "verification": {
+    "assertions": [
+      {
+        "name": "provenance lookup returns an attestation collection for the resolved release",
+        "passed": true,
+        "path": "$.data.attestations"
+      }
+    ],
+    "contract_hash": "bc49911083201643d1f66b4c405b651aaef187dcfe0bb2ef41add8eb49b6f3fa",
+    "recipe_hash": "773e12e99b21e7892b587ad9aede089f09a26cc7af935e12b044057b29db17da",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "exit_code": 0,
+      "interfaces": [
+        "domain_first_cli_current",
+        "generic_cli_compatibility",
+        "mcp_site_call"
+      ],
+      "name": "agentweb-npm-release-gate",
+      "runtime_matrix": {
+        "0.16.0": [
+          "adapter_import",
+          "generic_cli",
+          "mcp"
+        ],
+        "0.16.3": [
+          "adapter_import",
+          "generic_cli",
+          "mcp"
+        ],
+        "0.16.4": [
+          "adapter_import",
+          "generic_cli",
+          "mcp"
+        ],
+        "0.16.5": [
+          "adapter_import",
+          "domain_first_cli",
+          "mcp"
+        ]
+      },
+      "runtime_versions": [
+        "0.16.0",
+        "0.16.3",
+        "0.16.4",
+        "0.16.5"
+      ],
+      "version": "1"
+    },
+    "status": "passed",
+    "verified_at_unix": 1784757911.0
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "observed": {
+    "cases": [
+      "success",
+      "live_cli_success",
+      "live_mcp_success",
+      "empty_result"
+    ],
+    "paths": [
+      "https://registry.npmjs.org/{package}/{version}"
+    ],
+    "source": "reviewed npm public capability mapping"
+  },
+  "operation": "list_dependencies",
+  "recipe": {
+    "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+    "operation": "list_dependencies",
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "evidence_1",
+        "path": "https://registry.npmjs.org/{package}/{version}"
+      }
+    ],
+    "type": "reviewed_python_binding"
+  },
+  "schema_version": 1,
+  "verification": {
+    "assertions": [
+      {
+        "name": "dependency lookup returns a paginated normalized collection",
+        "passed": true,
+        "path": "$.data.dependencies"
+      }
+    ],
+    "contract_hash": "e51a0c690eee50eae358b76ee2b72661ef2d8a91f927ad2739b63be74644cf7f",
+    "recipe_hash": "e3892f79d29558bdb312a7d089c998713c030858b00dc1e09476609762a07667",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "exit_code": 0,
+      "interfaces": [
+        "domain_first_cli_current",
+        "generic_cli_compatibility",
+        "mcp_site_call"
+      ],
+      "name": "agentweb-npm-release-gate",
+      "runtime_matrix": {
+        "0.16.0": [
+          "adapter_import",
+          "generic_cli",
+          "mcp"
+        ],
+        "0.16.3": [
+          "adapter_import",
+          "generic_cli",
+          "mcp"
+        ],
+        "0.16.4": [
+          "adapter_import",
+          "generic_cli",
+          "mcp"
+        ],
+        "0.16.5": [
+          "adapter_import",
+          "domain_first_cli",
+          "mcp"
+        ]
+      },
+      "runtime_versions": [
+        "0.16.0",
+        "0.16.3",
+        "0.16.4",
+        "0.16.5"
+      ],
+      "version": "1"
+    },
+    "status": "passed",
+    "verified_at_unix": 1784757911.0
+  }
+}
