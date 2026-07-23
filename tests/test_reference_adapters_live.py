@@ -7,7 +7,6 @@ import pytest
 from agentweb.runtime import Runtime
 from agentweb.storage import StatePaths
 
-
 pytestmark = pytest.mark.skipif(
     os.environ.get("AGENTWEB_LIVE_TESTS") != "1",
     reason="set AGENTWEB_LIVE_TESTS=1 to call public production APIs",

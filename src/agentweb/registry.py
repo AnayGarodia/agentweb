@@ -23,9 +23,8 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import (
     Ed25519PublicKey,
 )
 
-from .sdk import AgentWebError, USER_AGENT
+from .sdk import USER_AGENT, AgentWebError
 from .storage import StatePaths, contained_path, read_json, safe_component, write_json
-
 
 MAX_INDEX_BYTES = 2 * 1024 * 1024
 MAX_BUNDLE_FILE_BYTES = 25 * 1024 * 1024

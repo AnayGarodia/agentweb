@@ -4,8 +4,8 @@ import argparse
 import base64
 import hashlib
 import json
-from pathlib import Path
 import zipfile
+from pathlib import Path
 
 
 def validate_active_registry(wheel_path: Path) -> None:

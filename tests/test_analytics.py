@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+
 import pytest
 
-from agentweb.analytics import Analytics, PRIVACY_NOTICE, summarize_events
+from agentweb.analytics import PRIVACY_NOTICE, Analytics, summarize_events
 from agentweb.dashboard import DashboardData
 from agentweb.registry import Registry, bundled_registry
 from agentweb.runtime import Runtime

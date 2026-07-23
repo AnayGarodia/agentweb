@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import importlib.util
 import hashlib
+import importlib.util
 import json
 import os
 import re
@@ -18,8 +18,8 @@ from .capture import verify_flow_capsule
 from .registry import Registry, validate_manifest
 from .sdk import (
     AdapterContext,
-    CancellationToken,
     AgentWebError,
+    CancellationToken,
     enforce_data_budget,
     map_operation_inputs,
     match_operation_response_error,
@@ -42,7 +42,6 @@ from .targets import (
     target_url,
 )
 from .web_runtime import WebRuntime
-
 
 WEB_COMMANDS: dict[str, dict[str, Any]] = {
     "web_start": {
@@ -326,7 +325,7 @@ class Runtime:
         installed = self.registry.installed()
         config = read_json(self.paths.registry_config, {}) or {}
         source = self.registry.configured_source()
-        remote = source.startswith("https://") or source.startswith("http://")
+        remote = source.startswith(("https://", "http://"))
         last_attempt = max(
             float(config.get("last_sync_at", 0)),
             float(config.get("last_sync_attempt_at", 0)),
@@ -1132,7 +1131,8 @@ class Runtime:
                 error_code="internal_error",
             )
             raise
-        meta = result.get("meta") if isinstance(result.get("meta"), dict) else {}
+        meta_value = result.get("meta")
+        meta = meta_value if isinstance(meta_value, dict) else {}
         self.analytics.record(
             "operation_completed",
             site=site,
@@ -1232,7 +1232,7 @@ class Runtime:
                     (binding.get("http_errors") or {}).get(str(final_status))
                     or "website_http_error"
                 )
-                documented = next(
+                documented: dict[str, Any] = next(
                     (
                         item
                         for item in contract.get("errors") or []

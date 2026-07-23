@@ -8,10 +8,11 @@ import subprocess
 import sys
 import time
 import webbrowser
+from collections.abc import Callable
 from http.cookiejar import Cookie
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 from urllib.error import URLError
 from urllib.parse import parse_qs, urlparse
 from urllib.request import urlopen
@@ -28,10 +29,10 @@ from .auth import (
     status_is_connected,
     terminate_attempt,
 )
+from .logs import logger
 from .runtime import Runtime
-from .sdk import ConfigurationRequired, AgentWebError
+from .sdk import AgentWebError, ConfigurationRequired
 from .storage import atomic_write, read_json, write_json
-
 
 Progress = Callable[[str], None]
 CDP_CONNECTION_ERRORS = (
@@ -220,7 +221,7 @@ def open_debugger_client(
         try:
             client.close()
         except Exception:
-            pass
+            logger.debug("Failed to close CDP client during cleanup", exc_info=True)
         raise
     return client
 
@@ -319,7 +320,7 @@ def best_browser_auth_snapshot(
                 try:
                     candidate.close()
                 except Exception:
-                    pass
+                    logger.debug("Failed to close candidate CDP client", exc_info=True)
     if not snapshots:
         return {}
     selected = max(
@@ -414,8 +415,12 @@ def import_cdp_cookies(runtime: Runtime, site: str, cookies: list[dict[str, Any]
             comment=None,
             comment_url=None,
             rest={
-                "HttpOnly": item.get("httpOnly"),
-                "SameSite": item.get("sameSite"),
+                key: str(value)
+                for key, value in (
+                    ("HttpOnly", item.get("httpOnly")),
+                    ("SameSite", item.get("sameSite")),
+                )
+                if value is not None
             },
             rfc2109=False,
         )
@@ -464,7 +469,7 @@ def _connection_verified(
 
 
 def _safe_browser_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
-    safe = {
+    safe: dict[str, Any] = {
         key: snapshot.get(key)
         for key in (
             "title",
@@ -587,7 +592,9 @@ def _monitor_cookie_auth_attempt(
                 try:
                     client.close()
                 except Exception:
-                    pass
+                    logger.debug(
+                        "Failed to close CDP client before reconnect", exc_info=True
+                    )
                 client = open_debugger_client(
                     attempt.debugger_port,
                     allowed_domain,
@@ -634,7 +641,7 @@ def _monitor_cookie_auth_attempt(
 
             checkpoint = HumanCheckpoint.from_snapshot(last_snapshot)
             if checkpoint:
-                checkpoint_value = {
+                checkpoint_value: dict[str, Any] | None = {
                     "kind": checkpoint.kind,
                     "instruction": checkpoint.instruction,
                     "confidence": checkpoint.confidence,
@@ -865,7 +872,7 @@ def _monitor_cookie_auth_attempt(
         try:
             client.close()
         except Exception:
-            pass
+            logger.debug("Failed to close CDP client after connect flow", exc_info=True)
 
 
 def connect_with_oauth2_pkce(
@@ -1237,7 +1244,7 @@ def connect_site(
             try:
                 client.close()
             except Exception:
-                pass
+                logger.debug("Failed to close CDP client during teardown", exc_info=True)
         if process is not None and process.poll() is None and not retain_browser:
             process.terminate()
             try:

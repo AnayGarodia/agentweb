@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from typing import Any
-import re
 from urllib.parse import parse_qs, unquote, urlparse
 
 from .sdk import AgentWebError
@@ -71,12 +71,14 @@ def extract_resource(
         arguments: dict[str, Any] = {}
         valid = True
         for name, rule in (route.get("arguments") or {}).items():
+            value: Any
             if rule.get("url") is True:
-                value: Any = url
+                value = url
             elif "value" in rule:
-                value: Any = rule["value"]
+                value = rule["value"]
             elif "query" in rule:
-                value = (query.get(str(rule["query"])) or [None])[0]
+                matches = query.get(str(rule["query"]))
+                value = matches[0] if matches else None
             else:
                 value = groups.get(str(rule.get("group") or name))
             if value is None:

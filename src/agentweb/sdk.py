@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import gzip
 import base64
+import gzip
 import hashlib
 import json
 import mimetypes
@@ -22,8 +22,8 @@ from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.parse import parse_qsl, quote, urlencode, urljoin, urlparse, urlunparse
 from urllib.request import (
-    HTTPRedirectHandler,
     HTTPCookieProcessor,
+    HTTPRedirectHandler,
     Request,
     build_opener,
 )
@@ -40,7 +40,6 @@ from .storage import (
     read_json,
     safe_component,
 )
-
 
 USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -167,7 +166,7 @@ def parse_xml_feed(body: bytes) -> dict[str, Any]:
             }
         )
 
-    metadata = {
+    metadata: dict[str, Any] = {
         "id": first_text(channel, "id"),
         "title": first_text(channel, "title"),
         "description": first_text(channel, "subtitle", "description"),
@@ -653,7 +652,8 @@ def parse_query_pairs(
         for value in values or []:
             if "=" not in value:
                 raise AgentWebError(f"Query parameter {value!r} must use key=value")
-            entries.append(tuple(value.split("=", 1)))
+            key_part, value_part = value.split("=", 1)
+            entries.append((key_part, value_part))
     for key, item in entries:
         key = key.strip()
         if not key or not key.replace("_", "").replace("-", "").isalnum():
@@ -688,16 +688,16 @@ def bounded_data(
             truncated = truncated or changed
         return output, truncated
     if isinstance(value, dict):
-        output = {}
+        output_map: dict[str, Any] = {}
         entries = list(value.items())
         truncated = len(entries) > max_items
         for key, item in entries[:max_items]:
             mapped, changed = bounded_data(
                 item, max_items=max_items, max_string=max_string, depth=depth + 1
             )
-            output[str(key)] = mapped
+            output_map[str(key)] = mapped
             truncated = truncated or changed
-        return output, truncated
+        return output_map, truncated
     return value, False
 
 
@@ -1012,11 +1012,11 @@ class HttpSession:
         current_headers = dict(request_headers)
         if impersonate:
             transport = f"curl_cffi:{impersonate}"
-            browser = curl_requests.Session()
+            browser: Any = curl_requests.Session()
             for cookie in self.cookies:
                 browser.cookies.set(
                     cookie.name,
-                    cookie.value,
+                    cookie.value or "",
                     domain=cookie.domain,
                     path=cookie.path or "/",
                 )
@@ -1024,13 +1024,13 @@ class HttpSession:
                 self.cancellation.check()
                 try:
                     raw = browser.request(
-                        current_method,
+                        current_method,  # type: ignore[arg-type]
                         current_url,
                         data=current_data,
                         headers=current_headers,
                         timeout=timeout_seconds,
                         allow_redirects=False,
-                        impersonate=impersonate,
+                        impersonate=impersonate,  # type: ignore[arg-type]
                     )
                 except Exception as exc:
                     host = urlparse(current_url).hostname or self.site
@@ -1070,7 +1070,7 @@ class HttpSession:
                 current_url = next_url
             for cookie in browser.cookies.jar:
                 self.cookies.set_cookie(cookie)
-            body = bytes(raw.content)
+            response_body = bytes(raw.content)
             raw_status = int(raw.status_code)
             raw_url = str(raw.url)
             raw_headers = dict(raw.headers.items())
@@ -1124,9 +1124,9 @@ class HttpSession:
                     current_data = None
                     current_headers.pop("Content-Type", None)
                 current_url = next_url
-            body = raw.read()
+            response_body = raw.read()
             if raw.headers.get("Content-Encoding") == "gzip":
-                body = gzip.decompress(body)
+                response_body = gzip.decompress(response_body)
             raw_status = raw.status
             raw_url = raw.url
             raw_headers = dict(raw.headers.items())
@@ -1135,7 +1135,7 @@ class HttpSession:
             status=raw_status,
             url=raw_url,
             headers=raw_headers,
-            body=body,
+            body=response_body,
             elapsed_ms=elapsed,
             transport=transport,
         )
@@ -1171,6 +1171,7 @@ class HttpSession:
         parsed = SimpleCookie()
         parsed.load(header.strip())
         count = 0
+        rest: dict[str, Any] = {"HttpOnly": None}
         for name, morsel in parsed.items():
             cookie = Cookie(
                 version=0,
@@ -1188,7 +1189,7 @@ class HttpSession:
                 discard=True,
                 comment=None,
                 comment_url=None,
-                rest={"HttpOnly": None},
+                rest=rest,
                 rfc2109=False,
             )
             self.cookies.set_cookie(cookie)
@@ -1332,7 +1333,8 @@ class SiteAdapter:
             for value in values or []:
                 if "=" not in value:
                     raise AgentWebError(f"Header {value!r} must use name=value")
-                entries.append(tuple(value.split("=", 1)))
+                name_part, value_part = value.split("=", 1)
+                entries.append((name_part, value_part))
         for name, item in entries:
             name = name.strip()
             if not re.fullmatch(r"[A-Za-z0-9-]+", name):
@@ -1519,7 +1521,7 @@ class SiteAdapter:
         for index, form in enumerate(soup.select("form")):
             fields = []
             for node in form.select("input[name], textarea[name], select[name]"):
-                field = {
+                field: dict[str, Any] = {
                     "name": node.get("name"),
                     "type": node.get("type") or node.name,
                     "required": node.has_attr("required"),
@@ -1897,12 +1899,14 @@ class RequestRecipeAdapter(SiteAdapter):
                 )
             attribute = spec.get("attribute")
             if attribute:
-                value = node.get(str(attribute))
-                if value is None:
+                attr_value = node.get(str(attribute))
+                if attr_value is None:
                     raise AgentWebError(
                         f"Recipe HTML selector {selector!r} had no {attribute!r} attribute"
                     )
-                return value
+                if isinstance(attr_value, list):
+                    return " ".join(attr_value)
+                return attr_value
             return node.get_text(" ", strip=True)
         if source == "text":
             return response.text

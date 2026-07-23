@@ -1,0 +1,27 @@
+# Run `pre-commit install` once, then hooks run on every commit.
+# Mirrors the CI lint job so failures surface locally before pushing.
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: end-of-file-fixer
+        exclude: ^src/agentweb/builtin_registry/
+      - id: trailing-whitespace
+        exclude: ^src/agentweb/builtin_registry/
+      - id: check-yaml
+      - id: check-merge-conflict
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        args: [--fix]
+
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: python -m mypy
+        language: system
+        pass_filenames: false
+        types: [python]

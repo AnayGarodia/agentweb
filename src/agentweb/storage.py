@@ -3,16 +3,15 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import shutil
 import sqlite3
 import tempfile
 import time
-import re
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-
 
 SAFE_COMPONENT = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}")
 
@@ -104,7 +103,7 @@ class StatePaths:
     root: Path
 
     @classmethod
-    def discover(cls) -> "StatePaths":
+    def discover(cls) -> StatePaths:
         configured = os.environ.get("AGENTWEB_HOME") or os.environ.get("SITEPACK_HOME")
         root = Path(configured).expanduser() if configured else Path.home() / ".agentweb"
         legacy = Path.home() / ".sitepack"

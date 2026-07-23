@@ -12,14 +12,14 @@ import urllib.error
 import urllib.request
 import uuid
 from collections import Counter, defaultdict
+from collections.abc import Iterable
 from datetime import UTC, datetime, timedelta
 from importlib.resources import files
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 from . import __version__
 from .storage import StatePaths, read_json, write_json
-
 
 PRIVACY_NOTICE = (
     "AgentWeb records anonymous counts, operation names, outcomes, and timing. "
