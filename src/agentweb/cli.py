@@ -23,6 +23,7 @@ from .connector import (
     install_agent_skills,
 )
 from .dashboard import serve_dashboard
+from .logs import configure_logging, logger
 from .mcp import serve
 from .registry import (
     audit_registry,
@@ -122,7 +123,7 @@ def dynamic_site_call(
             continue
         flag = "--" + name.replace("_", "-")
         prop_type = prop.get("type", "string")
-        options: dict[str, Any] = {"help": prop.get("description")}
+        options = {"help": prop.get("description")}
         if prop_type == "boolean":
             options["action"] = argparse.BooleanOptionalAction
             options["default"] = prop.get("default") if "default" in prop else None
@@ -441,6 +442,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
+    configure_logging()
     argv = list(sys.argv[1:] if argv is None else argv)
     known = {
         "sync",
@@ -481,7 +483,7 @@ def main(argv: list[str] | None = None) -> int:
         global_args, remaining = parse_global_args(argv)
         first_command = remaining[0] if remaining else None
         if first_command and first_command not in known:
-            result = dynamic_site_call(remaining, global_args)
+            result: Any = dynamic_site_call(remaining, global_args)
             emit(result, not global_args.compact)
             return 0
         args = parser.parse_args(remaining)
@@ -786,6 +788,7 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(payload), file=sys.stderr)
         return 2
     except Exception:
+        logger.exception("Unexpected internal error while handling CLI command")
         print(
             json.dumps(
                 {

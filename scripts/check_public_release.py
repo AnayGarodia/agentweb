@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import argparse
 import json
-from pathlib import Path, PurePosixPath
 import zipfile
-
+from pathlib import Path, PurePosixPath
 
 PRIVATE_MODULES = {
     "agentweb/author_mcp.py",

@@ -8,7 +8,6 @@ from urllib.parse import urlparse
 from .registry import validate_manifest
 from .sdk import AgentWebError
 
-
 NAME_PATTERN = re.compile(r"^[a-z][a-z0-9_-]{1,39}$")
 
 

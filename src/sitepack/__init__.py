@@ -11,7 +11,6 @@ import sys
 
 from agentweb import __version__
 
-
 _MODULES = (
     "auth",
     "capture",

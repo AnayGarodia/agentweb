@@ -14,7 +14,6 @@ from bs4 import BeautifulSoup
 from .sdk import AgentWebError
 from .storage import atomic_write
 
-
 SENSITIVE_NAME = re.compile(
     r"(?:^|[-_])(authorization|cookie|password|passwd|secret|token|csrf|xsrf|otp|code|signature|session|credential|card|cvv|cvc)(?:$|[-_])",
     re.I,

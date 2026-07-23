@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from http.cookiejar import Cookie
 import json
+from http.cookiejar import Cookie
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -19,7 +19,7 @@ from agentweb.registry import (
     generate_registry_keypair,
     verify_signed_index,
 )
-from agentweb.runtime import Runtime, WEB_COMMANDS
+from agentweb.runtime import WEB_COMMANDS, Runtime
 from agentweb.scaffold import create_adapter
 from agentweb.sdk import (
     AdapterContext,
@@ -39,9 +39,10 @@ def synced_runtime(tmp_path: Path) -> Runtime:
 
 
 def test_legacy_namespace_points_to_public_core() -> None:
+    from sitepack.runtime import Runtime as LegacyRuntime
+
     import agentweb
     import sitepack
-    from sitepack.runtime import Runtime as LegacyRuntime
 
     assert sitepack.__version__ == agentweb.__version__
     assert LegacyRuntime is Runtime

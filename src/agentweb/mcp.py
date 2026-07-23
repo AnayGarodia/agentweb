@@ -5,15 +5,16 @@ import sys
 import threading
 from concurrent.futures import Future, ThreadPoolExecutor
 from copy import deepcopy
+from functools import partial
 from typing import Any
 
 from . import __version__
 from .connector import connection_handoff
+from .logs import configure_logging, logger
 from .runtime import Runtime
-from .sdk import AuthenticationRequired, ConfigurationRequired, AgentWebError
+from .sdk import AgentWebError, AuthenticationRequired, ConfigurationRequired
 
-
-TOOLS = [
+TOOLS: list[dict[str, Any]] = [
     {
         "name": "sites_list",
         "description": "List website adapters and their canonical domains currently available through AgentWeb.",
@@ -114,6 +115,7 @@ def tool_surface() -> list[dict[str, Any]]:
     try:
         names = sorted(Runtime().registry.installed())
     except Exception:
+        logger.debug("Could not list installed sites for tool surface", exc_info=True)
         names = []
     if names:
         mapped = ", ".join(names)
@@ -164,6 +166,7 @@ def dispatch(
             interface="mcp",
         )
         try:
+            value: Any
             if name == "sites_list":
                 value = runtime.sites()
             elif name == "site_describe":
@@ -252,6 +255,7 @@ def dispatch(
                 },
             )
         except Exception:
+            logger.exception("Unhandled error dispatching MCP tool %s", name)
             return response(
                 request_id,
                 {
@@ -274,6 +278,7 @@ def dispatch(
 
 
 def serve() -> int:
+    configure_logging()
     output_lock = threading.Lock()
     active_lock = threading.Lock()
     active: dict[Any, threading.Event] = {}
@@ -290,6 +295,7 @@ def serve() -> int:
         try:
             emit_result(future.result())
         except Exception as exc:
+            logger.exception("MCP request %s failed", request_id)
             emit_result(
                 response(request_id, error={"code": -32603, "message": str(exc)})
             )
@@ -316,9 +322,8 @@ def serve() -> int:
                     with active_lock:
                         active[request_id] = cancel_event
                 future = executor.submit(dispatch, message, cancel_event)
-                future.add_done_callback(
-                    lambda item, rid=request_id: completed(rid, item)
-                )
+                future.add_done_callback(partial(completed, request_id))
             except Exception as exc:
+                logger.exception("Failed to process MCP input line")
                 emit_result(response(None, error={"code": -32603, "message": str(exc)}))
     return 0

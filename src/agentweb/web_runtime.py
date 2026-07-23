@@ -13,9 +13,9 @@ from typing import Any
 from urllib.parse import urlparse
 from urllib.request import urlopen
 
-from .sdk import HttpSession, AgentWebError
+from .logs import logger
+from .sdk import AgentWebError, HttpSession
 from .storage import StatePaths, read_json, write_json
-
 
 INSPECT_SCRIPT = r"""
 (() => {
@@ -163,6 +163,7 @@ class WebRuntime:
             ) as response:
                 return response.status == 200
         except Exception:
+            logger.debug("Browser debugger port %s not reachable", port, exc_info=True)
             return False
 
     def _require_session(self) -> WebSession:
@@ -393,6 +394,7 @@ class WebRuntime:
             self._wait_ready(client, 15, expected_url=target)
             inspected = self._inspect_when_ready(client)
         except Exception:
+            logger.debug("Web runtime startup failed; will retry once", exc_info=True)
             self._terminate(session)
             if not getattr(self, "_startup_retry_active", False):
                 self._startup_retry_active = True
@@ -1091,7 +1093,8 @@ class WebRuntime:
                             code="invalid_web_action",
                             field=f"steps.{index}.ms",
                         )
-                    milliseconds = int(step.get("ms", step.get("milliseconds", 500)))
+                    raw_ms = step.get("ms", step.get("milliseconds", 500))
+                    milliseconds = int(raw_ms) if raw_ms is not None else 500
                     if milliseconds < 0 or milliseconds > 15000:
                         raise AgentWebError(
                             "wait milliseconds must be between 0 and 15000"
@@ -1400,12 +1403,12 @@ class WebRuntime:
             try:
                 client.call("Browser.close")
             except Exception:
-                pass
+                logger.debug("Browser.close failed during web stop", exc_info=True)
         finally:
             try:
                 client.close()
             except Exception:
-                pass
+                logger.debug("Failed to close CDP client during web stop", exc_info=True)
             self._terminate(session)
         return {
             "operation": f"{self.site}.web_stop",
