@@ -136,8 +136,11 @@ action:
 agentweb describe arxiv.org --operation search_papers
 ```
 
-Commands accept normal domains and many normal website URLs. Results and expected
-errors are JSON, so agents do not need site-specific parsing code.
+Commands accept normal domains and many normal website URLs. A command's main
+argument can be given either positionally or as a flag — `agentweb wikipedia.org
+page "Alan Turing"` and `agentweb wikipedia.org page --title "Alan Turing"` are
+equivalent — so copy-pasted examples work either way. Results and expected errors
+are JSON, so agents do not need site-specific parsing code.
 
 ## What is included today?
 
@@ -157,8 +160,11 @@ The installer currently ships these 11 mapped websites:
 | Stack Overflow | `stackoverflow.com` | Search and read questions, answers, comments, users, and tags; ask, answer, comment, and vote when signed in |
 | Wikipedia | `wikipedia.org` | Search and read pages, links, categories, revisions, languages, images, nearby pages, and pageviews; edit or upload when signed in |
 
-Run `agentweb capabilities DOMAIN` for the current exact operation list and any
-declared gaps. The installer ships every site above.
+The installer registers this catalog on first run (the one-line installer runs
+`agentweb setup` for you). If a site is missing, or to pull the latest adapters
+later, run `agentweb sync`. Use `agentweb sites` to see what is currently
+installed and `agentweb capabilities DOMAIN` for a site's exact operation list and
+any declared gaps.
 
 This public repository also includes three fully open reference adapters:
 

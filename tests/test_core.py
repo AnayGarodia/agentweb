@@ -9,6 +9,7 @@ import pytest
 
 from agentweb import connector
 from agentweb.capture import compile_network_trace, verify_flow_capsule
+from agentweb.cli import dynamic_site_call
 from agentweb.cli import main as cli_main
 from agentweb.mcp import dispatch
 from agentweb.registry import (
@@ -511,3 +512,61 @@ def test_execute_passes_through_flat_legacy_result(
     assert response["data"] == {"results": [1, 2, 3], "verified": True}
     assert response["verification"] == {"verified": True}
     assert "result_meta" not in response
+
+
+def test_domain_help_lists_operations_instead_of_erroring(monkeypatch) -> None:
+    # `agentweb DOMAIN --help` and a bare `agentweb DOMAIN` must surface the
+    # site's operations, not try to run a phantom action named after the flag.
+    captured: list[str] = []
+
+    def fake_capabilities(self, target, **kwargs):
+        captured.append(target)
+        return {"ok": True, "operations": [{"name": "get_version"}]}
+
+    monkeypatch.setattr(Runtime, "capabilities", fake_capabilities)
+
+    def _describe_never_called(self, site):  # pragma: no cover - guard
+        raise AssertionError("help path must not resolve an action")
+
+    monkeypatch.setattr(Runtime, "describe", _describe_never_called)
+
+    args = SimpleNamespace(profile="default", fresh=False, mapping_mode=False)
+    for argv in (["npm", "--help"], ["npm", "-h"], ["npm"]):
+        result = dynamic_site_call(argv, args)
+        assert result["ok"] is True
+        assert result["operations"] == [{"name": "get_version"}]
+    assert captured == ["npm", "npm", "npm"]
+
+
+def test_dynamic_cli_accepts_positional_or_flag_for_declared_positionals(
+    monkeypatch,
+) -> None:
+    # A declared positional (e.g. wikipedia page's `title`) is accepted both as a
+    # bare positional and as a `--title` flag, so copy-pasted examples work
+    # regardless of which convention they use.
+    monkeypatch.setattr(
+        Runtime,
+        "describe",
+        lambda self, site: {
+            "commands": {
+                "page": {
+                    "cli": {"positionals": ["title"]},
+                    "input_schema": {
+                        "type": "object",
+                        "required": ["title"],
+                        "properties": {"title": {"type": "string"}},
+                    },
+                }
+            }
+        },
+    )
+    monkeypatch.setattr(
+        Runtime, "call", lambda self, operation, arguments: dict(arguments)
+    )
+    args = SimpleNamespace(profile="default", fresh=False, mapping_mode=False)
+    positional = dynamic_site_call(["wikipedia", "page", "Alan Turing"], args)
+    flagged = dynamic_site_call(["wikipedia", "page", "--title", "Alan Turing"], args)
+    assert positional == {"title": "Alan Turing"}
+    assert flagged == {"title": "Alan Turing"}
+    with pytest.raises(SystemExit):
+        dynamic_site_call(["wikipedia", "page"], args)
