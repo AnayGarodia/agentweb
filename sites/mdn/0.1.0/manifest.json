@@ -1,0 +1,741 @@
+{
+  "aliases": [
+    "mdn"
+  ],
+  "allowed_domains": [
+    "developer.mozilla.org"
+  ],
+  "auth": {
+    "interaction": "not_required",
+    "strategy": "none"
+  },
+  "authoring": {
+    "browserless_parity": true,
+    "catalog_complete": true,
+    "exhaustive": true,
+    "matrix_verified": true,
+    "tool_quality_verified": true
+  },
+  "base_url": "https://developer.mozilla.org",
+  "canonical_domain": "developer.mozilla.org",
+  "commands": {
+    "page": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "discovery",
+      "description": "Read one MDN documentation page as plain-text sections by its slug.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "slug": "Web/API/Fetch_API"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque cursor from a previous call to continue reading sections.",
+            "maxLength": 100,
+            "type": "string"
+          },
+          "limit": {
+            "default": 10,
+            "description": "Maximum sections to return in one call.",
+            "maximum": 50,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "locale": {
+            "default": "en-US",
+            "description": "Documentation locale, such as en-US.",
+            "maxLength": 10,
+            "type": "string"
+          },
+          "slug": {
+            "description": "Page slug from search results, such as Web/API/Fetch_API.",
+            "maxLength": 300,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_./:*-]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "slug"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "One MDN page split into readable sections.",
+        "properties": {
+          "sections": {
+            "description": "Page body sections in reading order.",
+            "items": {
+              "properties": {
+                "content": {
+                  "description": "Section content as plain text; empty for non-prose sections.",
+                  "type": "string"
+                },
+                "heading": {
+                  "description": "Section heading; empty for the lead section.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "summary": {
+            "description": "One-paragraph page summary; null when MDN provides none.",
+            "type": "string"
+          },
+          "title": {
+            "description": "Page title.",
+            "type": "string"
+          },
+          "url": {
+            "description": "Relative MDN URL of the page.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "sections"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Local cursor pagination over page sections; pass limit and the returned next_cursor.",
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not guess slugs; find them with search first.",
+      "when_to_use": "Use this after search to read the actual documentation content of a page."
+    },
+    "search": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "discovery",
+      "description": "Full-text search across MDN Web Docs for web platform documentation.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "query": "fetch abort"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "locale": {
+            "default": "en-US",
+            "description": "Documentation locale, such as en-US or fr.",
+            "maxLength": 10,
+            "type": "string"
+          },
+          "query": {
+            "description": "Search terms, such as 'fetch abort' or 'css grid template'.",
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "MDN search results for the query.",
+        "properties": {
+          "items": {
+            "description": "Matching MDN pages, best match first.",
+            "items": {
+              "properties": {
+                "slug": {
+                  "description": "Page slug usable with the page operation, such as Web/API/Fetch_API.",
+                  "type": "string"
+                },
+                "summary": {
+                  "description": "One-paragraph summary of the page; null when MDN provides none.",
+                  "type": "string"
+                },
+                "title": {
+                  "description": "Page title, such as 'Fetch API'.",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "Relative MDN URL of the page.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns MDN's first page of results (10 best matches).",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this for Python or non-web library docs; use readthedocs. Fetch a known page with page.",
+      "when_to_use": "Use this to find the MDN page for a web API, JavaScript method, CSS property, or HTML element."
+    }
+  },
+  "cookie_domain": ".developer.mozilla.org",
+  "coverage": {
+    "constraints": [
+      "Site permissions, rate limits, and anti-automation rules still apply"
+    ],
+    "human_boundaries": [],
+    "not_mapped": [],
+    "protocol_fallback": null,
+    "typed_fast_paths": [
+      "page",
+      "search"
+    ],
+    "website_parity": "Mapping mode can inspect the remaining website while direct request recipes are compiled. Browser commands are never counted as runtime parity."
+  },
+  "description": "Complete agent interface for developer.mozilla.org",
+  "entrypoint": "adapter.py",
+  "evidence_capsules": {},
+  "flow_capsules": {
+    "page": {
+      "contract": "page",
+      "path": "flows/page.json"
+    },
+    "search": {
+      "contract": "search",
+      "path": "flows/search.json"
+    }
+  },
+  "name": "mdn",
+  "operation_contracts": {
+    "page": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "404": "not_found"
+        },
+        "output": {
+          "collection": "sections",
+          "fields": {
+            "sections": {
+              "item_fields": {
+                "content": {
+                  "default": "",
+                  "path": "$.value.content",
+                  "transform": "html_to_text"
+                },
+                "heading": {
+                  "default": "",
+                  "path": "$.value.title"
+                }
+              },
+              "path": "$.body"
+            },
+            "summary": {
+              "default": null,
+              "path": "$.summary"
+            },
+            "title": {
+              "path": "$.title"
+            },
+            "url": {
+              "path": "$.mdn_url"
+            }
+          },
+          "pagination": {
+            "cursor_input": "cursor",
+            "default_limit": 10,
+            "limit_input": "limit",
+            "max_limit": 50
+          },
+          "source": "$.doc"
+        },
+        "recipe_hash": "d65800f6ec8bbb00e83cfce5cbb66e3c0b14559aa6c4ea5a2853c7834b4d15dd",
+        "type": "generated_recipe",
+        "variables": {
+          "locale": {
+            "default": "en-US",
+            "source": "locale"
+          },
+          "slug": "slug"
+        }
+      },
+      "capabilities": [
+        "page"
+      ],
+      "category": "discovery",
+      "contract_hash": "51a6e2e9242baccd06f20a8e8ab9c142b3a37dccef1beef6195db409b1925300",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "slug": "Web/API/Fetch_API"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque cursor from a previous call to continue reading sections.",
+            "maxLength": 100,
+            "type": "string"
+          },
+          "limit": {
+            "default": 10,
+            "description": "Maximum sections to return in one call.",
+            "maximum": 50,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "locale": {
+            "default": "en-US",
+            "description": "Documentation locale, such as en-US.",
+            "maxLength": 10,
+            "type": "string"
+          },
+          "slug": {
+            "description": "Page slug from search results, such as Web/API/Fetch_API.",
+            "maxLength": 300,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_./:*-]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "slug"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "page",
+      "output_schema": {
+        "description": "One MDN page split into readable sections.",
+        "properties": {
+          "sections": {
+            "description": "Page body sections in reading order.",
+            "items": {
+              "properties": {
+                "content": {
+                  "description": "Section content as plain text; empty for non-prose sections.",
+                  "type": "string"
+                },
+                "heading": {
+                  "description": "Section heading; empty for the lead section.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "summary": {
+            "description": "One-paragraph page summary; null when MDN provides none.",
+            "type": "string"
+          },
+          "title": {
+            "description": "Page title.",
+            "type": "string"
+          },
+          "url": {
+            "description": "Relative MDN URL of the page.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "sections"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Local cursor pagination over page sections; pass limit and the returned next_cursor.",
+        "supported": true
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 50,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784933314.3696342,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Read one MDN documentation page as plain-text sections by its slug.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns page sections",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "returns the page title",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "51a6e2e9242baccd06f20a8e8ab9c142b3a37dccef1beef6195db409b1925300",
+            "input_names": [
+              "limit",
+              "locale",
+              "slug"
+            ],
+            "passed": true,
+            "recipe_hash": "d65800f6ec8bbb00e83cfce5cbb66e3c0b14559aa6c4ea5a2853c7834b4d15dd",
+            "verified_at_unix": 1784933314.326373
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns page sections",
+            "path": "$.data.sections",
+            "type": "non_empty"
+          },
+          {
+            "name": "returns the page title",
+            "path": "$.data.title",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not guess slugs; find them with search first.",
+      "when_to_use": "Use this after search to read the actual documentation content of a page."
+    },
+    "search": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "404": "not_found"
+        },
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "slug": {
+              "path": "$.slug"
+            },
+            "summary": {
+              "default": null,
+              "path": "$.summary"
+            },
+            "title": {
+              "path": "$.title"
+            },
+            "url": {
+              "path": "$.mdn_url"
+            }
+          },
+          "source": "$.documents"
+        },
+        "recipe_hash": "b24963e4f3bf98eca7a64f6848a9227d92cc8ebb7ebf28721a3904c646a5aae4",
+        "type": "generated_recipe",
+        "variables": {
+          "locale": {
+            "default": "en-US",
+            "source": "locale"
+          },
+          "query": "query"
+        }
+      },
+      "capabilities": [
+        "search"
+      ],
+      "category": "discovery",
+      "contract_hash": "2c7fe93ad787be725253b33a60abba0b30376f5004a7e5a7a40586f9c2e5fb8c",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "query": "fetch abort"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "locale": {
+            "default": "en-US",
+            "description": "Documentation locale, such as en-US or fr.",
+            "maxLength": 10,
+            "type": "string"
+          },
+          "query": {
+            "description": "Search terms, such as 'fetch abort' or 'css grid template'.",
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "search",
+      "output_schema": {
+        "description": "MDN search results for the query.",
+        "properties": {
+          "items": {
+            "description": "Matching MDN pages, best match first.",
+            "items": {
+              "properties": {
+                "slug": {
+                  "description": "Page slug usable with the page operation, such as Web/API/Fetch_API.",
+                  "type": "string"
+                },
+                "summary": {
+                  "description": "One-paragraph summary of the page; null when MDN provides none.",
+                  "type": "string"
+                },
+                "title": {
+                  "description": "Page title, such as 'Fetch API'.",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "Relative MDN URL of the page.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns MDN's first page of results (10 best matches).",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 10,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784933314.3779182,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Full-text search across MDN Web Docs for web platform documentation.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "finds documentation pages",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "2c7fe93ad787be725253b33a60abba0b30376f5004a7e5a7a40586f9c2e5fb8c",
+            "input_names": [
+              "locale",
+              "query"
+            ],
+            "passed": true,
+            "recipe_hash": "b24963e4f3bf98eca7a64f6848a9227d92cc8ebb7ebf28721a3904c646a5aae4",
+            "verified_at_unix": 1784933314.3632767
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "finds documentation pages",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for Python or non-web library docs; use readthedocs. Fetch a known page with page.",
+      "when_to_use": "Use this to find the MDN page for a web API, JavaScript method, CSS property, or HTML element."
+    }
+  },
+  "runtime": {
+    "auth_interaction": "not_yet_mapped",
+    "browserless_replay": true
+  },
+  "url_routes": [],
+  "version": "0.1.0"
+}

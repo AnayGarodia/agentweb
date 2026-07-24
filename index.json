@@ -3,7 +3,7 @@
   "signature": {
     "algorithm": "ed25519",
     "key_id": "d3237069b559fa7b",
-    "value": "inT/Ky5qqIJ89ur5uk6A8QrlikyVA/zcA1Kr1tJbweyYnR8DH6XytGGlfwuAgGXFo+Du0H2IpUfCQOdyP7rwBw=="
+    "value": "Zfmbe6oWsGJIB0J/H0XyA47RUsaCYIEfQ14Ksq57bu2MDJQ70CBbPMznAvGtjUsuXEmIJLYNVu9gYYwAfdgQBQ=="
   },
   "sites": [
     {
@@ -218,6 +218,17 @@
     },
     {
       "files": {
+        "adapter.py": "da347faa61d4ff50de7233fcaa463c9529ed516a3c5b67c91f91b101b72d0626",
+        "authoring-report.json": "a326d06e29983f17b2be0ee132d8c23967624e5890d5c8d5e8b5b485c062c388",
+        "flows/page.json": "1102147b58bdbbc6d896da5c2f65dd9a01adc62e1e63778890486bebee298072",
+        "flows/search.json": "66d4bf1f76744e4dcf9aac25967c3a45b18ac40859c61d615f14b4fcac7cdca8",
+        "manifest.json": "93d5df22b0b81a2980c44f9362a748aba3848d90ad64933135dcfc5627c4df97"
+      },
+      "name": "mdn",
+      "version": "0.1.0"
+    },
+    {
+      "files": {
         "adapter.py": "66ea19a0e0ae5b70af25d870dda94671a5bbc6b70043d273284c2811fb86999e",
         "authoring-report.json": "ccade38435b64546495c623ef01a7f08e36c78bc3147f8a34a0b527864969129",
         "flows/reverse.json": "5d6978cafa30e746f594a388b6b8953bfe3d42e8b94292f0e13b8023e0a48742",
@@ -344,6 +355,17 @@
       },
       "name": "rbi",
       "version": "0.3.0"
+    },
+    {
+      "files": {
+        "adapter.py": "17f95ee63ab57ed19d09a32ef829fbdf2f76639c73b73ea2ae02bd729c349704",
+        "authoring-report.json": "041ac68b201bc6b438d16ca77d3b84c37bf4ebd315a86a651b5985039cd8b6e1",
+        "flows/project.json": "31e86afccb5ada6a681a7537ecc47a48ab1c041cebd11c802a6023d59db5f356",
+        "flows/search.json": "1dd7fe8760ced81f85554cd92f40aee2e77c7cbcab0104a9f6bec7869ddaf15a",
+        "manifest.json": "d8a415430c27c1d76a84eef0ecf0589101170dbf38e92e79d6ec7c3639a05157"
+      },
+      "name": "readthedocs",
+      "version": "0.1.0"
     },
     {
       "files": {

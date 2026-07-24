@@ -1,0 +1,700 @@
+{
+  "aliases": [
+    "readthedocs"
+  ],
+  "allowed_domains": [
+    "readthedocs.org"
+  ],
+  "auth": {
+    "interaction": "not_required",
+    "strategy": "none"
+  },
+  "authoring": {
+    "browserless_parity": true,
+    "catalog_complete": true,
+    "exhaustive": true,
+    "matrix_verified": true,
+    "tool_quality_verified": true
+  },
+  "base_url": "https://readthedocs.org",
+  "canonical_domain": "readthedocs.org",
+  "commands": {
+    "project": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "discovery",
+      "description": "Metadata for one Read the Docs project: language, homepage, repository, and default version.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "project": "requests"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "project": {
+            "description": "Read the Docs project slug, such as requests.",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-z0-9._-]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "One project's metadata.",
+        "properties": {
+          "default_version": {
+            "description": "Default docs version, such as latest or stable; null when unset.",
+            "type": "string"
+          },
+          "docs_url": {
+            "description": "URL of the hosted documentation; null when unset.",
+            "type": "string"
+          },
+          "homepage": {
+            "description": "Project homepage URL; null when unset.",
+            "type": "string"
+          },
+          "language": {
+            "description": "Documentation language; null when unset.",
+            "type": "string"
+          },
+          "name": {
+            "description": "Project display name.",
+            "type": "string"
+          },
+          "repository": {
+            "description": "Source repository URL; null when unset.",
+            "type": "string"
+          },
+          "slug": {
+            "description": "Project slug used in search.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "slug"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns one project record.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this to read documentation content; use search.",
+      "when_to_use": "Use this to confirm a project slug exists and find its docs homepage before searching."
+    },
+    "search": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "discovery",
+      "description": "Server-side full-text search inside a specific project's documentation on Read the Docs.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "project": "requests",
+            "query": "timeout"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "project": {
+            "description": "Read the Docs project slug, usually the package name, such as requests or flask.",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-z0-9._-]+$",
+            "type": "string"
+          },
+          "query": {
+            "description": "Search terms, such as 'timeout' or 'blueprint'.",
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "query"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Documentation search results within one project.",
+        "properties": {
+          "items": {
+            "description": "Matching documentation pages, best match first.",
+            "items": {
+              "properties": {
+                "domain": {
+                  "description": "Docs domain hosting the page, such as https://requests.readthedocs.io.",
+                  "type": "string"
+                },
+                "first_match": {
+                  "description": "Content of the best-matching section on the page; null when unavailable.",
+                  "type": "string"
+                },
+                "title": {
+                  "description": "Documentation page title.",
+                  "type": "string"
+                },
+                "url_path": {
+                  "description": "Path of the page on the project's docs domain.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "total": {
+            "description": "Total matching pages reported by Read the Docs.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns Read the Docs' first page of results (up to 50 pages).",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this for web platform docs; use mdn. The project slug must be known (usually the package name).",
+      "when_to_use": "Use this to find how-to content inside a library's docs, such as timeouts in requests or blueprints in flask."
+    }
+  },
+  "cookie_domain": ".readthedocs.org",
+  "coverage": {
+    "constraints": [
+      "Site permissions, rate limits, and anti-automation rules still apply"
+    ],
+    "human_boundaries": [],
+    "not_mapped": [],
+    "protocol_fallback": null,
+    "typed_fast_paths": [
+      "project",
+      "search"
+    ],
+    "website_parity": "Mapping mode can inspect the remaining website while direct request recipes are compiled. Browser commands are never counted as runtime parity."
+  },
+  "description": "Complete agent interface for readthedocs.org",
+  "entrypoint": "adapter.py",
+  "evidence_capsules": {},
+  "flow_capsules": {
+    "project": {
+      "contract": "project",
+      "path": "flows/project.json"
+    },
+    "search": {
+      "contract": "search",
+      "path": "flows/search.json"
+    }
+  },
+  "name": "readthedocs",
+  "operation_contracts": {
+    "project": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "404": "not_found"
+        },
+        "output": {
+          "fields": {
+            "default_version": {
+              "default": null,
+              "path": "$.default_version"
+            },
+            "docs_url": {
+              "default": null,
+              "path": "$.urls.documentation"
+            },
+            "homepage": {
+              "default": null,
+              "path": "$.homepage"
+            },
+            "language": {
+              "default": null,
+              "path": "$.language.name"
+            },
+            "name": {
+              "path": "$.name"
+            },
+            "repository": {
+              "default": null,
+              "path": "$.repository.url"
+            },
+            "slug": {
+              "path": "$.slug"
+            }
+          },
+          "source": "$"
+        },
+        "recipe_hash": "8a72bb561136ca004ddfb12ba07a10e2a327125c231aedc168388517fc4a5f07",
+        "type": "generated_recipe",
+        "variables": {
+          "project": "project"
+        }
+      },
+      "capabilities": [
+        "project"
+      ],
+      "category": "discovery",
+      "contract_hash": "6b81acebf2c5450bbc2fbe60abded1a8cbcf3d9b42903a11296cfbc5b00ed132",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "project": "requests"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "project": {
+            "description": "Read the Docs project slug, such as requests.",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-z0-9._-]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "project",
+      "output_schema": {
+        "description": "One project's metadata.",
+        "properties": {
+          "default_version": {
+            "description": "Default docs version, such as latest or stable; null when unset.",
+            "type": "string"
+          },
+          "docs_url": {
+            "description": "URL of the hosted documentation; null when unset.",
+            "type": "string"
+          },
+          "homepage": {
+            "description": "Project homepage URL; null when unset.",
+            "type": "string"
+          },
+          "language": {
+            "description": "Documentation language; null when unset.",
+            "type": "string"
+          },
+          "name": {
+            "description": "Project display name.",
+            "type": "string"
+          },
+          "repository": {
+            "description": "Source repository URL; null when unset.",
+            "type": "string"
+          },
+          "slug": {
+            "description": "Project slug used in search.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "slug"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns one project record.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 1,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784933315.72233,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Metadata for one Read the Docs project: language, homepage, repository, and default version.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns the project slug",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "6b81acebf2c5450bbc2fbe60abded1a8cbcf3d9b42903a11296cfbc5b00ed132",
+            "input_names": [
+              "project"
+            ],
+            "passed": true,
+            "recipe_hash": "8a72bb561136ca004ddfb12ba07a10e2a327125c231aedc168388517fc4a5f07",
+            "verified_at_unix": 1784933315.3650856
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns the project slug",
+            "path": "$.data.slug",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this to read documentation content; use search.",
+      "when_to_use": "Use this to confirm a project slug exists and find its docs homepage before searching."
+    },
+    "search": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "404": "not_found"
+        },
+        "output": {
+          "fields": {
+            "items": {
+              "item_fields": {
+                "domain": {
+                  "path": "$.domain"
+                },
+                "first_match": {
+                  "default": null,
+                  "path": "$.blocks.0.content"
+                },
+                "title": {
+                  "path": "$.title"
+                },
+                "url_path": {
+                  "path": "$.path"
+                }
+              },
+              "path": "$.results"
+            },
+            "total": {
+              "path": "$.count"
+            }
+          },
+          "source": "$"
+        },
+        "recipe_hash": "00bfecfd1d3aeb969f8dd143101d97e59c7a279c2dd5bf0dd415e869ada39251",
+        "type": "generated_recipe",
+        "variables": {
+          "project": "project",
+          "query": "query"
+        }
+      },
+      "capabilities": [
+        "search"
+      ],
+      "category": "discovery",
+      "contract_hash": "5a61a1dfca990f881d574fb407ff918650c24aba4170ac9c7c7e5cc28ca6e08f",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "project": "requests",
+            "query": "timeout"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "project": {
+            "description": "Read the Docs project slug, usually the package name, such as requests or flask.",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-z0-9._-]+$",
+            "type": "string"
+          },
+          "query": {
+            "description": "Search terms, such as 'timeout' or 'blueprint'.",
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "query"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "search",
+      "output_schema": {
+        "description": "Documentation search results within one project.",
+        "properties": {
+          "items": {
+            "description": "Matching documentation pages, best match first.",
+            "items": {
+              "properties": {
+                "domain": {
+                  "description": "Docs domain hosting the page, such as https://requests.readthedocs.io.",
+                  "type": "string"
+                },
+                "first_match": {
+                  "description": "Content of the best-matching section on the page; null when unavailable.",
+                  "type": "string"
+                },
+                "title": {
+                  "description": "Documentation page title.",
+                  "type": "string"
+                },
+                "url_path": {
+                  "description": "Path of the page on the project's docs domain.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "total": {
+            "description": "Total matching pages reported by Read the Docs.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns Read the Docs' first page of results (up to 50 pages).",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 50,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784933315.728388,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Server-side full-text search inside a specific project's documentation on Read the Docs.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "finds documentation pages",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "5a61a1dfca990f881d574fb407ff918650c24aba4170ac9c7c7e5cc28ca6e08f",
+            "input_names": [
+              "project",
+              "query"
+            ],
+            "passed": true,
+            "recipe_hash": "00bfecfd1d3aeb969f8dd143101d97e59c7a279c2dd5bf0dd415e869ada39251",
+            "verified_at_unix": 1784933315.7167664
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "finds documentation pages",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for web platform docs; use mdn. The project slug must be known (usually the package name).",
+      "when_to_use": "Use this to find how-to content inside a library's docs, such as timeouts in requests or blueprints in flask."
+    }
+  },
+  "runtime": {
+    "auth_interaction": "not_yet_mapped",
+    "browserless_replay": true
+  },
+  "url_routes": [],
+  "version": "0.1.0"
+}
