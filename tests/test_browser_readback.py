@@ -191,7 +191,10 @@ def test_browser_execute_requires_saved_session(
     monkeypatch.setattr(
         br,
         "seed_profile_from_default_browser",
-        lambda profile_dir: {"seeded": False, "reason": "no_default_browser_profile"},
+        lambda profile_dir, **kwargs: {
+            "seeded": False,
+            "reason": "no_default_browser_profile",
+        },
     )
     runtime = Runtime(StatePaths(tmp_path))
     with pytest.raises(AgentWebError) as excinfo:
@@ -208,7 +211,7 @@ def test_browser_execute_isolated_does_not_seed(
     class _Resolved:
         site = "linkedin"
 
-    def _fail_seed(profile_dir):  # pragma: no cover - must not be called
+    def _fail_seed(profile_dir, **kwargs):  # pragma: no cover - must not be called
         raise AssertionError("seeding must not run when default reuse is disabled")
 
     monkeypatch.setattr(Runtime, "resolve", lambda self, target: _Resolved())

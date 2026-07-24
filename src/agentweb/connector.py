@@ -9,6 +9,7 @@ import sys
 import time
 import webbrowser
 from collections.abc import Callable
+from dataclasses import dataclass
 from http.cookiejar import Cookie
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
@@ -104,39 +105,336 @@ def chrome_executable() -> str:
     )
 
 
-def default_chrome_user_data_dir() -> Path | None:
-    """Locate the user's everyday Chrome/Chromium ``User Data`` directory.
+@dataclass(frozen=True)
+class BrowserProfile:
+    """A detected Chromium-family browser and the profile to reuse for login.
 
-    Returns the first directory that actually exists across common install
-    locations for the current OS, or ``None`` when none is found. Honors
-    ``AGENTWEB_CHROME_USER_DATA_DIR`` for non-standard installs.
+    ``executable`` matters: to reuse a saved session the *same* browser must
+    launch the seeded profile, because each Chromium browser encrypts its
+    cookies under its own OS keychain entry (e.g. "Arc Safe Storage" vs "Chrome
+    Safe Storage"). Launching Chrome against an Arc-derived profile would leave
+    every cookie undecryptable and the window logged out.
+    """
+
+    name: str
+    executable: str
+    user_data_dir: Path
+
+
+@dataclass(frozen=True)
+class _ChromiumBrowser:
+    """Per-OS locations and default-handler identifiers for one browser.
+
+    Only browsers whose on-disk profile matches Chrome's layout (a
+    ``<profile>`` such as ``Default`` directly under the user-data dir, with a
+    top-level ``Local State``) are listed, so seeding works unchanged. Empty
+    fields mean "not supported on this OS" and are skipped.
+    """
+
+    key: str
+    display: str
+    mac_app: str
+    mac_dir: str
+    mac_bundles: tuple[str, ...]
+    win_exe: str
+    win_dir: str
+    win_progids: tuple[str, ...]
+    linux_bins: tuple[str, ...]
+    linux_dir: str
+    linux_desktops: tuple[str, ...]
+
+
+# Ordered by fallback preference when the OS default handler can't be read:
+# Chrome/Chromium first to avoid regressing existing users, then the common
+# Chromium-based daily drivers. The OS default-browser lookup overrides this.
+_CHROMIUM_BROWSERS: tuple[_ChromiumBrowser, ...] = (
+    _ChromiumBrowser(
+        key="chrome",
+        display="Google Chrome",
+        mac_app="Google Chrome.app/Contents/MacOS/Google Chrome",
+        mac_dir="Google/Chrome",
+        mac_bundles=("com.google.chrome",),
+        win_exe="Google/Chrome/Application/chrome.exe",
+        win_dir="Google/Chrome/User Data",
+        win_progids=("ChromeHTML",),
+        linux_bins=("google-chrome", "google-chrome-stable"),
+        linux_dir=".config/google-chrome",
+        linux_desktops=("google-chrome.desktop",),
+    ),
+    _ChromiumBrowser(
+        key="chromium",
+        display="Chromium",
+        mac_app="Chromium.app/Contents/MacOS/Chromium",
+        mac_dir="Chromium",
+        mac_bundles=("org.chromium.chromium",),
+        win_exe="Chromium/Application/chrome.exe",
+        win_dir="Chromium/User Data",
+        win_progids=("ChromiumHTM",),
+        linux_bins=("chromium", "chromium-browser"),
+        linux_dir=".config/chromium",
+        linux_desktops=("chromium.desktop", "chromium-browser.desktop"),
+    ),
+    _ChromiumBrowser(
+        key="arc",
+        display="Arc",
+        mac_app="Arc.app/Contents/MacOS/Arc",
+        mac_dir="Arc/User Data",
+        mac_bundles=("company.thebrowser.browser",),
+        win_exe="",
+        win_dir="",
+        win_progids=("ArcHTML",),
+        linux_bins=(),
+        linux_dir="",
+        linux_desktops=("arc.desktop",),
+    ),
+    _ChromiumBrowser(
+        key="brave",
+        display="Brave",
+        mac_app="Brave Browser.app/Contents/MacOS/Brave Browser",
+        mac_dir="BraveSoftware/Brave-Browser",
+        mac_bundles=("com.brave.browser",),
+        win_exe="BraveSoftware/Brave-Browser/Application/brave.exe",
+        win_dir="BraveSoftware/Brave-Browser/User Data",
+        win_progids=("BraveHTML",),
+        linux_bins=("brave-browser", "brave"),
+        linux_dir=".config/BraveSoftware/Brave-Browser",
+        linux_desktops=("brave-browser.desktop", "brave.desktop"),
+    ),
+    _ChromiumBrowser(
+        key="edge",
+        display="Microsoft Edge",
+        mac_app="Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+        mac_dir="Microsoft Edge",
+        mac_bundles=("com.microsoft.edgemac",),
+        win_exe="Microsoft/Edge/Application/msedge.exe",
+        win_dir="Microsoft/Edge/User Data",
+        win_progids=("MSEdgeHTM",),
+        linux_bins=("microsoft-edge", "microsoft-edge-stable"),
+        linux_dir=".config/microsoft-edge",
+        linux_desktops=("microsoft-edge.desktop",),
+    ),
+    _ChromiumBrowser(
+        key="vivaldi",
+        display="Vivaldi",
+        mac_app="Vivaldi.app/Contents/MacOS/Vivaldi",
+        mac_dir="Vivaldi",
+        mac_bundles=("com.vivaldi.vivaldi",),
+        win_exe="Vivaldi/Application/vivaldi.exe",
+        win_dir="Vivaldi/User Data",
+        win_progids=("VivaldiHTM",),
+        linux_bins=("vivaldi", "vivaldi-stable"),
+        linux_dir=".config/vivaldi",
+        linux_desktops=("vivaldi-stable.desktop", "vivaldi.desktop"),
+    ),
+    _ChromiumBrowser(
+        key="comet",
+        display="Comet",
+        mac_app="Comet.app/Contents/MacOS/Comet",
+        mac_dir="Comet/User Data",
+        mac_bundles=("ai.perplexity.comet", "ai.perplexity.comet.browser"),
+        win_exe="",
+        win_dir="",
+        win_progids=("CometHTML",),
+        linux_bins=(),
+        linux_dir="",
+        linux_desktops=("comet.desktop",),
+    ),
+)
+
+
+def _browser_executable_path(spec: _ChromiumBrowser) -> str | None:
+    if sys.platform == "darwin":
+        if not spec.mac_app:
+            return None
+        for base in ("/Applications", str(Path.home() / "Applications")):
+            candidate = Path(base) / spec.mac_app
+            if candidate.exists():
+                return str(candidate)
+        return None
+    if sys.platform.startswith("win"):
+        if not spec.win_exe:
+            return None
+        bases: list[Path] = []
+        for var in ("PROGRAMFILES", "PROGRAMFILES(X86)", "LOCALAPPDATA"):
+            value = os.environ.get(var)
+            if value:
+                bases.append(Path(value))
+        for base in bases:
+            candidate = base / spec.win_exe
+            if candidate.exists():
+                return str(candidate)
+        return None
+    for name in spec.linux_bins:
+        found = shutil.which(name)
+        if found:
+            return found
+    return None
+
+
+def _browser_user_data_dir(spec: _ChromiumBrowser) -> Path | None:
+    home = Path.home()
+    if sys.platform == "darwin":
+        if not spec.mac_dir:
+            return None
+        path = home / "Library/Application Support" / spec.mac_dir
+    elif sys.platform.startswith("win"):
+        if not spec.win_dir:
+            return None
+        local = os.environ.get("LOCALAPPDATA")
+        base = Path(local) if local else home / "AppData/Local"
+        path = base / spec.win_dir
+    else:
+        if not spec.linux_dir:
+            return None
+        path = home / spec.linux_dir
+    return path if path.is_dir() else None
+
+
+def installed_chromium_browsers() -> list[BrowserProfile]:
+    """Every supported Chromium-family browser with a profile *and* an
+    executable actually present on this machine."""
+    found: list[BrowserProfile] = []
+    for spec in _CHROMIUM_BROWSERS:
+        data_dir = _browser_user_data_dir(spec)
+        if data_dir is None:
+            continue
+        executable = _browser_executable_path(spec)
+        if executable is None:
+            continue
+        found.append(BrowserProfile(spec.display, executable, data_dir))
+    return found
+
+
+def _macos_default_browser_key() -> str | None:
+    import plistlib
+
+    plist = (
+        Path.home()
+        / "Library/Preferences/com.apple.LaunchServices"
+        / "com.apple.launchservices.secure.plist"
+    )
+    if not plist.is_file():
+        return None
+    with plist.open("rb") as handle:
+        data = plistlib.load(handle)
+    bundle: str | None = None
+    for entry in data.get("LSHandlers") or []:
+        if entry.get("LSHandlerURLScheme") in {"http", "https"}:
+            role = entry.get("LSHandlerRoleAll") or entry.get("LSHandlerRoleViewer")
+            if role:
+                bundle = str(role).lower()
+                break
+    if not bundle:
+        return None
+    for spec in _CHROMIUM_BROWSERS:
+        if bundle in {value.lower() for value in spec.mac_bundles}:
+            return spec.key
+    return None
+
+
+def _windows_default_browser_key() -> str | None:
+    import winreg  # type: ignore[import-not-found,unused-ignore]
+
+    key_path = (
+        r"Software\Microsoft\Windows\Shell\Associations"
+        r"\UrlAssociations\https\UserChoice"
+    )
+    hkcu = winreg.HKEY_CURRENT_USER  # type: ignore[attr-defined,unused-ignore]
+    with winreg.OpenKey(hkcu, key_path) as key:  # type: ignore[attr-defined,unused-ignore]
+        progid = str(winreg.QueryValueEx(key, "ProgId")[0])  # type: ignore[attr-defined,unused-ignore]
+    for spec in _CHROMIUM_BROWSERS:
+        if any(progid.startswith(prefix) for prefix in spec.win_progids):
+            return spec.key
+    return None
+
+
+def _linux_default_browser_key() -> str | None:
+    result = subprocess.run(
+        ["xdg-settings", "get", "default-web-browser"],
+        capture_output=True,
+        text=True,
+        timeout=5,
+    )
+    desktop = result.stdout.strip().lower()
+    if not desktop:
+        return None
+    for spec in _CHROMIUM_BROWSERS:
+        if any(name.lower() in desktop for name in spec.linux_desktops):
+            return spec.key
+    return None
+
+
+def os_default_browser_key() -> str | None:
+    """Best-effort key of the OS default web browser, or ``None``.
+
+    Wrapped in a broad guard: default-handler lookups touch platform files and
+    registries that vary widely, and a failure here must only downgrade to the
+    fallback preference order, never break login.
+    """
+    try:
+        if sys.platform == "darwin":
+            return _macos_default_browser_key()
+        if sys.platform.startswith("win"):
+            return _windows_default_browser_key()
+        return _linux_default_browser_key()
+    except Exception:
+        logger.debug("default browser detection failed", exc_info=True)
+        return None
+
+
+def detect_default_browser() -> BrowserProfile | None:
+    """The Chromium-family browser whose saved login AgentWeb should reuse.
+
+    Order: an explicit ``AGENTWEB_CHROME_USER_DATA_DIR`` override, then the OS
+    default browser if it is a detected Chromium browser, then the fallback
+    preference order. Returns ``None`` when no reusable Chromium profile exists
+    (e.g. the user's everyday browser is Safari or Firefox), so login degrades
+    to an isolated window instead of failing.
+    """
+    override_dir = os.environ.get("AGENTWEB_CHROME_USER_DATA_DIR")
+    if override_dir:
+        path = Path(override_dir).expanduser()
+        if not path.is_dir():
+            return None
+        executable = os.environ.get("AGENTWEB_CHROME") or os.environ.get(
+            "SITEPACK_CHROME"
+        )
+        if not executable or not Path(executable).exists():
+            try:
+                executable = chrome_executable()
+            except AgentWebError:
+                return None
+        return BrowserProfile("custom", executable, path)
+    installed = installed_chromium_browsers()
+    if not installed:
+        return None
+    default_key = os_default_browser_key()
+    if default_key:
+        for spec in _CHROMIUM_BROWSERS:
+            if spec.key != default_key:
+                continue
+            for profile in installed:
+                if profile.name == spec.display:
+                    return profile
+    return installed[0]
+
+
+def default_chrome_user_data_dir() -> Path | None:
+    """Locate the user's everyday Chromium-family ``User Data`` directory.
+
+    Honors ``AGENTWEB_CHROME_USER_DATA_DIR``; otherwise returns the profile of
+    the detected default browser, falling back to the first installed Chromium
+    browser. ``None`` when none is found.
     """
     override = os.environ.get("AGENTWEB_CHROME_USER_DATA_DIR")
     if override:
         path = Path(override).expanduser()
         return path if path.exists() else None
-    home = Path.home()
-    if sys.platform == "darwin":
-        candidates = [
-            home / "Library/Application Support/Google/Chrome",
-            home / "Library/Application Support/Chromium",
-        ]
-    elif sys.platform.startswith("win"):
-        local = os.environ.get("LOCALAPPDATA")
-        base = Path(local) if local else home / "AppData/Local"
-        candidates = [
-            base / "Google/Chrome/User Data",
-            base / "Chromium/User Data",
-        ]
-    else:
-        candidates = [
-            home / ".config/google-chrome",
-            home / ".config/chromium",
-        ]
-    for candidate in candidates:
-        if candidate.is_dir():
-            return candidate
-    return None
+    profile = detect_default_browser()
+    if profile is not None:
+        return profile.user_data_dir
+    installed = installed_chromium_browsers()
+    return installed[0].user_data_dir if installed else None
 
 
 def use_default_browser_enabled(explicit: bool | None = None) -> bool:
@@ -170,31 +468,74 @@ _SEED_PROFILE_FILES = (
 )
 
 
+def _source_profile_dirs(source: Path) -> list[str]:
+    """Every Chrome profile directory in ``source`` that should be seeded.
+
+    A user can have several profiles (``Default``, ``Profile 1``, ...), each
+    with its own signed-in accounts. Copying *all* of them -- plus the shared
+    ``Local State`` -- means the launched browser shows the profile switcher and
+    every "Continue with Google" account, instead of a single (often empty)
+    ``Default``. Reads ``Local State``'s ``profile.info_cache`` (the
+    authoritative profile list) and falls back to the conventional
+    ``Default`` / ``Profile N`` names when it can't be parsed.
+    """
+    names: list[str] = []
+    local_state = source / "Local State"
+    if local_state.is_file():
+        try:
+            data = json.loads(local_state.read_text(encoding="utf-8"))
+            info_cache = data.get("profile", {}).get("info_cache", {})
+            names = [name for name in info_cache if (source / name).is_dir()]
+        except (OSError, ValueError):
+            names = []
+    if not names:
+        candidates = ["Default"] + [f"Profile {index}" for index in range(1, 50)]
+        names = [name for name in candidates if (source / name).is_dir()]
+    return names
+
+
 def seed_profile_from_default_browser(
     profile_dir: Path,
     *,
+    source_dir: Path | None = None,
+    source_name: str | None = None,
+    reseed: bool = False,
     progress: Progress = stderr_progress,
 ) -> dict[str, Any]:
-    """Seed a per-site login profile from the user's everyday Chrome profile.
+    """Seed a per-site login profile from the user's everyday browser profile.
 
     Copies only the files that carry a signed-in session so the managed login
     window opens already authenticated to whatever the user is signed into,
-    instead of a blank browser. Runs once per site profile (guarded by a
-    marker) and never overwrites a profile that has already captured a session.
-    Cookies are still filtered to the target site before anything is persisted
-    to the browserless session jar, so cross-site cookies are not retained.
+    instead of a blank browser. Cookies are still filtered to the target site
+    before anything is persisted to the browserless session jar, so cross-site
+    cookies are not retained.
+
+    ``source_dir`` is the everyday browser's user-data directory to copy from
+    (Chrome, Arc, Brave, Edge, ...). When omitted it is auto-detected. The
+    caller must launch the *matching* browser so the seeded cookies decrypt.
+
+    ``reseed`` refreshes the copy even when the managed profile already holds
+    cookies. The login flow passes it because it only reaches seeding once the
+    existing session has failed to validate, so an old (logged-out) copy left by
+    a previous connect must not permanently block reuse of the everyday
+    session -- the bug behind "it opens a logged-out window even though I'm
+    signed in in my normal browser". Seed-once callers (e.g. browser transport)
+    leave it ``False`` so a live captured session is never overwritten.
     """
     marker = profile_dir / ".agentweb-seeded"
-    if marker.exists() or (profile_dir / "Default" / "Cookies").exists():
+    if not reseed and (
+        marker.exists() or (profile_dir / "Default" / "Cookies").exists()
+    ):
         return {"seeded": False, "reason": "profile_already_initialized"}
-    source = default_chrome_user_data_dir()
+    source = source_dir if source_dir is not None else default_chrome_user_data_dir()
     if source is None:
         return {"seeded": False, "reason": "no_default_browser_profile"}
-    profile_directory = (
-        os.environ.get("AGENTWEB_CHROME_PROFILE_DIRECTORY") or "Default"
-    )
-    source_profile = source / profile_directory
-    if not source_profile.is_dir():
+    override_profile = os.environ.get("AGENTWEB_CHROME_PROFILE_DIRECTORY")
+    if override_profile:
+        profile_names = [override_profile] if (source / override_profile).is_dir() else []
+    else:
+        profile_names = _source_profile_dirs(source)
+    if not profile_names:
         return {"seeded": False, "reason": "default_profile_directory_missing"}
 
     def _copy(src: Path, dst: Path) -> bool:
@@ -204,8 +545,16 @@ def seed_profile_from_default_browser(
         shutil.copy2(src, dst)
         for suffix in ("-wal", "-journal"):
             sibling = src.with_name(src.name + suffix)
+            dst_sibling = dst.with_name(dst.name + suffix)
             if sibling.is_file():
-                shutil.copy2(sibling, dst.with_name(dst.name + suffix))
+                shutil.copy2(sibling, dst_sibling)
+            elif dst_sibling.exists():
+                # A leftover WAL/journal from a previous seed would be replayed
+                # against the freshly-copied database and corrupt it, so drop it.
+                try:
+                    dst_sibling.unlink()
+                except OSError:
+                    pass
         return True
 
     copied = 0
@@ -213,21 +562,36 @@ def seed_profile_from_default_browser(
     for name in _SEED_TOP_LEVEL_FILES:
         if _copy(source / name, profile_dir / name):
             copied += 1
-    dest_profile = profile_dir / "Default"
-    for relative in _SEED_PROFILE_FILES:
-        if _copy(source_profile / relative, dest_profile / relative):
-            copied += 1
+    seeded_profiles: list[str] = []
+    for profile_name in profile_names:
+        source_profile = source / profile_name
+        if not source_profile.is_dir():
+            continue
+        dest_profile = profile_dir / profile_name
+        profile_copied = 0
+        for relative in _SEED_PROFILE_FILES:
+            if _copy(source_profile / relative, dest_profile / relative):
+                profile_copied += 1
+        if profile_copied:
+            copied += profile_copied
+            seeded_profiles.append(profile_name)
     if not copied:
         return {"seeded": False, "reason": "no_session_files_found"}
     marker.write_text("1", encoding="utf-8")
+    accounts = (
+        "all your signed-in accounts are available"
+        if len(seeded_profiles) > 1
+        else "your signed-in accounts are available"
+    )
     progress(
-        "Reusing your default browser's sign-in state for this login "
-        "(only this site's cookies are saved)."
+        f"Reusing your {source_name or 'default browser'} sign-in for this login "
+        f"({accounts}; only this site's cookies are saved)."
     )
     return {
         "seeded": True,
         "source": str(source),
-        "profile_directory": profile_directory,
+        "source_name": source_name,
+        "profiles": seeded_profiles,
         "files_copied": copied,
     }
 
@@ -1267,10 +1631,27 @@ def connect_site(
     profile_dir = web.chrome_profile
     profile_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
     seed_result: dict[str, Any] = {"seeded": False, "reason": "disabled"}
+    login_browser: BrowserProfile | None = None
     if use_default_browser_enabled(use_default_browser):
+        login_browser = detect_default_browser()
+        # Reseed on every login attempt: control only reaches here once the
+        # existing session failed to validate, so a stale logged-out copy from
+        # an earlier connect must be refreshed rather than left to force a
+        # blank window forever.
         seed_result = seed_profile_from_default_browser(
-            profile_dir, progress=progress
+            profile_dir,
+            source_dir=login_browser.user_data_dir if login_browser else None,
+            source_name=login_browser.name if login_browser else None,
+            reseed=True,
+            progress=progress,
         )
+    # Launch the *same* browser we seeded from so its cookies decrypt; fall back
+    # to a managed Chrome/Chromium when no everyday Chromium profile was reused.
+    login_executable = (
+        login_browser.executable
+        if login_browser is not None
+        else chrome_executable()
+    )
     browser_impersonation = manifest.get("browser_impersonation") or {}
     progress(
         f"Opening {site} "
@@ -1297,7 +1678,7 @@ def connect_site(
                     pass
             port = available_port()
             command = [
-                chrome_executable(),
+                login_executable,
                 f"--user-data-dir={profile_dir}",
                 "--remote-debugging-address=127.0.0.1",
                 f"--remote-debugging-port={port}",
