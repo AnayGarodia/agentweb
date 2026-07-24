@@ -81,6 +81,11 @@ def test_reference_registry_contains_only_public_adapters(tmp_path: Path) -> Non
         "stackoverflow",
         "wikipedia",
     }
+    compact = Runtime(paths).sites()[0]
+    assert set(compact) == {"name", "domain", "version", "operations", "description"}
+    assert isinstance(compact["operations"], int)
+    full = Runtime(paths).sites(full=True)[0]
+    assert {"domains", "aliases", "commands"} <= set(full)
 
 
 def test_sync_preserves_adapters_from_other_registries(tmp_path: Path) -> None:
