@@ -26,6 +26,18 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import (
 from .sdk import USER_AGENT, AgentWebError
 from .storage import StatePaths, contained_path, read_json, safe_component, write_json
 
+# The hosted registry lets every install pick up newly published adapters
+# without upgrading the tool. Its index is signed with the pinned key below;
+# the host cannot substitute adapters without the private key.
+DEFAULT_REMOTE_REGISTRY = (
+    "https://raw.githubusercontent.com/AnayGarodia/agentweb/registry/index.json"
+)
+DEFAULT_REMOTE_PUBLIC_KEY = (
+    "-----BEGIN PUBLIC KEY-----\n"
+    "MCowBQYDK2VwAyEAplqSSVJLk4X3IedJ0Et3H1gaHxYBYWQv7mWvmqnS6u0=\n"
+    "-----END PUBLIC KEY-----\n"
+)
+
 MAX_INDEX_BYTES = 2 * 1024 * 1024
 MAX_BUNDLE_FILE_BYTES = 25 * 1024 * 1024
 HASH = re.compile(r"[0-9a-f]{64}")
@@ -873,7 +885,7 @@ class Registry:
         config = read_json(self.paths.registry_config, {}) or {}
         source = config.get("source")
         if not source or source == "builtin":
-            return str(bundled_registry())
+            return DEFAULT_REMOTE_REGISTRY
         parsed = urlparse(str(source))
         if parsed.scheme not in {"http", "https"}:
             candidate = Path(str(source)).expanduser()
@@ -908,10 +920,13 @@ class Registry:
                 )
             )
             missing_builtin = basename == "builtin_registry" and not candidate.exists()
-            if not already_bundle and (
+            if already_bundle or (
                 is_builtin_pointer or packaged_pointer or missing_builtin
             ):
-                return str(bundle)
+                # Bundled-registry pointers (current or stale) follow the
+                # hosted registry so installs see new adapters without a
+                # tool upgrade; the bundle stays as the offline fallback.
+                return DEFAULT_REMOTE_REGISTRY
         return str(source)
 
     def configured_public_key(self) -> str | None:
@@ -930,8 +945,34 @@ class Registry:
         trusted_public_key: str | None = None,
         prune: bool = False,
     ) -> dict[str, Any]:
+        resolved = source or self.configured_source()
+        if resolved == DEFAULT_REMOTE_REGISTRY:
+            try:
+                return self._sync(
+                    resolved,
+                    trusted_public_key=trusted_public_key
+                    or DEFAULT_REMOTE_PUBLIC_KEY,
+                    prune=prune,
+                )
+            except (AgentWebError, OSError) as exc:
+                result = self._sync(str(bundled_registry()), prune=prune)
+                result["fallback"] = (
+                    "hosted registry unavailable; installed the bundled "
+                    f"adapters instead ({exc})"
+                )
+                return result
+        return self._sync(
+            resolved, trusted_public_key=trusted_public_key, prune=prune
+        )
+
+    def _sync(
+        self,
+        source: str,
+        *,
+        trusted_public_key: str | None = None,
+        prune: bool = False,
+    ) -> dict[str, Any]:
         with SYNC_LOCK:
-            source = source or self.configured_source()
             parsed_source = urlparse(source)
             remote = parsed_source.scheme in {"http", "https"}
             index, base = _index_source(source)

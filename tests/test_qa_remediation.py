@@ -9,7 +9,7 @@ import pytest
 
 from agentweb.cli import BooleanFlagAction
 from agentweb.cli import main as cli_main
-from agentweb.registry import Registry, bundled_registry
+from agentweb.registry import DEFAULT_REMOTE_REGISTRY, Registry, bundled_registry
 from agentweb.runtime import Runtime
 from agentweb.sdk import AgentWebError, Response
 from agentweb.storage import StatePaths, write_json
@@ -72,11 +72,12 @@ def test_cli_public_false_reaches_adapter_as_false(
 def test_registry_prefers_bundle_over_stray_packaged_source(tmp_path: Path) -> None:
     # QA High / 6-of-12 root cause: a stale sibling environment's packaged
     # registry must not be trusted over the bundle shipping with the running
-    # code. A source under another env's site-packages/pipx resolves to bundle.
+    # code. A source under another env's site-packages/pipx resolves to the
+    # hosted registry (with the bundle as offline fallback inside sync).
     paths = StatePaths(tmp_path)
     stray = "/home/other/.local/pipx/venvs/sitepack-lab/lib/python3.12/site-packages/agentweb/builtin_registry"
     write_json(paths.registry_config, {"source": stray})
-    assert Registry(paths).configured_source() == str(bundled_registry())
+    assert Registry(paths).configured_source() == DEFAULT_REMOTE_REGISTRY
 
 
 def test_registry_prefers_bundle_over_missing_builtin_pointer(tmp_path: Path) -> None:
@@ -85,7 +86,7 @@ def test_registry_prefers_bundle_over_missing_builtin_pointer(tmp_path: Path) ->
         paths.registry_config,
         {"source": str(tmp_path / "gone" / "builtin_registry")},
     )
-    assert Registry(paths).configured_source() == str(bundled_registry())
+    assert Registry(paths).configured_source() == DEFAULT_REMOTE_REGISTRY
 
 
 def test_registry_keeps_intentional_custom_local_source(tmp_path: Path) -> None:
