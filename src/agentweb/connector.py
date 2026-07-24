@@ -104,6 +104,130 @@ def chrome_executable() -> str:
     )
 
 
+def default_chrome_user_data_dir() -> Path | None:
+    """Locate the user's everyday Chrome/Chromium ``User Data`` directory.
+
+    Returns the first directory that actually exists across common install
+    locations for the current OS, or ``None`` when none is found. Honors
+    ``AGENTWEB_CHROME_USER_DATA_DIR`` for non-standard installs.
+    """
+    override = os.environ.get("AGENTWEB_CHROME_USER_DATA_DIR")
+    if override:
+        path = Path(override).expanduser()
+        return path if path.exists() else None
+    home = Path.home()
+    if sys.platform == "darwin":
+        candidates = [
+            home / "Library/Application Support/Google/Chrome",
+            home / "Library/Application Support/Chromium",
+        ]
+    elif sys.platform.startswith("win"):
+        local = os.environ.get("LOCALAPPDATA")
+        base = Path(local) if local else home / "AppData/Local"
+        candidates = [
+            base / "Google/Chrome/User Data",
+            base / "Chromium/User Data",
+        ]
+    else:
+        candidates = [
+            home / ".config/google-chrome",
+            home / ".config/chromium",
+        ]
+    for candidate in candidates:
+        if candidate.is_dir():
+            return candidate
+    return None
+
+
+def use_default_browser_enabled(explicit: bool | None = None) -> bool:
+    """Whether login should reuse the user's everyday browser session.
+
+    Opt-in: ``explicit`` (the ``--use-default-browser`` flag) wins when set,
+    otherwise the ``AGENTWEB_USE_DEFAULT_BROWSER`` environment toggle applies.
+    Defaults to isolated (blank-profile) login when neither is set.
+    """
+    if explicit is not None:
+        return explicit
+    raw = os.environ.get("AGENTWEB_USE_DEFAULT_BROWSER", "").strip().lower()
+    return raw in {"1", "true", "yes", "on"}
+
+
+# Minimal set of files that carry a signed-in Chrome session. Copying only
+# these (rather than the whole profile) keeps the seed small and avoids the
+# personal history/extensions in the everyday profile.
+_SEED_TOP_LEVEL_FILES = ("Local State",)
+_SEED_PROFILE_FILES = (
+    "Cookies",
+    "Network/Cookies",
+    "Login Data",
+    "Web Data",
+    "Preferences",
+    "Secure Preferences",
+)
+
+
+def seed_profile_from_default_browser(
+    profile_dir: Path,
+    *,
+    progress: Progress = stderr_progress,
+) -> dict[str, Any]:
+    """Seed a per-site login profile from the user's everyday Chrome profile.
+
+    Copies only the files that carry a signed-in session so the managed login
+    window opens already authenticated to whatever the user is signed into,
+    instead of a blank browser. Runs once per site profile (guarded by a
+    marker) and never overwrites a profile that has already captured a session.
+    Cookies are still filtered to the target site before anything is persisted
+    to the browserless session jar, so cross-site cookies are not retained.
+    """
+    marker = profile_dir / ".agentweb-seeded"
+    if marker.exists() or (profile_dir / "Default" / "Cookies").exists():
+        return {"seeded": False, "reason": "profile_already_initialized"}
+    source = default_chrome_user_data_dir()
+    if source is None:
+        return {"seeded": False, "reason": "no_default_browser_profile"}
+    profile_directory = (
+        os.environ.get("AGENTWEB_CHROME_PROFILE_DIRECTORY") or "Default"
+    )
+    source_profile = source / profile_directory
+    if not source_profile.is_dir():
+        return {"seeded": False, "reason": "default_profile_directory_missing"}
+
+    def _copy(src: Path, dst: Path) -> bool:
+        if not src.is_file():
+            return False
+        dst.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+        shutil.copy2(src, dst)
+        for suffix in ("-wal", "-journal"):
+            sibling = src.with_name(src.name + suffix)
+            if sibling.is_file():
+                shutil.copy2(sibling, dst.with_name(dst.name + suffix))
+        return True
+
+    copied = 0
+    profile_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
+    for name in _SEED_TOP_LEVEL_FILES:
+        if _copy(source / name, profile_dir / name):
+            copied += 1
+    dest_profile = profile_dir / "Default"
+    for relative in _SEED_PROFILE_FILES:
+        if _copy(source_profile / relative, dest_profile / relative):
+            copied += 1
+    if not copied:
+        return {"seeded": False, "reason": "no_session_files_found"}
+    marker.write_text("1", encoding="utf-8")
+    progress(
+        "Reusing your default browser's sign-in state for this login "
+        "(only this site's cookies are saved)."
+    )
+    return {
+        "seeded": True,
+        "source": str(source),
+        "profile_directory": profile_directory,
+        "files_copied": copied,
+    }
+
+
 def available_port() -> int:
     with socket.socket() as listener:
         listener.bind(("127.0.0.1", 0))
@@ -1001,6 +1125,7 @@ def connect_site(
     mode: str = "login",
     timeout_seconds: int = 600,
     capture_now: bool = False,
+    use_default_browser: bool | None = None,
     progress: Progress = stderr_progress,
 ) -> dict[str, Any]:
     manifest = runtime.describe(site)
@@ -1137,6 +1262,11 @@ def connect_site(
     web.stop()
     profile_dir = web.chrome_profile
     profile_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
+    seed_result: dict[str, Any] = {"seeded": False, "reason": "disabled"}
+    if use_default_browser_enabled(use_default_browser):
+        seed_result = seed_profile_from_default_browser(
+            profile_dir, progress=progress
+        )
     browser_impersonation = manifest.get("browser_impersonation") or {}
     progress(
         f"Opening {site} "
@@ -1238,6 +1368,7 @@ def connect_site(
         )
         client = None  # The monitor owns and closes the debugger client.
         retain_browser = bool(result.get("browser_retained"))
+        result["default_browser"] = seed_result
         return result
     finally:
         if client:

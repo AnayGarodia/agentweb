@@ -342,6 +342,24 @@ def build_parser() -> argparse.ArgumentParser:
     )
     connect.add_argument("--timeout", type=int, default=600)
     connect.add_argument("--capture-now", action="store_true", help=argparse.SUPPRESS)
+    connect_default = connect.add_mutually_exclusive_group()
+    connect_default.add_argument(
+        "--use-default-browser",
+        dest="use_default_browser",
+        action="store_true",
+        default=None,
+        help=(
+            "Reuse your everyday Chrome profile's sign-in state so the login "
+            "window opens already authenticated (only this site's cookies are "
+            "saved). Also settable via AGENTWEB_USE_DEFAULT_BROWSER=1."
+        ),
+    )
+    connect_default.add_argument(
+        "--isolated",
+        dest="use_default_browser",
+        action="store_false",
+        help="Force a blank, isolated login window (ignore your default browser).",
+    )
 
     agent = subparsers.add_parser("install-agent", help="Connect AgentWeb to an agent")
     agent.add_argument("agent", choices=["claude", "codex"])
@@ -696,6 +714,7 @@ def main(argv: list[str] | None = None) -> int:
                     mode=args.mode,
                     timeout_seconds=args.timeout,
                     capture_now=args.capture_now,
+                    use_default_browser=args.use_default_browser,
                 )
             except AgentWebError as exc:
                 try:
