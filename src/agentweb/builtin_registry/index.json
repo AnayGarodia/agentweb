@@ -37,6 +37,17 @@
     },
     {
       "files": {
+        "adapter.py": "da6400c9e7c9ed39fe28f81e3a49c0353112bc029d155784c9680fa2cae3a9b3",
+        "authoring-report.json": "c19c3f8a3699b7d0821e753ca1bb3d711012ef058972248acbc64ab1f29b2f90",
+        "flows/announcements.json": "5e055614d8c387f94eeb332e76f06708f522cec47ff17618786ca0c0611fd96f",
+        "flows/quote.json": "55824ff663cbef80802058bb6afc56416219193a6a8564e27229fc697eeb5f28",
+        "manifest.json": "64f7ce5d17d5c3abf11c1399b64cd77c8d9d700b193023dfada47b251cde877a"
+      },
+      "name": "bse",
+      "version": "0.1.0"
+    },
+    {
+      "files": {
         "adapter.py": "06e3edf6bf0f433c2d2980a7d7b971fa9eb39a69feb0eba9fee452f28f632211",
         "evidence.json": "b6a7941462d7636ed3d606e68164ad3953715687e85ca7ce59918936b82675da",
         "evidence/conformance.json": "6c763fbfafc590a10d83fe276c7749010b29d017eeb21321400021ae24f35570",

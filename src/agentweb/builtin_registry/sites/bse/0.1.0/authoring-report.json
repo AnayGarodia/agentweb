@@ -1,0 +1,74 @@
+{
+  "browserless_parity": true,
+  "capabilities": {
+    "authenticated_member_services": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "Broker, member, and listing-centre services require BSE member credentials that this mapping does not hold.",
+      "roles": [
+        "bse_member"
+      ],
+      "state": "blocked",
+      "surface": "public_api"
+    },
+    "public_announcements": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_quote": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    }
+  },
+  "catalog_complete": true,
+  "excluded_operations": {},
+  "exhaustive": true,
+  "generated_at_unix": 1784878857.8458424,
+  "matrix": {
+    "locales": [
+      "en-IN"
+    ],
+    "roles": [
+      "public"
+    ],
+    "surfaces": [
+      "public_api"
+    ]
+  },
+  "matrix_verified": true,
+  "operations": {
+    "announcements": {
+      "capabilities": [
+        "public_announcements"
+      ],
+      "contract_hash": "efcb731c4fa04008de3038d6d16e9c901daadcc82af74f4b4a3d897c29163c98",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "quote": {
+      "capabilities": [
+        "public_quote"
+      ],
+      "contract_hash": "49d23b6e872f187ffbb6321622f612da6453f0cdf3194c306ce5f69ae0a230ae",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    }
+  },
+  "project_hash": "284d161b8eb46d6b463eef3bbf2e01a11aab8565c7f69baa6b0c0d9d18feea04",
+  "publication_mode": "reviewed",
+  "schema_version": 1,
+  "tool_quality_verified": true,
+  "uncovered_verified_capabilities": []
+}

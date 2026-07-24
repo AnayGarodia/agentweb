@@ -14,6 +14,7 @@ PRIVATE_MODULES = {
 PUBLIC_ADAPTERS = {
     "amazon",
     "arxiv",
+    "bse",
     "github",
     "gst",
     "hn",

@@ -56,6 +56,7 @@ def test_reference_registry_contains_only_public_adapters(tmp_path: Path) -> Non
     assert result["available"] == [
         "amazon",
         "arxiv",
+        "bse",
         "github",
         "gst",
         "hn",
@@ -69,6 +70,7 @@ def test_reference_registry_contains_only_public_adapters(tmp_path: Path) -> Non
     assert {item["name"] for item in Runtime(paths).sites()} == {
         "amazon",
         "arxiv",
+        "bse",
         "github",
         "gst",
         "hn",
@@ -96,6 +98,7 @@ def test_sync_preserves_adapters_from_other_registries(tmp_path: Path) -> None:
     assert set(result["available"]) == {
         "amazon",
         "arxiv",
+        "bse",
         "example",
         "github",
         "gst",
@@ -125,6 +128,7 @@ def test_sync_prune_explicitly_removes_adapters_not_in_source(tmp_path: Path) ->
     assert set(result["available"]) == {
         "amazon",
         "arxiv",
+        "bse",
         "github",
         "gst",
         "hn",
@@ -510,6 +514,7 @@ def test_public_registry_audit_reports_real_state() -> None:
     assert set(sites) == {
         "amazon",
         "arxiv",
+        "bse",
         "github",
         "gst",
         "hn",

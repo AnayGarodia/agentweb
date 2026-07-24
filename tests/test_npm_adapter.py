@@ -46,6 +46,7 @@ def test_npm_manifest_is_a_public_reference_adapter(tmp_path: Path) -> None:
     assert {entry["name"] for entry in index["sites"]} == {
         "amazon",
         "arxiv",
+        "bse",
         "github",
         "gst",
         "hn",
