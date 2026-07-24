@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "site": "amazon",
+  "verified_at": "2026-07-21",
+  "profile": "disposable parity QA account",
+  "flows": {
+    "account_status": {
+      "browser_result": "The managed Amazon page rendered Hello, Anay and an authenticated account menu.",
+      "direct_result": "account_status returned signed_in=true with account_label Hello, Anay and 21 retained cookies.",
+      "matched": true
+    },
+    "account_cart": {
+      "browser_result": "The authenticated Amazon Cart rendered cart count 0 and the empty-cart continue shopping state.",
+      "direct_result": "cart returned account scope, zero items, and visible_in_other_signed_in_browsers=true.",
+      "matched": true
+    },
+    "lists": {
+      "browser_result": "The authenticated Amazon Lists page rendered one private default list named Sitepack QA temporary list 2026-07-21 with ID 359WWML8N3HO0.",
+      "direct_result": "lists returned the same list ID, name, private visibility, and default-list marker.",
+      "matched": true
+    },
+    "list": {
+      "browser_result": "The authenticated list page rendered Sitepack QA temporary list 2026-07-21 as an empty private list.",
+      "direct_result": "list returned the same list ID and name with zero item cards.",
+      "matched": true
+    },
+    "orders": {
+      "browser_result": "A fresh Your Orders navigation required password reauthentication before rendering account history.",
+      "direct_result": "The retained direct session reached the real Your Orders document and read 0 orders placed in the selected period.",
+      "matched": false,
+      "status": "browser_step_up_required",
+      "note": "Do not claim browser parity until Amazon's password reauthentication is completed and the rendered result is compared."
+    }
+  }
+}

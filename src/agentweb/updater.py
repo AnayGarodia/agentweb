@@ -118,4 +118,9 @@ def run_upgrade(
             f"The AgentWeb installer exited with status {code}.",
             code="upgrade_failed",
         )
-    return {**status, "upgraded": True}
+    return {
+        **status,
+        "installed": status["latest"],
+        "previous": installed,
+        "upgraded": True,
+    }

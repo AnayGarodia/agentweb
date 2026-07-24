@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "site": "hn",
+  "verified_at": "2026-07-21",
+  "profile": "disposable parity QA account",
+  "flows": {
+    "account_status": {
+      "browser_result": "The item page rendered the signed-in username ag5250 and a logout action.",
+      "direct_result": "account_status returned authenticated=true and username ag5250.",
+      "matched": true
+    },
+    "favorite": {
+      "browser_result": "After direct favorite the website rendered Unicode un-favorite; after direct removal it rendered favorite again.",
+      "direct_result": "Both favorite and unfavorite returned state_changed=true and verified=true.",
+      "matched": true,
+      "cleanup": "The story was returned to its original not-favorited state."
+    },
+    "vote": {
+      "browser_result": "After direct upvote the website rendered unvote and increased the score from 1 to 2; after direct unvote it returned to 1 point and the upvote control.",
+      "direct_result": "Both upvote and unvote returned state_changed=true and verified=true.",
+      "matched": true,
+      "cleanup": "The story was returned to its original unvoted state."
+    }
+  }
+}

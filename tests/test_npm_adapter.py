@@ -39,7 +39,7 @@ def tarball(files: dict[str, bytes]) -> bytes:
 def test_npm_manifest_is_a_public_reference_adapter(tmp_path: Path) -> None:
     audit = audit_registry(bundled_registry(), "npm")["sites"][0]
     index = json.loads((bundled_registry() / "index.json").read_text())
-    bundle = bundled_registry() / "sites" / "npm" / "0.1.0"
+    bundle = bundled_registry() / "sites" / "npm" / "0.1.1"
     manifest = json.loads((bundle / "manifest.json").read_text())
     evidence = json.loads((bundle / "flows" / "get_package.json").read_text())
 
@@ -50,7 +50,6 @@ def test_npm_manifest_is_a_public_reference_adapter(tmp_path: Path) -> None:
         "gst",
         "hn",
         "huggingface",
-        "linkedin",
         "npm",
         "pypi",
         "spotify",

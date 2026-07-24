@@ -2255,7 +2255,15 @@ class Adapter(SiteAdapter):
         self._validate_cart_scope("account")
         cart, _, _ = self._get_cart()
         if not cart.get("items"):
-            raise AgentWebError("The Amazon account cart is empty")
+            raise AgentWebError(
+                "The Amazon account cart is empty",
+                code="cart_empty",
+                retryable=False,
+                user_action=(
+                    "Add at least one item with amazon.add_to_cart (confirming "
+                    "the item with the user first), then retry checkout."
+                ),
+            )
         response, navigation = self._checkout_document()
         soup = soup_for(response)
         if "/ap/signin" in response.url or soup.select_one("form[name=signIn]"):

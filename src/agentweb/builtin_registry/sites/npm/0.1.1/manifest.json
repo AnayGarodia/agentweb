@@ -2073,6 +2073,30 @@
   },
   "cookie_domain": ".npmjs.com",
   "coverage": {
+    "capability": {
+      "coverage_ratio": 0.5517,
+      "discovered_route_count": 29,
+      "excluded_count": 13,
+      "exhaustive": true,
+      "mapped_count": 16,
+      "open_count": 0,
+      "read": {
+        "coverage_ratio": 1.0,
+        "discovered_route_count": 16,
+        "excluded_count": 0,
+        "mapped_count": 16,
+        "open_count": 0
+      },
+      "remaining": [],
+      "schema_version": 1,
+      "write": {
+        "coverage_ratio": 0.0,
+        "discovered_route_count": 13,
+        "excluded_count": 13,
+        "mapped_count": 0,
+        "open_count": 0
+      }
+    },
     "constraints": [
       "npm permissions, rate limits, package availability, and service policies still apply",
       "Published tarball inspection is bounded to 50 MB compressed and 20,000 entries"
@@ -5507,5 +5531,5 @@
       "path_regex": "/.*"
     }
   ],
-  "version": "0.1.0"
+  "version": "0.1.1"
 }

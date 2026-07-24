@@ -1,0 +1,102 @@
+{
+  "site": "spotify",
+  "date": "2026-07-21",
+  "account_scope": "same retained Spotify Web Player account",
+  "method": "Compare normal Web Player state with direct partner, Connect, and Dealer protocol replay, then verify the resulting device state.",
+  "flows": {
+    "search": {
+      "query": "Piano Man Billy Joel",
+      "types": ["track"],
+      "browser_first_track_id": "70C4NyhjD5OZUMzvWZ3njJ",
+      "direct_first_track_id": "70C4NyhjD5OZUMzvWZ3njJ",
+      "browser_first_title": "Piano Man",
+      "direct_first_title": "Piano Man",
+      "direct_elapsed_ms": 969.5,
+      "matched": true
+    },
+    "recently_played": {
+      "browser_result": "The Web Player Recents page showed the same recent entities, dates, and activity labels.",
+      "direct_result": "spotify.recently_played returned the matching first five Recents entities without the public Web API.",
+      "parity": true,
+      "semantic_limit": "The website route exposes Recents activity, not exact played_at timestamps."
+    },
+    "devices": {
+      "browser_result": "The device picker showed the same browser and MacBook devices.",
+      "direct_result": "spotify.devices returned those devices from connect-state/v1/cluster.",
+      "parity": true
+    },
+    "play": {
+      "direct_result": "spotify.play changed the active context to the requested playlist and reported verified=true.",
+      "browser_result": "The Web Player rendered the requested playlist context as now playing.",
+      "parity": true
+    },
+    "pause": {
+      "direct_result": "spotify.pause reported verified=true.",
+      "browser_result": "The Web Player and subsequent connect-state read both showed playback paused.",
+      "parity": true
+    },
+    "shuffle": {
+      "direct_result": "The direct Dealer controller changed shuffle and restored it, with both calls verified.",
+      "browser_result": "The rendered Web Player control confirmed shuffle was restored off.",
+      "parity": true
+    },
+    "repeat": {
+      "direct_result": "The direct Dealer controller enabled context repeat and restored repeat off.",
+      "browser_result": "The rendered Web Player control confirmed repeat was restored off.",
+      "parity": true
+    },
+    "add_to_queue_and_next": {
+      "direct_result": "The direct Dealer controller queued the requested track, advanced playback, and verified both resulting state revisions.",
+      "browser_result": "The Web Player independently rendered the queued and advanced track state.",
+      "parity": true
+    },
+    "account": {
+      "browser_result": "The authenticated Web Player rendered Anay Garodia and the Premium account collection.",
+      "direct_result": "spotify.account returned the same display name, account id, country, and PREMIUM product from the retained Web Player session.",
+      "parity": true
+    },
+    "playlists": {
+      "browser_first": ["Pre Test", "Hindi & Urdu Through the Decades", "2026", "Old Hindi", "My Playlist #61"],
+      "direct_first": ["Pre Test", "Hindi & Urdu Through the Decades", "2026", "Old Hindi", "My Playlist #61"],
+      "browser_regular_playlist_total": 21,
+      "direct_regular_playlist_total": 21,
+      "parity": true,
+      "regression_fixed": "Liked Songs is a synthetic collection row and no longer consumes one requested playlist result."
+    },
+    "library_playlists": {
+      "browser_first": ["Pre Test", "Hindi & Urdu Through the Decades", "2026", "Old Hindi", "My Playlist #61"],
+      "direct_first": ["Pre Test", "Hindi & Urdu Through the Decades", "2026", "Old Hindi", "My Playlist #61"],
+      "direct_elapsed_ms": 500.0,
+      "parity": true
+    },
+    "playlist_roundtrip": {
+      "created_name": "Sitepack QA parity roundtrip 2026-07-21",
+      "direct_create_verified": true,
+      "direct_added_tracks": ["Piano Man", "Vienna"],
+      "browser_added_tracks": ["Piano Man", "Vienna"],
+      "direct_updated_name": "Sitepack QA parity direct update",
+      "browser_updated_name": "Sitepack QA parity direct update",
+      "direct_updated_description": "Verified direct website replay",
+      "browser_updated_description": "Verified direct website replay",
+      "browser_removed_track": "Piano Man",
+      "direct_removed_track": "Vienna",
+      "direct_remove_verified": true,
+      "browser_delete_verified": true,
+      "cleanup_complete": true,
+      "parity": true
+    },
+    "playlist_replace_and_reorder": {
+      "created_name": "Sitepack QA reorder parity 2026-07-21",
+      "direct_replace_order": ["Ghost Town", "Piano Man", "Vienna"],
+      "browser_replace_order": ["Ghost Town", "Piano Man", "Vienna"],
+      "direct_reorder_order": ["Piano Man", "Vienna", "Ghost Town"],
+      "browser_reorder_order": ["Piano Man", "Vienna", "Ghost Town"],
+      "replace_verified": true,
+      "reorder_verified": true,
+      "rate_limit_retry_verified": true,
+      "cleanup_complete": true,
+      "parity": true
+    }
+  },
+  "negative_finding": "HTTP 200 alone is not accepted as mutation evidence; controller commands must be followed by observed state revision checks."
+}

@@ -18,7 +18,6 @@ PUBLIC_ADAPTERS = {
     "gst",
     "hn",
     "huggingface",
-    "linkedin",
     "npm",
     "pypi",
     "spotify",

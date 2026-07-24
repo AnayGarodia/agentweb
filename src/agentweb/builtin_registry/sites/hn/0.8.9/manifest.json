@@ -1,6 +1,6 @@
 {
   "name": "hn",
-  "version": "0.8.8",
+  "version": "0.8.9",
   "description": "Broad public Hacker News search, feeds, threads, users, activity, and live update metadata.",
   "canonical_domain": "news.ycombinator.com",
   "aliases": [
@@ -1063,7 +1063,7 @@
       ]
     },
     "comment": {
-      "description": "Post a comment or reply by extracting the current hidden HN form fields and submitting them directly. Requires confirm.",
+      "description": "Post a comment or reply by extracting the current hidden HN form fields and submitting them directly. Returns the new comment's id when it can be located. Requires confirm.",
       "category": "posting",
       "when_to_use": "Use this to post a public comment or reply once a session is authorized; confirm is mandatory.",
       "when_not_to_use": "Do not use this without confirm=true; comments are public and hard to remove.",
@@ -1450,7 +1450,7 @@
       ]
     },
     "delete": {
-      "description": "Delete an eligible owned item through its current authenticated action link. Requires confirm.",
+      "description": "Delete an eligible owned item via the delete-confirm form and verify the deletion by re-reading the item page. Fails loudly if the item is still live. Requires confirm.",
       "category": "editing",
       "when_to_use": "Use this to delete an owned, still-deletable item; confirm is mandatory.",
       "when_not_to_use": "Do not use this without confirm=true; deletion is not reversible.",

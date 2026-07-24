@@ -195,6 +195,21 @@ class Adapter(RequestRecipeAdapter):
                 user_action="Wait for the reported rate-limit window before retrying.",
             )
         if response.status in {401, 403}:
+            # Hugging Face hides private-repo existence behind a generic 401
+            # ("Invalid username or password."); on an unauthenticated call
+            # that response usually means the id does not exist at all.
+            if (
+                response.status == 401
+                and "invalid username or password" in message.lower()
+            ):
+                raise AgentWebError(
+                    "Hugging Face returned 401 for this resource: the id may "
+                    "not exist, or it is private (Hugging Face hides private "
+                    "repository existence behind this response)",
+                    code="resource_not_found_or_private",
+                    retryable=False,
+                    user_action="Check the exact id with the matching search or list operation; if the repository is private, authenticate as a user with access.",
+                )
             gated = "gated" in message.lower() or "access" in message.lower()
             raise AgentWebError(
                 message

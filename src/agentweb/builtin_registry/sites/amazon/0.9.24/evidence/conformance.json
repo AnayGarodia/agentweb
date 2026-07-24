@@ -1,0 +1,1 @@
+{"schema_version":1,"flows":{"batch_products":{"passed":true},"deals":{"passed":true},"best_sellers":{"passed":true},"product":{"passed":true},"cart":{"passed":true},"add_to_cart":{"passed":true},"remove_from_cart":{"passed":true},"account_status":{"passed":true},"lists":{"passed":true},"list":{"passed":true}}}

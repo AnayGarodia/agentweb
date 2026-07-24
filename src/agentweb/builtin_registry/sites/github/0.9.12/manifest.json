@@ -1,6 +1,6 @@
 {
   "name": "github",
-  "version": "0.9.11",
+  "version": "0.9.12",
   "description": "Browserless GitHub operations implemented directly through GitHub REST and GraphQL requests, with no external CLI dependency.",
   "canonical_domain": "github.com",
   "aliases": [
@@ -1535,7 +1535,7 @@
       ]
     },
     "create_issue": {
-      "description": "Create an issue through GitHub's current website GraphQL protocol using the retained normal login; no PAT or external CLI is required. Requires confirm.",
+      "description": "Create an issue using the retained website login or a configured API token; either credential works. Requires confirm.",
       "category": "writes",
       "when_to_use": "Use this to create an issue via the retained website session; confirm is mandatory.",
       "when_not_to_use": "Do not use this without confirm=true; created issues cannot be un-created.",
