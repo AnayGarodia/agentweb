@@ -3,11 +3,11 @@
   "sites": [
     {
       "files": {
-        "adapter.py": "9f517fce90ff61863c8624e275b8b41c8f6de4ae8de227c986dc1403151f6d2c",
-        "manifest.json": "4f7b46ef8e2e9b7415f0493205a885cade43ff35176e6d4a915de7bd8b87a47a"
+        "adapter.py": "78bb7326346f76d1530a95e37f82298a9399f47ec7cc1717f34302f2db5ff6c3",
+        "manifest.json": "09bf2cc687e3a0d7b9f74a5a005c80dae3ed5db891aeeea0a4df5ae699356293"
       },
       "name": "amazon",
-      "version": "0.9.22"
+      "version": "0.9.23"
     },
     {
       "files": {
@@ -26,18 +26,18 @@
         "flows/list_site_resources.json": "d917a92d3f691a9cf737689515a8bef70379b2bfca255710d8236056acc17d88",
         "flows/read_site_resource.json": "48df0b4acac510e7385cdead8fc0dc1199f1e274c3f689992357bc29ff0fe47a",
         "flows/search_papers.json": "31f79a4b6dea5809316d59443ec610050aa5fe4c1b3a2470a2befdbb6a83f8c3",
-        "manifest.json": "2a677ea2662f82e7e99719486bd0aa74c28c46504de9e4907e2bfc01862d7c01"
+        "manifest.json": "858af82a1663aac32a76a50834f25b90218d138cd8aeb162f5f61e9782b476e1"
       },
       "name": "arxiv",
-      "version": "0.1.4"
+      "version": "0.1.5"
     },
     {
       "files": {
-        "adapter.py": "aca8c3436789c4e929c9e950d00ebd4c55db05b9ce37ad262bea891abe9ee7c1",
-        "manifest.json": "8280bd1d6572240d0a61d5125f23912a9941862093ccf624fdf5858500e7d3da"
+        "adapter.py": "06e3edf6bf0f433c2d2980a7d7b971fa9eb39a69feb0eba9fee452f28f632211",
+        "manifest.json": "565d7cecb2ac49df215a86dda00a0be50c76140f871c71ba0426132aea78e99d"
       },
       "name": "github",
-      "version": "0.9.10"
+      "version": "0.9.11"
     },
     {
       "files": {
@@ -193,11 +193,11 @@
     },
     {
       "files": {
-        "adapter.py": "9bf0206d7833e93570694fbaa591b62c580a7632c0cf18e5f57be8a8000458d8",
-        "manifest.json": "19c46fcf3f77b6fe59726b35e78cb3fce143c765a3da0e194861c53f9086dedb"
+        "adapter.py": "8a68b58588e3769aa38498c1af131619c801bca622771db87bdacbc4e5f68650",
+        "manifest.json": "50ab24bd0e5be9ea5d275c22ff3d9424907b6d05435580923561ad2c09700216"
       },
       "name": "spotify",
-      "version": "0.4.6"
+      "version": "0.4.7"
     },
     {
       "files": {

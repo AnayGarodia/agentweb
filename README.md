@@ -19,7 +19,7 @@ actions (checkout, posting, opening a PR) require an explicit `--confirm`:
 ```bash
 agentweb spotify play --query "Massive Attack Teardrop"
 agentweb amazon add-to-cart --asin B0XXXXXXXX
-agentweb github create-pull-request --owner you --repo app --head fix --base main --confirm
+agentweb github create-pull-request --owner you --repo app --head fix --base main --title "Fix the thing" --confirm
 ```
 
 An agent discovers what a site supports, calls the right command, and uses the
