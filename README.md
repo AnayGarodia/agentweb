@@ -190,8 +190,11 @@ automatic system used to map and repair the catalog is **not** in this repositor
 > automated access in their terms of service. You are responsible for using these
 > adapters in a way that complies with each site's terms and applicable law.
 
-`agentweb sync` pulls the latest signed adapters and `agentweb sites` shows what is
-currently installed.
+Every install follows the hosted registry by default: newly published adapters
+appear on the next `agentweb sync` (which also runs automatically) without
+upgrading the tool. The hosted index is signed with a pinned Ed25519 key, and
+the adapters bundled with the package remain the offline fallback. `agentweb
+sites` shows what is currently installed.
 
 ## How it works
 
