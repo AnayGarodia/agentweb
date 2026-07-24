@@ -3,22 +3,47 @@ set -eu
 
 VERSION="__VERSION__"
 EXPECTED_SHA256="__SHA256__"
+PYTHON_BIN="${PYTHON_BIN:-python3}"
+INSTALL_ROOT="${AGENTWEB_INSTALL_ROOT:-$HOME/.local/share/agentweb}"
+BIN_DIR="${AGENTWEB_BIN_DIR:-$HOME/.local/bin}"
+VENV="$INSTALL_ROOT/venv"
 TEMP_DIR="$(mktemp -d 2>/dev/null || mktemp -d -t agentweb)"
 WHEEL_PATH="$TEMP_DIR/agentweb_cli-$VERSION-py3-none-any.whl"
 trap 'test -n "${TEMP_DIR:-}" && test -d "$TEMP_DIR" && rm -rf -- "$TEMP_DIR"' EXIT
 
-if ! command -v python3 >/dev/null 2>&1; then
-  echo "AgentWeb requires Python 3.11 or newer." >&2
-  exit 1
+python_is_compatible() {
+  command -v "$1" >/dev/null 2>&1 && "$1" - <<'PY' >/dev/null 2>&1
+import sys
+raise SystemExit(0 if sys.version_info >= (3, 11) else 1)
+PY
+}
+
+mkdir -p "$INSTALL_ROOT" "$BIN_DIR"
+export PATH="$BIN_DIR:$PATH"
+
+if ! python_is_compatible "$PYTHON_BIN"; then
+  echo "A compatible Python was not found. AgentWeb is installing its own isolated Python 3.12..."
+  if command -v uv >/dev/null 2>&1; then
+    UV_BIN="$(command -v uv)"
+  else
+    if ! command -v curl >/dev/null 2>&1; then
+      echo "AgentWeb needs curl once to install its isolated Python runtime." >&2
+      exit 1
+    fi
+    curl -LsSf https://astral.sh/uv/install.sh | env UV_UNMANAGED_INSTALL="$BIN_DIR" sh
+    UV_BIN="$BIN_DIR/uv"
+  fi
+  UV_PYTHON_INSTALL_DIR="$INSTALL_ROOT/python" "$UV_BIN" python install 3.12 >/dev/null
+  PYTHON_BIN="$(
+    UV_PYTHON_INSTALL_DIR="$INSTALL_ROOT/python" "$UV_BIN" python find 3.12
+  )"
+  if ! python_is_compatible "$PYTHON_BIN"; then
+    echo "AgentWeb could not provision its isolated Python 3.12 runtime." >&2
+    exit 1
+  fi
 fi
 
-python3 - <<'PY'
-import sys
-if sys.version_info < (3, 11):
-    raise SystemExit("AgentWeb requires Python 3.11 or newer.")
-PY
-
-python3 - "$WHEEL_PATH" "$EXPECTED_SHA256" <<'PY'
+"$PYTHON_BIN" - "$WHEEL_PATH" "$EXPECTED_SHA256" <<'PY'
 import base64
 import hashlib
 import pathlib
@@ -34,8 +59,6 @@ if actual != expected:
 wheel.write_bytes(data)
 PY
 
-export PATH="$HOME/.local/bin:$PATH"
-
 if ! command -v google-chrome >/dev/null 2>&1 \
   && ! command -v google-chrome-stable >/dev/null 2>&1 \
   && ! command -v chromium >/dev/null 2>&1 \
@@ -43,7 +66,7 @@ if ! command -v google-chrome >/dev/null 2>&1 \
   && [ ! -x "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" ] \
   && [ ! -x "/Applications/Chromium.app/Contents/MacOS/Chromium" ]; then
   echo "Installing Chrome for Testing for one-time site authorization and mapping mode..."
-  python3 - <<'PY'
+  "$PYTHON_BIN" - <<'PY'
 import json
 import os
 import platform
@@ -108,38 +131,28 @@ link.symlink_to(executable)
 PY
 fi
 
-if command -v uv >/dev/null 2>&1; then
-  # Prefer the manager that owns the most common existing AgentWeb launcher.
-  # Installing into pipx while an older uv launcher remains first on PATH can
-  # otherwise report success without upgrading the executable an agent calls.
-  uv tool uninstall sitepack-lab >/dev/null 2>&1 || true
-  uv tool install --force "$WHEEL_PATH" >/dev/null
-elif command -v pipx >/dev/null 2>&1; then
-  pipx uninstall sitepack-lab >/dev/null 2>&1 || true
-  if ! pipx runpip agentweb-cli install --force-reinstall "$WHEEL_PATH" >/dev/null 2>&1; then
-    pipx install "$WHEEL_PATH" >/dev/null
-  fi
-else
-  echo "Installing pipx for the current user..."
-  python3 -m pip install --user pipx >/dev/null
-  python3 -m pipx ensurepath >/dev/null 2>&1 || true
-  python3 -m pipx install "$WHEEL_PATH" >/dev/null
+if [ ! -x "$VENV/bin/python" ]; then
+  "$PYTHON_BIN" -m venv "$VENV"
 fi
+"$VENV/bin/python" -m pip install \
+  --quiet --disable-pip-version-check --upgrade "$WHEEL_PATH"
+ln -sfn "$VENV/bin/agentweb" "$BIN_DIR/agentweb"
+ln -sfn "$VENV/bin/sitepack" "$BIN_DIR/sitepack"
 
-if ! command -v agentweb >/dev/null 2>&1; then
+if [ ! -x "$BIN_DIR/agentweb" ]; then
   echo "AgentWeb installed, but its executable is not on PATH yet." >&2
-  echo "Add $HOME/.local/bin to PATH, then run any command such as: agentweb sites" >&2
+  echo "Add $BIN_DIR to PATH, then run any command such as: agentweb sites" >&2
   exit 1
 fi
 
-INSTALLED_VERSION="$(agentweb --version)"
+INSTALLED_VERSION="$("$BIN_DIR/agentweb" --version)"
 if [ "$INSTALLED_VERSION" != "$VERSION" ]; then
   echo "AgentWeb install verification failed: expected $VERSION, executable reports $INSTALLED_VERSION." >&2
   exit 1
 fi
 
-agentweb setup >/dev/null
-agentweb sites >/dev/null
+"$BIN_DIR/agentweb" setup >/dev/null
+"$BIN_DIR/agentweb" sites >/dev/null
 
 echo "AgentWeb $VERSION CLI is ready: agentweb DOMAIN ACTION [arguments]"
 echo "Public website operations work immediately; login is requested only when needed."

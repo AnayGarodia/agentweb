@@ -565,6 +565,15 @@ def build_parser() -> argparse.ArgumentParser:
             "Chrome (skipped by default; needs a prior `agentweb connect SITE`)"
         ),
     )
+    upgrade = subparsers.add_parser(
+        "upgrade",
+        help="Upgrade AgentWeb in place to the latest published version",
+    )
+    upgrade.add_argument(
+        "--check",
+        action="store_true",
+        help="Only report whether a newer version exists; do not install",
+    )
     return parser
 
 
@@ -601,6 +610,7 @@ def main(argv: list[str] | None = None) -> int:
         "capture-oracle",
         "verify-capture",
         "verify-oracles",
+        "upgrade",
     }
     parser = build_parser()
     try:
@@ -1074,6 +1084,13 @@ def main(argv: list[str] | None = None) -> int:
             if args.strict and not result["healthy"]:
                 emit(result, not args.compact)
                 return 1
+        elif args.command == "upgrade":
+            from .updater import check_for_update, run_upgrade
+
+            if args.check:
+                result = check_for_update(__version__)
+            else:
+                result = run_upgrade(__version__)
         elif args.command == "mcp-config":
             result = {
                 "mcpServers": {
