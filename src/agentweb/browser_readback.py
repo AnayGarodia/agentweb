@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import base64
 import json
+import logging
 import subprocess
 import time
 from pathlib import Path
@@ -41,6 +42,8 @@ from .connector import (
 )
 from .runtime import Runtime
 from .sdk import AgentWebError, HttpSession, Response
+
+logger = logging.getLogger(__name__)
 
 # Request headers a browser manages itself; setting them via fetch() is either
 # forbidden by the Fetch spec or would fight the browser's first-party context.
@@ -236,7 +239,7 @@ class BrowserSession(HttpSession):
             try:
                 self._client.socket.settimeout(previous_timeout)
             except Exception:
-                pass
+                logger.debug("Failed to restore CDP socket timeout", exc_info=True)
         exception = result.get("exceptionDetails")
         if exception:
             raise AgentWebError(
@@ -439,7 +442,7 @@ def browser_execute(
             try:
                 client.close()
             except Exception:
-                pass
+                logger.debug("Failed to close CDP client after read-back", exc_info=True)
         if process is not None and process.poll() is None:
             process.terminate()
             try:

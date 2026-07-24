@@ -671,6 +671,435 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _run_connect(runtime: Runtime, analytics: Analytics, args: argparse.Namespace) -> Any:
+    connected_at = time.monotonic()
+    try:
+        result = connect_site(
+            runtime,
+            args.site,
+            mode=args.mode,
+            timeout_seconds=args.timeout,
+            capture_now=args.capture_now,
+            use_default_browser=args.use_default_browser,
+        )
+    except AgentWebError as exc:
+        try:
+            connection_site = runtime.resolve(args.site).site
+        except AgentWebError:
+            connection_site = None
+        analytics.record(
+            "connection_completed",
+            site=connection_site,
+            success=False,
+            duration_ms=(time.monotonic() - connected_at) * 1000,
+            interface="cli",
+            error_code=exc.code,
+        )
+        raise
+    analytics.record(
+        "connection_completed",
+        site=runtime.resolve(args.site).site,
+        success=bool(result.get("connected")),
+        duration_ms=(time.monotonic() - connected_at) * 1000,
+        interface="cli",
+        error_code=None if result.get("connected") else "connection_failed",
+    )
+    return result
+
+
+def _run_install_agent(analytics: Analytics, args: argparse.Namespace) -> Any:
+    result = install_agent(args.agent, scope=args.scope, dry_run=args.dry_run)
+    if not args.dry_run:
+        analytics.record(
+            "agent_connected",
+            operation=args.agent,
+            success=bool(result.get("installed", True)),
+            interface="cli",
+        )
+    return result
+
+
+def _run_setup(runtime: Runtime, analytics: Analytics) -> Any:
+    sync_result = runtime.registry.sync()
+    skill_result = install_agent_skills()
+    result = {
+        "ready": True,
+        "interface": "cli",
+        "command": "agentweb DOMAIN ACTION [arguments]",
+        "registry": sync_result,
+        "sites": sorted(item["name"] for item in runtime.sites()),
+        "agent_discovery": skill_result,
+        "mcp_installed": False,
+        "next": "Start a new coding-agent session, then ask it to use AgentWeb in normal language.",
+    }
+    analytics.record(
+        "setup_completed",
+        success=bool(result.get("ready")),
+        interface="cli",
+    )
+    return result
+
+
+def _run_onboard(runtime: Runtime, args: argparse.Namespace) -> Any:
+    agent_result = install_agent(args.agent, scope=args.scope)
+    sync_result = runtime.registry.sync()
+    connection_result = None
+    if args.connect:
+        connection_result = connect_site(
+            runtime, args.site, timeout_seconds=args.timeout
+        )
+    result = {
+        "ready": True,
+        "public_operations_ready": True,
+        "agent": agent_result,
+        "registry": sync_result,
+        "connection": connection_result,
+        "authentication": (
+            "connected"
+            if connection_result and connection_result.get("connected")
+            else "lazy; only requested by protected operations"
+        ),
+    }
+    return result
+
+
+def _run_auth(runtime: Runtime, args: argparse.Namespace) -> Any:
+    if args.auth_command == "status":
+        result = authentication_status(runtime, args.site)
+    elif args.auth_command == "resume":
+        attempt = authentication_status(runtime, args.site).get("attempt")
+        if not attempt or attempt.get("state") not in {
+            "authorizing",
+            "human_required",
+            "verifying",
+        }:
+            raise AgentWebError(
+                f"No resumable authorization attempt exists for {args.site}"
+            )
+        result = connect_site(
+            runtime,
+            args.site,
+            mode=str(attempt.get("mode") or "login"),
+            timeout_seconds=args.timeout,
+        )
+    elif args.auth_command == "cancel":
+        result = cancel_authentication(runtime, args.site)
+    elif args.auth_command in {"disconnect", "switch-account"}:
+        if not args.confirm:
+            raise AgentWebError(
+                f"{args.auth_command} removes the saved website session; retry with --confirm"
+            )
+        result = disconnect_site(runtime, args.site)
+        if args.auth_command == "switch-account":
+            result = connect_site(
+                runtime,
+                args.site,
+                timeout_seconds=args.timeout,
+            )
+    else:
+        manifest = runtime.describe(args.site)
+        adapter = runtime.adapter(args.site)
+        session = adapter.session()
+    if args.auth_command == "import-cookies":
+        result = {
+            "imported": session.import_netscape_cookies(args.path),
+            **session.cookie_summary(),
+        }
+    elif args.auth_command == "import-header":
+        header = (
+            args.header if args.header is not None else sys.stdin.read().strip()
+        )
+        if not header:
+            raise AgentWebError("Cookie header was empty")
+        result = {
+            "imported": session.import_cookie_header(
+                header, manifest.get("cookie_domain", f".{args.site}.com")
+            ),
+            **session.cookie_summary(),
+        }
+    return result
+
+
+def _run_telemetry(analytics: Analytics, args: argparse.Namespace) -> Any:
+    if args.telemetry_command == "status":
+        result = analytics.status()
+    elif args.telemetry_command == "enable":
+        result = analytics.set_enabled(True)
+    elif args.telemetry_command == "disable":
+        result = analytics.set_enabled(False)
+    elif args.telemetry_command == "reset-id":
+        result = analytics.reset_installation_id()
+    elif args.telemetry_command == "inspect":
+        result = analytics.inspect_event()
+    else:
+        result = analytics.configure_posthog(args.project_key, args.host)
+    return result
+
+
+def _run_capture_compile(args: argparse.Namespace) -> Any:
+    try:
+        trace = json.loads(args.trace.read_text())
+    except (OSError, json.JSONDecodeError) as exc:
+        raise AgentWebError(f"Could not read capture trace: {exc}") from exc
+    if not isinstance(trace, dict) or trace.get("kind") not in {
+        "agentweb_redacted_network_trace",
+        "sitepack_redacted_network_trace",
+    }:
+        raise AgentWebError(
+            "capture-compile requires an AgentWeb redacted network trace"
+        )
+    if args.capsule_out:
+        result = build_flow_capsule(trace, operation=args.operation)
+        args.capsule_out.parent.mkdir(parents=True, exist_ok=True)
+        args.capsule_out.write_text(
+            json.dumps(result, indent=2, sort_keys=True) + "\n"
+        )
+        result["written_to"] = str(args.capsule_out)
+    else:
+        result = analyze_network_trace(trace)
+    return result
+
+
+def _run_verify(runtime: Runtime, args: argparse.Namespace) -> Any:
+    try:
+        capsule = json.loads(args.capsule.read_text())
+    except (OSError, json.JSONDecodeError) as exc:
+        raise AgentWebError(f"Could not read flow capsule: {exc}") from exc
+    variables = parse_json(args.input)
+    structural = verify_flow_capsule(capsule)
+    if not structural["passed"] or args.offline:
+        result = structural
+    else:
+        required = set(
+            (capsule.get("recipe") or {}).get("required_inputs") or []
+        )
+        missing = sorted(required - set(variables))
+        if missing:
+            raise AgentWebError(
+                "Missing flow capsule inputs: " + ", ".join(missing),
+                code="missing_input",
+            )
+        replay = runtime.call(
+            f"{capsule['site']}.direct_workflow",
+            {
+                "steps": capsule["recipe"]["steps"],
+                "variables": variables,
+                "confirm": args.confirm,
+            },
+        )
+        result = verify_flow_capsule(capsule, replay)
+    return result
+
+
+def _run_capture_oracle(runtime: Runtime, args: argparse.Namespace) -> Any:
+    arguments = parse_json(args.input)
+    site = runtime.resolve(args.site).site
+    action = runtime.resolve_action(site, args.operation)
+    command = (runtime.describe(site).get("commands") or {}).get(action) or {}
+    risk = command.get("risk") or {}
+    level = str(risk.get("level") or "read")
+    is_write = level not in ("read", "public", "none", "")
+    confirmation = str(risk.get("confirmation") or "never")
+    mutating = is_write or confirmation in ("always", "on_write")
+    if mutating and not args.confirm:
+        raise AgentWebError(
+            f"{args.site}.{args.operation} is a mutating operation. Capture the "
+            "read-back that confirms its effect instead, or pass --confirm to "
+            "record this operation's own response as the oracle.",
+            code="oracle_capture_mutating",
+        )
+    capture_args = {**arguments, "confirm": True} if mutating else arguments
+    if args.via_browser:
+        from .browser_readback import browser_execute
+
+        envelope = browser_execute(
+            runtime, args.site, args.operation, capture_args
+        )
+    else:
+        envelope = runtime.execute(args.site, args.operation, capture_args)
+    oracle = build_response_oracle(
+        site,
+        args.operation,
+        arguments,
+        envelope,
+        mutating=mutating,
+        assert_paths=args.assert_paths or [],
+    )
+    if args.via_browser:
+        oracle["execution"] = "browser_assisted"
+    if args.out:
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(json.dumps(oracle, indent=2, sort_keys=True) + "\n")
+        oracle = {**oracle, "written_to": str(args.out)}
+    result = oracle
+    return result
+
+
+def _run_verify_capture(runtime: Runtime, args: argparse.Namespace) -> Any:
+    try:
+        oracle = json.loads(args.oracle.read_text())
+    except (OSError, json.JSONDecodeError) as exc:
+        raise AgentWebError(f"Could not read response oracle: {exc}") from exc
+    via_browser = (
+        args.via_browser or oracle.get("execution") == "browser_assisted"
+    )
+    structural = verify_response_oracle(oracle)
+    if not structural["passed"] or args.offline:
+        result = structural
+    elif oracle.get("mutating"):
+        result = {
+            **structural,
+            "note": (
+                "Oracle is for a mutating operation; a live replay would re-run "
+                "the read-back with a signed-in session. Re-run its read-back "
+                "operation and pass its envelope to verify_response_oracle, or "
+                "use --offline for structure-only validation."
+            ),
+        }
+    else:
+        arguments = (
+            parse_json(args.input)
+            if args.input is not None
+            else (oracle.get("input") or {})
+        )
+        if via_browser:
+            from .browser_readback import browser_execute
+
+            envelope = browser_execute(
+                runtime, oracle["site"], oracle["operation"], arguments
+            )
+        else:
+            envelope = runtime.execute(
+                oracle["site"], oracle["operation"], arguments
+            )
+        result = verify_response_oracle(oracle, envelope)
+        if via_browser:
+            result = {
+                **result,
+                "execution": "browser_assisted",
+                "evidence": (
+                    "browser_capture_verified"
+                    if result.get("passed")
+                    else result.get("status")
+                ),
+            }
+    if args.strict and not result.get("passed"):
+        emit(result, not args.compact)
+        return 1
+    return result
+
+
+def _run_verify_oracles(runtime: Runtime, args: argparse.Namespace) -> Any:
+    directory = args.dir.expanduser()
+    if not directory.is_dir():
+        raise AgentWebError(
+            f"Oracle directory not found: {directory}",
+            code="oracle_dir_missing",
+        )
+    records: list[dict[str, Any]] = []
+    for path in discover_oracles(directory):
+        name = path.relative_to(directory).as_posix()
+        try:
+            oracle = json.loads(path.read_text())
+        except (OSError, json.JSONDecodeError) as exc:
+            records.append(
+                {
+                    "oracle": name,
+                    "passed": False,
+                    "status": "unreadable",
+                    "error": str(exc),
+                }
+            )
+            continue
+        record = {
+            "oracle": name,
+            "site": oracle.get("site"),
+            "operation": oracle.get("operation"),
+            "age_days": oracle_age_days(oracle),
+        }
+        structural = verify_response_oracle(oracle)
+        if not structural["passed"] or args.offline:
+            records.append({**record, **structural})
+            continue
+        mode = classify_oracle_replay(oracle, via_browser=args.via_browser)
+        if mode == "mutating":
+            records.append(
+                {
+                    **record,
+                    "passed": True,
+                    "status": SKIPPED,
+                    "reason": "mutating oracle records a read-back; "
+                    "not auto-replayed",
+                }
+            )
+            continue
+        if mode == "browser_required":
+            records.append(
+                {
+                    **record,
+                    "passed": True,
+                    "status": SKIPPED,
+                    "reason": "browser-assisted oracle needs "
+                    "--via-browser (authenticated Chrome)",
+                }
+            )
+            continue
+        try:
+            if mode == "browser":
+                from .browser_readback import browser_execute
+
+                envelope = browser_execute(
+                    runtime,
+                    oracle["site"],
+                    oracle["operation"],
+                    oracle.get("input") or {},
+                )
+            else:
+                envelope = runtime.execute(
+                    oracle["site"],
+                    oracle["operation"],
+                    oracle.get("input") or {},
+                )
+        except AgentWebError as exc:
+            # A transient network/site error is advisory, not drift, so
+            # it never fails a scheduled run on its own.
+            records.append(
+                {
+                    **record,
+                    "passed": True,
+                    "status": INCONCLUSIVE,
+                    "error": str(exc),
+                }
+            )
+            continue
+        replay = verify_response_oracle(oracle, envelope)
+        if mode == "browser" and replay.get("passed"):
+            replay = {**replay, "evidence": "browser_capture_verified"}
+        records.append({**record, **replay})
+    drift = [r for r in records if r.get("status") == "drift"]
+    unreadable = [r for r in records if r.get("status") == "unreadable"]
+    errored = [r for r in records if r.get("errors")]
+    result = {
+        "directory": str(directory),
+        "checked": len(records),
+        "verified": sum(
+            1 for r in records if r.get("status") == CAPTURE_VERIFIED
+        ),
+        "skipped": sum(1 for r in records if r.get("status") == SKIPPED),
+        "inconclusive": sum(
+            1 for r in records if r.get("status") == INCONCLUSIVE
+        ),
+        "drift": drift,
+        "checked_at_unix": int(time.time()),
+        "healthy": not drift and not unreadable and not errored,
+        "records": records,
+    }
+    if args.strict and not result["healthy"]:
+        emit(result, not args.compact)
+        return 1
+    return result
+
+
 def main(argv: list[str] | None = None) -> int:
     configure_logging()
     argv = list(sys.argv[1:] if argv is None else argv)
@@ -782,403 +1211,29 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "call":
             result = runtime.call(args.operation, parse_json(args.input))
         elif args.command == "connect":
-            connected_at = time.monotonic()
-            try:
-                result = connect_site(
-                    runtime,
-                    args.site,
-                    mode=args.mode,
-                    timeout_seconds=args.timeout,
-                    capture_now=args.capture_now,
-                    use_default_browser=args.use_default_browser,
-                )
-            except AgentWebError as exc:
-                try:
-                    connection_site = runtime.resolve(args.site).site
-                except AgentWebError:
-                    connection_site = None
-                analytics.record(
-                    "connection_completed",
-                    site=connection_site,
-                    success=False,
-                    duration_ms=(time.monotonic() - connected_at) * 1000,
-                    interface="cli",
-                    error_code=exc.code,
-                )
-                raise
-            analytics.record(
-                "connection_completed",
-                site=runtime.resolve(args.site).site,
-                success=bool(result.get("connected")),
-                duration_ms=(time.monotonic() - connected_at) * 1000,
-                interface="cli",
-                error_code=None if result.get("connected") else "connection_failed",
-            )
+            result = _run_connect(runtime, analytics, args)
         elif args.command == "install-agent":
-            result = install_agent(args.agent, scope=args.scope, dry_run=args.dry_run)
-            if not args.dry_run:
-                analytics.record(
-                    "agent_connected",
-                    operation=args.agent,
-                    success=bool(result.get("installed", True)),
-                    interface="cli",
-                )
+            result = _run_install_agent(analytics, args)
         elif args.command == "setup":
-            sync_result = runtime.registry.sync()
-            skill_result = install_agent_skills()
-            result = {
-                "ready": True,
-                "interface": "cli",
-                "command": "agentweb DOMAIN ACTION [arguments]",
-                "registry": sync_result,
-                "sites": sorted(item["name"] for item in runtime.sites()),
-                "agent_discovery": skill_result,
-                "mcp_installed": False,
-                "next": "Start a new coding-agent session, then ask it to use AgentWeb in normal language.",
-            }
-            analytics.record(
-                "setup_completed",
-                success=bool(result.get("ready")),
-                interface="cli",
-            )
+            result = _run_setup(runtime, analytics)
         elif args.command == "onboard":
-            agent_result = install_agent(args.agent, scope=args.scope)
-            sync_result = runtime.registry.sync()
-            connection_result = None
-            if args.connect:
-                connection_result = connect_site(
-                    runtime, args.site, timeout_seconds=args.timeout
-                )
-            result = {
-                "ready": True,
-                "public_operations_ready": True,
-                "agent": agent_result,
-                "registry": sync_result,
-                "connection": connection_result,
-                "authentication": (
-                    "connected"
-                    if connection_result and connection_result.get("connected")
-                    else "lazy; only requested by protected operations"
-                ),
-            }
+            result = _run_onboard(runtime, args)
         elif args.command == "auth":
-            if args.auth_command == "status":
-                result = authentication_status(runtime, args.site)
-            elif args.auth_command == "resume":
-                attempt = authentication_status(runtime, args.site).get("attempt")
-                if not attempt or attempt.get("state") not in {
-                    "authorizing",
-                    "human_required",
-                    "verifying",
-                }:
-                    raise AgentWebError(
-                        f"No resumable authorization attempt exists for {args.site}"
-                    )
-                result = connect_site(
-                    runtime,
-                    args.site,
-                    mode=str(attempt.get("mode") or "login"),
-                    timeout_seconds=args.timeout,
-                )
-            elif args.auth_command == "cancel":
-                result = cancel_authentication(runtime, args.site)
-            elif args.auth_command in {"disconnect", "switch-account"}:
-                if not args.confirm:
-                    raise AgentWebError(
-                        f"{args.auth_command} removes the saved website session; retry with --confirm"
-                    )
-                result = disconnect_site(runtime, args.site)
-                if args.auth_command == "switch-account":
-                    result = connect_site(
-                        runtime,
-                        args.site,
-                        timeout_seconds=args.timeout,
-                    )
-            else:
-                manifest = runtime.describe(args.site)
-                adapter = runtime.adapter(args.site)
-                session = adapter.session()
-            if args.auth_command == "import-cookies":
-                result = {
-                    "imported": session.import_netscape_cookies(args.path),
-                    **session.cookie_summary(),
-                }
-            elif args.auth_command == "import-header":
-                header = (
-                    args.header if args.header is not None else sys.stdin.read().strip()
-                )
-                if not header:
-                    raise AgentWebError("Cookie header was empty")
-                result = {
-                    "imported": session.import_cookie_header(
-                        header, manifest.get("cookie_domain", f".{args.site}.com")
-                    ),
-                    **session.cookie_summary(),
-                }
+            result = _run_auth(runtime, args)
         elif args.command == "cache":
             result = {"deleted": Cache(paths.cache_db).clear(args.site)}
         elif args.command == "telemetry":
-            if args.telemetry_command == "status":
-                result = analytics.status()
-            elif args.telemetry_command == "enable":
-                result = analytics.set_enabled(True)
-            elif args.telemetry_command == "disable":
-                result = analytics.set_enabled(False)
-            elif args.telemetry_command == "reset-id":
-                result = analytics.reset_installation_id()
-            elif args.telemetry_command == "inspect":
-                result = analytics.inspect_event()
-            else:
-                result = analytics.configure_posthog(args.project_key, args.host)
+            result = _run_telemetry(analytics, args)
         elif args.command == "capture-compile":
-            try:
-                trace = json.loads(args.trace.read_text())
-            except (OSError, json.JSONDecodeError) as exc:
-                raise AgentWebError(f"Could not read capture trace: {exc}") from exc
-            if not isinstance(trace, dict) or trace.get("kind") not in {
-                "agentweb_redacted_network_trace",
-                "sitepack_redacted_network_trace",
-            }:
-                raise AgentWebError(
-                    "capture-compile requires an AgentWeb redacted network trace"
-                )
-            if args.capsule_out:
-                result = build_flow_capsule(trace, operation=args.operation)
-                args.capsule_out.parent.mkdir(parents=True, exist_ok=True)
-                args.capsule_out.write_text(
-                    json.dumps(result, indent=2, sort_keys=True) + "\n"
-                )
-                result["written_to"] = str(args.capsule_out)
-            else:
-                result = analyze_network_trace(trace)
+            result = _run_capture_compile(args)
         elif args.command == "verify":
-            try:
-                capsule = json.loads(args.capsule.read_text())
-            except (OSError, json.JSONDecodeError) as exc:
-                raise AgentWebError(f"Could not read flow capsule: {exc}") from exc
-            variables = parse_json(args.input)
-            structural = verify_flow_capsule(capsule)
-            if not structural["passed"] or args.offline:
-                result = structural
-            else:
-                required = set(
-                    (capsule.get("recipe") or {}).get("required_inputs") or []
-                )
-                missing = sorted(required - set(variables))
-                if missing:
-                    raise AgentWebError(
-                        "Missing flow capsule inputs: " + ", ".join(missing),
-                        code="missing_input",
-                    )
-                replay = runtime.call(
-                    f"{capsule['site']}.direct_workflow",
-                    {
-                        "steps": capsule["recipe"]["steps"],
-                        "variables": variables,
-                        "confirm": args.confirm,
-                    },
-                )
-                result = verify_flow_capsule(capsule, replay)
+            result = _run_verify(runtime, args)
         elif args.command == "capture-oracle":
-            arguments = parse_json(args.input)
-            site = runtime.resolve(args.site).site
-            action = runtime.resolve_action(site, args.operation)
-            command = (runtime.describe(site).get("commands") or {}).get(action) or {}
-            risk = command.get("risk") or {}
-            level = str(risk.get("level") or "read")
-            is_write = level not in ("read", "public", "none", "")
-            confirmation = str(risk.get("confirmation") or "never")
-            mutating = is_write or confirmation in ("always", "on_write")
-            if mutating and not args.confirm:
-                raise AgentWebError(
-                    f"{args.site}.{args.operation} is a mutating operation. Capture the "
-                    "read-back that confirms its effect instead, or pass --confirm to "
-                    "record this operation's own response as the oracle.",
-                    code="oracle_capture_mutating",
-                )
-            capture_args = {**arguments, "confirm": True} if mutating else arguments
-            if args.via_browser:
-                from .browser_readback import browser_execute
-
-                envelope = browser_execute(
-                    runtime, args.site, args.operation, capture_args
-                )
-            else:
-                envelope = runtime.execute(args.site, args.operation, capture_args)
-            oracle = build_response_oracle(
-                site,
-                args.operation,
-                arguments,
-                envelope,
-                mutating=mutating,
-                assert_paths=args.assert_paths or [],
-            )
-            if args.via_browser:
-                oracle["execution"] = "browser_assisted"
-            if args.out:
-                args.out.parent.mkdir(parents=True, exist_ok=True)
-                args.out.write_text(json.dumps(oracle, indent=2, sort_keys=True) + "\n")
-                oracle = {**oracle, "written_to": str(args.out)}
-            result = oracle
+            result = _run_capture_oracle(runtime, args)
         elif args.command == "verify-capture":
-            try:
-                oracle = json.loads(args.oracle.read_text())
-            except (OSError, json.JSONDecodeError) as exc:
-                raise AgentWebError(f"Could not read response oracle: {exc}") from exc
-            via_browser = (
-                args.via_browser or oracle.get("execution") == "browser_assisted"
-            )
-            structural = verify_response_oracle(oracle)
-            if not structural["passed"] or args.offline:
-                result = structural
-            elif oracle.get("mutating"):
-                result = {
-                    **structural,
-                    "note": (
-                        "Oracle is for a mutating operation; a live replay would re-run "
-                        "the read-back with a signed-in session. Re-run its read-back "
-                        "operation and pass its envelope to verify_response_oracle, or "
-                        "use --offline for structure-only validation."
-                    ),
-                }
-            else:
-                arguments = (
-                    parse_json(args.input)
-                    if args.input is not None
-                    else (oracle.get("input") or {})
-                )
-                if via_browser:
-                    from .browser_readback import browser_execute
-
-                    envelope = browser_execute(
-                        runtime, oracle["site"], oracle["operation"], arguments
-                    )
-                else:
-                    envelope = runtime.execute(
-                        oracle["site"], oracle["operation"], arguments
-                    )
-                result = verify_response_oracle(oracle, envelope)
-                if via_browser:
-                    result = {
-                        **result,
-                        "execution": "browser_assisted",
-                        "evidence": (
-                            "browser_capture_verified"
-                            if result.get("passed")
-                            else result.get("status")
-                        ),
-                    }
-            if args.strict and not result.get("passed"):
-                emit(result, not args.compact)
-                return 1
+            result = _run_verify_capture(runtime, args)
         elif args.command == "verify-oracles":
-            directory = args.dir.expanduser()
-            if not directory.is_dir():
-                raise AgentWebError(
-                    f"Oracle directory not found: {directory}",
-                    code="oracle_dir_missing",
-                )
-            records: list[dict[str, Any]] = []
-            for path in discover_oracles(directory):
-                name = path.relative_to(directory).as_posix()
-                try:
-                    oracle = json.loads(path.read_text())
-                except (OSError, json.JSONDecodeError) as exc:
-                    records.append(
-                        {
-                            "oracle": name,
-                            "passed": False,
-                            "status": "unreadable",
-                            "error": str(exc),
-                        }
-                    )
-                    continue
-                record = {
-                    "oracle": name,
-                    "site": oracle.get("site"),
-                    "operation": oracle.get("operation"),
-                    "age_days": oracle_age_days(oracle),
-                }
-                structural = verify_response_oracle(oracle)
-                if not structural["passed"] or args.offline:
-                    records.append({**record, **structural})
-                    continue
-                mode = classify_oracle_replay(oracle, via_browser=args.via_browser)
-                if mode == "mutating":
-                    records.append(
-                        {
-                            **record,
-                            "passed": True,
-                            "status": SKIPPED,
-                            "reason": "mutating oracle records a read-back; "
-                            "not auto-replayed",
-                        }
-                    )
-                    continue
-                if mode == "browser_required":
-                    records.append(
-                        {
-                            **record,
-                            "passed": True,
-                            "status": SKIPPED,
-                            "reason": "browser-assisted oracle needs "
-                            "--via-browser (authenticated Chrome)",
-                        }
-                    )
-                    continue
-                try:
-                    if mode == "browser":
-                        from .browser_readback import browser_execute
-
-                        envelope = browser_execute(
-                            runtime,
-                            oracle["site"],
-                            oracle["operation"],
-                            oracle.get("input") or {},
-                        )
-                    else:
-                        envelope = runtime.execute(
-                            oracle["site"],
-                            oracle["operation"],
-                            oracle.get("input") or {},
-                        )
-                except AgentWebError as exc:
-                    # A transient network/site error is advisory, not drift, so
-                    # it never fails a scheduled run on its own.
-                    records.append(
-                        {
-                            **record,
-                            "passed": True,
-                            "status": INCONCLUSIVE,
-                            "error": str(exc),
-                        }
-                    )
-                    continue
-                replay = verify_response_oracle(oracle, envelope)
-                if mode == "browser" and replay.get("passed"):
-                    replay = {**replay, "evidence": "browser_capture_verified"}
-                records.append({**record, **replay})
-            drift = [r for r in records if r.get("status") == "drift"]
-            unreadable = [r for r in records if r.get("status") == "unreadable"]
-            errored = [r for r in records if r.get("errors")]
-            result = {
-                "directory": str(directory),
-                "checked": len(records),
-                "verified": sum(
-                    1 for r in records if r.get("status") == CAPTURE_VERIFIED
-                ),
-                "skipped": sum(1 for r in records if r.get("status") == SKIPPED),
-                "inconclusive": sum(
-                    1 for r in records if r.get("status") == INCONCLUSIVE
-                ),
-                "drift": drift,
-                "checked_at_unix": int(time.time()),
-                "healthy": not drift and not unreadable and not errored,
-                "records": records,
-            }
-            if args.strict and not result["healthy"]:
-                emit(result, not args.compact)
-                return 1
+            result = _run_verify_oracles(runtime, args)
         elif args.command == "upgrade":
             from .updater import check_for_update, run_upgrade
 
@@ -1215,6 +1270,8 @@ def main(argv: list[str] | None = None) -> int:
             )
         else:
             raise AgentWebError(f"Unknown command {args.command}")
+        if isinstance(result, int):
+            return result
         emit(result, not args.compact)
         return 0
     except (AgentWebError, FileNotFoundError, KeyError, ValueError) as exc:

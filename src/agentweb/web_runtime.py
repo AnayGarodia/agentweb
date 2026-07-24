@@ -670,6 +670,483 @@ class WebRuntime:
         finally:
             client.close()
 
+    def _confirm_gate(
+        self, client: Any, ref: Any, index: int, confirm: bool
+    ) -> None:
+        risk = self._control_risk(client, str(ref or ""))
+        if risk and not confirm:
+            raise AgentWebError(
+                f"web step {index + 1} may change website state ({risk}); repeat with confirm=true"
+            )
+
+    @staticmethod
+    def _step_text(step: dict[str, Any], index: int, kind: str) -> str:
+        if "text" in step and "value" in step and step["text"] != step["value"]:
+            raise AgentWebError(
+                f"{kind} action received conflicting text and value fields",
+                code="invalid_web_action",
+                field=f"steps.{index}.text",
+            )
+        if "text" not in step and "value" not in step:
+            raise AgentWebError(
+                f"{kind} action requires a text field",
+                code="missing_input",
+                field=f"steps.{index}.text",
+            )
+        return str(step.get("text", step.get("value")) or "")
+
+    def _step_goto(self, client: Any, step: dict[str, Any]) -> Any:
+        url = self._validate_url(str(step.get("url") or ""))
+        client.call("Page.navigate", {"url": url})
+        self._wait_ready(
+            client,
+            int(step.get("timeout_seconds", 20)),
+            expected_url=url,
+        )
+        return {"url": url}
+
+    def _step_history(self, client: Any, step: dict[str, Any], kind: str) -> Any:
+        history = client.call("Page.getNavigationHistory")
+        entries = history.get("entries") or []
+        current = int(history.get("currentIndex", 0))
+        target_index = current - 1 if kind == "back" else current + 1
+        if target_index < 0 or target_index >= len(entries):
+            raise AgentWebError(
+                f"cannot navigate {kind}; no history entry is available"
+            )
+        target_entry = entries[target_index]
+        self._validate_url(str(target_entry.get("url") or ""))
+        client.call(
+            "Page.navigateToHistoryEntry", {"entryId": target_entry["id"]}
+        )
+        self._wait_ready(client, int(step.get("timeout_seconds", 20)))
+        return {"url": target_entry.get("url")}
+
+    def _step_fill(self, client: Any, step: dict[str, Any], index: int) -> Any:
+        value = json.dumps(self._step_text(step, index, "fill"))
+        return self._evaluate_ref(
+            client,
+            str(step.get("ref") or ""),
+            f"el.focus(); if(el.isContentEditable){{el.textContent={value};}}else{{const proto=el.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype; const setter=Object.getOwnPropertyDescriptor(proto,'value'); if(setter&&setter.set) setter.set.call(el,{value}); else el.value={value};}} el.dispatchEvent(new InputEvent('input',{{bubbles:true,inputType:'insertText',data:{value}}})); el.dispatchEvent(new Event('change',{{bubbles:true}})); el.dispatchEvent(new KeyboardEvent('keyup',{{bubbles:true,key:'Unidentified'}})); return true;",
+        )
+
+    def _step_type(self, client: Any, step: dict[str, Any], index: int) -> Any:
+        typed = self._step_text(step, index, "type")
+        if len(typed) > 5000:
+            raise AgentWebError("typed text cannot exceed 5000 characters")
+        self._evaluate_ref(
+            client,
+            str(step.get("ref") or ""),
+            "el.focus(); return true;",
+        )
+        if step.get("clear", True):
+            self._evaluate_ref(
+                client,
+                str(step.get("ref") or ""),
+                "if(el.isContentEditable) el.textContent=''; else el.value=''; el.dispatchEvent(new InputEvent('input',{bubbles:true,inputType:'deleteContentBackward',data:null})); return true;",
+            )
+        for character in typed:
+            client.call(
+                "Input.dispatchKeyEvent",
+                {
+                    "type": "keyDown",
+                    "key": character,
+                    "text": character,
+                    "unmodifiedText": character,
+                },
+            )
+            client.call(
+                "Input.dispatchKeyEvent",
+                {"type": "keyUp", "key": character},
+            )
+        return {"characters": len(typed)}
+
+    _PRESS_NAMED_KEYS = frozenset(
+        {
+            "Enter",
+            "Escape",
+            "Tab",
+            "ArrowUp",
+            "ArrowDown",
+            "ArrowLeft",
+            "ArrowRight",
+            "Backspace",
+            "Delete",
+            " ",
+            "Home",
+            "End",
+            "PageUp",
+            "PageDown",
+            "Insert",
+        }
+    )
+
+    def _step_press(
+        self, client: Any, step: dict[str, Any], index: int, confirm: bool
+    ) -> Any:
+        key = str(step.get("key") or "")
+        if key not in self._PRESS_NAMED_KEYS and not re.fullmatch(
+            r"F(?:[1-9]|1[0-2])|.", key
+        ):
+            raise AgentWebError("press key is not allowed")
+        ref = step.get("ref")
+        if ref:
+            if key == "Enter":
+                self._confirm_gate(client, ref, index, confirm)
+            self._evaluate_ref(client, str(ref), "el.focus(); return true;")
+        modifiers = (
+            (1 if step.get("alt") else 0)
+            | (2 if step.get("ctrl") else 0)
+            | (4 if step.get("meta") else 0)
+            | (8 if step.get("shift") else 0)
+        )
+        client.call(
+            "Input.dispatchKeyEvent",
+            {"type": "keyDown", "key": key, "modifiers": modifiers},
+        )
+        client.call(
+            "Input.dispatchKeyEvent",
+            {"type": "keyUp", "key": key, "modifiers": modifiers},
+        )
+        return True
+
+    def _step_upload(
+        self, client: Any, step: dict[str, Any], index: int, confirm: bool
+    ) -> Any:
+        if not confirm:
+            raise AgentWebError(
+                f"web step {index + 1} can upload data to the website; repeat with confirm=true"
+            )
+        upload = Path(str(step.get("path") or "")).expanduser().resolve()
+        if not upload.is_file():
+            raise AgentWebError("upload path must be an existing file")
+        node_id = self._node_id_for_ref(client, str(step.get("ref") or ""))
+        client.call(
+            "DOM.setFileInputFiles",
+            {"nodeId": node_id, "files": [str(upload)]},
+        )
+        return {"filename": upload.name, "bytes": upload.stat().st_size}
+
+    def _step_drag(
+        self, client: Any, step: dict[str, Any], index: int, confirm: bool
+    ) -> Any:
+        if not confirm:
+            raise AgentWebError(
+                f"web step {index + 1} may reorder or change website state; repeat with confirm=true"
+            )
+        source = self._control_center(client, str(step.get("ref") or ""))
+        if step.get("target_ref"):
+            target = self._control_center(
+                client, str(step.get("target_ref"))
+            )
+        else:
+            target = {
+                "x": float(step.get("x", source["x"])),
+                "y": float(step.get("y", source["y"])),
+            }
+        client.call(
+            "Input.dispatchMouseEvent", {"type": "mouseMoved", **source}
+        )
+        client.call(
+            "Input.dispatchMouseEvent",
+            {
+                "type": "mousePressed",
+                "button": "left",
+                "clickCount": 1,
+                **source,
+            },
+        )
+        for position in range(1, 11):
+            ratio = position / 10
+            client.call(
+                "Input.dispatchMouseEvent",
+                {
+                    "type": "mouseMoved",
+                    "button": "left",
+                    "buttons": 1,
+                    "x": source["x"] + (target["x"] - source["x"]) * ratio,
+                    "y": source["y"] + (target["y"] - source["y"]) * ratio,
+                },
+            )
+        client.call(
+            "Input.dispatchMouseEvent",
+            {
+                "type": "mouseReleased",
+                "button": "left",
+                "clickCount": 1,
+                **target,
+            },
+        )
+        return {"from": source, "to": target}
+
+    def _step_scroll(self, client: Any, step: dict[str, Any]) -> Any:
+        if step.get("ref"):
+            return self._evaluate_ref(
+                client,
+                str(step.get("ref")),
+                "el.scrollIntoView({block:'center',behavior:'instant'}); return true;",
+            )
+        delta_y = int(step.get("delta_y", 700))
+        if abs(delta_y) > 10000:
+            raise AgentWebError("scroll delta_y cannot exceed 10000")
+        return self._evaluate(
+            client, f"window.scrollBy(0,{delta_y}); window.scrollY"
+        )
+
+    def _step_screenshot(self, client: Any, step: dict[str, Any]) -> Any:
+        requested = step.get("path")
+        if requested:
+            screenshot_path = Path(str(requested)).expanduser().resolve()
+            screenshot_path.parent.mkdir(parents=True, exist_ok=True)
+        else:
+            screenshot_dir = self.root / "screenshots"
+            screenshot_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
+            screenshot_path = (
+                screenshot_dir / f"page-{int(time.time() * 1000)}.png"
+            )
+        captured = client.call(
+            "Page.captureScreenshot",
+            {
+                "format": "png",
+                "captureBeyondViewport": bool(step.get("full_page", False)),
+            },
+        )
+        screenshot_path.write_bytes(base64.b64decode(captured["data"]))
+        return {
+            "path": str(screenshot_path),
+            "bytes": screenshot_path.stat().st_size,
+        }
+
+    def _step_download(
+        self, client: Any, step: dict[str, Any], index: int, confirm: bool
+    ) -> Any:
+        download_dir = (
+            Path(
+                str(
+                    step.get("output_directory")
+                    or (self.root / "downloads")
+                )
+            )
+            .expanduser()
+            .resolve()
+        )
+        download_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
+        before = {
+            item.name for item in download_dir.iterdir() if item.is_file()
+        }
+        client.call(
+            "Browser.setDownloadBehavior",
+            {
+                "behavior": "allow",
+                "downloadPath": str(download_dir),
+                "eventsEnabled": True,
+            },
+        )
+        self._confirm_gate(client, step.get("ref"), index, confirm)
+        self._evaluate_ref(
+            client, str(step.get("ref") or ""), "el.click(); return true;"
+        )
+        deadline = time.monotonic() + min(
+            max(int(step.get("timeout_seconds", 30)), 1), 120
+        )
+        completed_files: list[Path] = []
+        while time.monotonic() < deadline:
+            completed_files = [
+                item
+                for item in download_dir.iterdir()
+                if item.is_file()
+                and item.name not in before
+                and not item.name.endswith((".crdownload", ".tmp"))
+            ]
+            partial = any(
+                item.name.endswith((".crdownload", ".tmp"))
+                for item in download_dir.iterdir()
+            )
+            if completed_files and not partial:
+                break
+            time.sleep(0.2)
+        if not completed_files:
+            raise AgentWebError("download did not complete before timeout")
+        return {
+            "files": [
+                {"path": str(item), "bytes": item.stat().st_size}
+                for item in completed_files
+            ]
+        }
+
+    def _step_dialog(
+        self, client: Any, step: dict[str, Any], index: int, confirm: bool
+    ) -> Any:
+        accept = bool(step.get("accept", True))
+        if accept and not confirm:
+            raise AgentWebError(
+                f"web step {index + 1} accepts a website confirmation dialog; repeat with confirm=true"
+            )
+        params: dict[str, Any] = {"accept": accept}
+        if step.get("prompt_text") is not None:
+            params["promptText"] = str(step.get("prompt_text"))
+        client.call("Page.handleJavaScriptDialog", params)
+        return {"accepted": accept}
+
+    @staticmethod
+    def _step_wait(step: dict[str, Any], index: int) -> Any:
+        if (
+            "ms" in step
+            and "milliseconds" in step
+            and step["ms"] != step["milliseconds"]
+        ):
+            raise AgentWebError(
+                "wait action received conflicting ms and milliseconds fields",
+                code="invalid_web_action",
+                field=f"steps.{index}.ms",
+            )
+        raw_ms = step.get("ms", step.get("milliseconds", 500))
+        milliseconds = int(500 if raw_ms is None else raw_ms)
+        if milliseconds < 0 or milliseconds > 15000:
+            raise AgentWebError(
+                "wait milliseconds must be between 0 and 15000"
+            )
+        time.sleep(milliseconds / 1000)
+        return {"waited_ms": milliseconds}
+
+    def _execute_step(
+        self, client: Any, step: dict[str, Any], index: int, confirm: bool
+    ) -> Any:
+        kind = step.get("action")
+        ref = step.get("ref")
+        if kind == "goto":
+            return self._step_goto(client, step)
+        if kind in {"back", "forward"}:
+            return self._step_history(client, step, kind)
+        if kind == "reload":
+            client.call(
+                "Page.reload",
+                {"ignoreCache": bool(step.get("ignore_cache", False))},
+            )
+            self._wait_ready(client, int(step.get("timeout_seconds", 20)))
+            return True
+        if kind == "click":
+            self._confirm_gate(client, ref, index, confirm)
+            return self._evaluate_ref(
+                client, str(ref or ""), "el.click(); return true;"
+            )
+        if kind == "double_click":
+            self._confirm_gate(client, ref, index, confirm)
+            return self._evaluate_ref(
+                client,
+                str(ref or ""),
+                "el.dispatchEvent(new MouseEvent('dblclick',{bubbles:true,cancelable:true,view:window})); return true;",
+            )
+        if kind == "fill":
+            return self._step_fill(client, step, index)
+        if kind == "type":
+            return self._step_type(client, step, index)
+        if kind == "select":
+            self._confirm_gate(client, ref, index, confirm)
+            value = json.dumps(str(step.get("value") or ""))
+            return self._evaluate_ref(
+                client,
+                str(ref or ""),
+                f"el.value={value}; el.dispatchEvent(new Event('change',{{bubbles:true}})); return el.value;",
+            )
+        if kind in {"check", "uncheck"}:
+            self._confirm_gate(client, ref, index, confirm)
+            checked = "true" if kind == "check" else "false"
+            return self._evaluate_ref(
+                client,
+                str(ref or ""),
+                f"const desired={checked}; if(el.checked!==desired){{if(!desired&&el.type==='radio') throw new Error('radio buttons cannot be unchecked directly; check another option'); el.click();}} return el.checked;",
+            )
+        if kind == "submit":
+            self._confirm_gate(client, ref, index, confirm)
+            return self._evaluate_ref(
+                client,
+                str(ref or ""),
+                "const form=el.tagName==='FORM'?el:el.form; if(!form) throw new Error('control has no form'); form.requestSubmit(); return true;",
+            )
+        if kind in {"focus", "blur"}:
+            return self._evaluate_ref(
+                client,
+                str(ref or ""),
+                f"el.{kind}(); return true;",
+            )
+        if kind == "press":
+            return self._step_press(client, step, index, confirm)
+        if kind == "upload":
+            return self._step_upload(client, step, index, confirm)
+        if kind == "hover":
+            return self._evaluate_ref(
+                client,
+                str(ref or ""),
+                "el.scrollIntoView({block:'center'}); el.dispatchEvent(new PointerEvent('pointerover',{bubbles:true})); el.dispatchEvent(new MouseEvent('mouseover',{bubbles:true})); return true;",
+            )
+        if kind == "drag":
+            return self._step_drag(client, step, index, confirm)
+        if kind == "scroll":
+            return self._step_scroll(client, step)
+        if kind == "screenshot":
+            return self._step_screenshot(client, step)
+        if kind == "download":
+            return self._step_download(client, step, index, confirm)
+        if kind == "dialog":
+            return self._step_dialog(client, step, index, confirm)
+        if kind == "wait":
+            return self._step_wait(step, index)
+        raise AgentWebError(
+            "web action must be goto, back, forward, reload, click, double_click, fill, type, select, check, uncheck, submit, focus, blur, press, upload, hover, drag, scroll, screenshot, download, dialog, or wait"
+        )
+
+    def _capture_trace(
+        self,
+        client: Any,
+        steps: list[dict[str, Any]],
+        capture_name: str,
+        page_before: Any,
+        page: Any,
+    ) -> dict[str, Any]:
+        from .capture import (
+            capture_response_bodies,
+            compile_network_trace,
+            write_trace,
+        )
+
+        events = client.drain_events(timeout=0.5)
+        response_bodies = capture_response_bodies(
+            client,
+            events,
+            allowed_domains=self.allowed_domains,
+        )
+        page_after = page
+        if page_after is None:
+            try:
+                page_after = self._inspect_when_ready(client)
+            except AgentWebError:
+                page_after = None
+        trace = compile_network_trace(
+            events,
+            site=self.site,
+            profile=self.profile,
+            allowed_domains=self.allowed_domains,
+            action_steps=steps,
+            page_before=page_before,
+            page_after=page_after,
+            response_bodies=response_bodies,
+        )
+        # Keep the author's stable operation name inside the portable
+        # trace. Batch compilation should not have to reverse-engineer
+        # it from a timestamped filename.
+        trace["operation"] = capture_name
+        trace_path = write_trace(self.root / "captures", capture_name, trace)
+        return {
+            "path": str(trace_path),
+            "request_count": trace["request_count"],
+            "redacted": True,
+            "response_bodies_captured": len(response_bodies),
+            "endpoint_count": trace["compiler"]["endpoint_count"],
+            "recipe_draft": trace["compiler"]["recipe_draft"],
+            "review_required": trace["compiler"]["review_required"],
+        }
+
     def action(
         self,
         steps: list[dict[str, Any]],
@@ -698,413 +1175,7 @@ class WebRuntime:
                         dict(step["target"]),
                         step_number=index + 1,
                     )
-                if kind == "goto":
-                    url = self._validate_url(str(step.get("url") or ""))
-                    client.call("Page.navigate", {"url": url})
-                    self._wait_ready(
-                        client,
-                        int(step.get("timeout_seconds", 20)),
-                        expected_url=url,
-                    )
-                    result: Any = {"url": url}
-                elif kind in {"back", "forward"}:
-                    history = client.call("Page.getNavigationHistory")
-                    entries = history.get("entries") or []
-                    current = int(history.get("currentIndex", 0))
-                    target_index = current - 1 if kind == "back" else current + 1
-                    if target_index < 0 or target_index >= len(entries):
-                        raise AgentWebError(
-                            f"cannot navigate {kind}; no history entry is available"
-                        )
-                    target_entry = entries[target_index]
-                    self._validate_url(str(target_entry.get("url") or ""))
-                    client.call(
-                        "Page.navigateToHistoryEntry", {"entryId": target_entry["id"]}
-                    )
-                    self._wait_ready(client, int(step.get("timeout_seconds", 20)))
-                    result = {"url": target_entry.get("url")}
-                elif kind == "reload":
-                    client.call(
-                        "Page.reload",
-                        {"ignoreCache": bool(step.get("ignore_cache", False))},
-                    )
-                    self._wait_ready(client, int(step.get("timeout_seconds", 20)))
-                    result = True
-                elif kind == "click":
-                    risk = self._control_risk(client, str(step.get("ref") or ""))
-                    if risk and not confirm:
-                        raise AgentWebError(
-                            f"web step {index + 1} may change website state ({risk}); repeat with confirm=true"
-                        )
-                    result = self._evaluate_ref(
-                        client, str(step.get("ref") or ""), "el.click(); return true;"
-                    )
-                elif kind == "double_click":
-                    risk = self._control_risk(client, str(step.get("ref") or ""))
-                    if risk and not confirm:
-                        raise AgentWebError(
-                            f"web step {index + 1} may change website state ({risk}); repeat with confirm=true"
-                        )
-                    result = self._evaluate_ref(
-                        client,
-                        str(step.get("ref") or ""),
-                        "el.dispatchEvent(new MouseEvent('dblclick',{bubbles:true,cancelable:true,view:window})); return true;",
-                    )
-                elif kind == "fill":
-                    if (
-                        "text" in step
-                        and "value" in step
-                        and step["text"] != step["value"]
-                    ):
-                        raise AgentWebError(
-                            "fill action received conflicting text and value fields",
-                            code="invalid_web_action",
-                            field=f"steps.{index}.text",
-                        )
-                    if "text" not in step and "value" not in step:
-                        raise AgentWebError(
-                            "fill action requires a text field",
-                            code="missing_input",
-                            field=f"steps.{index}.text",
-                        )
-                    value = json.dumps(str(step.get("text", step.get("value")) or ""))
-                    result = self._evaluate_ref(
-                        client,
-                        str(step.get("ref") or ""),
-                        f"el.focus(); if(el.isContentEditable){{el.textContent={value};}}else{{const proto=el.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype; const setter=Object.getOwnPropertyDescriptor(proto,'value'); if(setter&&setter.set) setter.set.call(el,{value}); else el.value={value};}} el.dispatchEvent(new InputEvent('input',{{bubbles:true,inputType:'insertText',data:{value}}})); el.dispatchEvent(new Event('change',{{bubbles:true}})); el.dispatchEvent(new KeyboardEvent('keyup',{{bubbles:true,key:'Unidentified'}})); return true;",
-                    )
-                elif kind == "type":
-                    if (
-                        "text" in step
-                        and "value" in step
-                        and step["text"] != step["value"]
-                    ):
-                        raise AgentWebError(
-                            "type action received conflicting text and value fields",
-                            code="invalid_web_action",
-                            field=f"steps.{index}.text",
-                        )
-                    if "text" not in step and "value" not in step:
-                        raise AgentWebError(
-                            "type action requires a text field",
-                            code="missing_input",
-                            field=f"steps.{index}.text",
-                        )
-                    typed = str(step.get("text", step.get("value")) or "")
-                    if len(typed) > 5000:
-                        raise AgentWebError("typed text cannot exceed 5000 characters")
-                    self._evaluate_ref(
-                        client,
-                        str(step.get("ref") or ""),
-                        "el.focus(); return true;",
-                    )
-                    if step.get("clear", True):
-                        self._evaluate_ref(
-                            client,
-                            str(step.get("ref") or ""),
-                            "if(el.isContentEditable) el.textContent=''; else el.value=''; el.dispatchEvent(new InputEvent('input',{bubbles:true,inputType:'deleteContentBackward',data:null})); return true;",
-                        )
-                    for character in typed:
-                        client.call(
-                            "Input.dispatchKeyEvent",
-                            {
-                                "type": "keyDown",
-                                "key": character,
-                                "text": character,
-                                "unmodifiedText": character,
-                            },
-                        )
-                        client.call(
-                            "Input.dispatchKeyEvent",
-                            {"type": "keyUp", "key": character},
-                        )
-                    result = {"characters": len(typed)}
-                elif kind == "select":
-                    risk = self._control_risk(client, str(step.get("ref") or ""))
-                    if risk and not confirm:
-                        raise AgentWebError(
-                            f"web step {index + 1} may change website state ({risk}); repeat with confirm=true"
-                        )
-                    value = json.dumps(str(step.get("value") or ""))
-                    result = self._evaluate_ref(
-                        client,
-                        str(step.get("ref") or ""),
-                        f"el.value={value}; el.dispatchEvent(new Event('change',{{bubbles:true}})); return el.value;",
-                    )
-                elif kind in {"check", "uncheck"}:
-                    risk = self._control_risk(client, str(step.get("ref") or ""))
-                    if risk and not confirm:
-                        raise AgentWebError(
-                            f"web step {index + 1} may change website state ({risk}); repeat with confirm=true"
-                        )
-                    checked = "true" if kind == "check" else "false"
-                    result = self._evaluate_ref(
-                        client,
-                        str(step.get("ref") or ""),
-                        f"const desired={checked}; if(el.checked!==desired){{if(!desired&&el.type==='radio') throw new Error('radio buttons cannot be unchecked directly; check another option'); el.click();}} return el.checked;",
-                    )
-                elif kind == "submit":
-                    risk = self._control_risk(client, str(step.get("ref") or ""))
-                    if risk and not confirm:
-                        raise AgentWebError(
-                            f"web step {index + 1} may change website state ({risk}); repeat with confirm=true"
-                        )
-                    result = self._evaluate_ref(
-                        client,
-                        str(step.get("ref") or ""),
-                        "const form=el.tagName==='FORM'?el:el.form; if(!form) throw new Error('control has no form'); form.requestSubmit(); return true;",
-                    )
-                elif kind in {"focus", "blur"}:
-                    result = self._evaluate_ref(
-                        client,
-                        str(step.get("ref") or ""),
-                        f"el.{kind}(); return true;",
-                    )
-                elif kind == "press":
-                    key = str(step.get("key") or "")
-                    named = {
-                        "Enter",
-                        "Escape",
-                        "Tab",
-                        "ArrowUp",
-                        "ArrowDown",
-                        "ArrowLeft",
-                        "ArrowRight",
-                        "Backspace",
-                        "Delete",
-                        " ",
-                        "Home",
-                        "End",
-                        "PageUp",
-                        "PageDown",
-                        "Insert",
-                    }
-                    if key not in named and not re.fullmatch(
-                        r"F(?:[1-9]|1[0-2])|.", key
-                    ):
-                        raise AgentWebError("press key is not allowed")
-                    ref = step.get("ref")
-                    if ref:
-                        if key == "Enter":
-                            risk = self._control_risk(client, str(ref))
-                            if risk and not confirm:
-                                raise AgentWebError(
-                                    f"web step {index + 1} may change website state ({risk}); repeat with confirm=true"
-                                )
-                        self._evaluate_ref(client, str(ref), "el.focus(); return true;")
-                    modifiers = (
-                        (1 if step.get("alt") else 0)
-                        | (2 if step.get("ctrl") else 0)
-                        | (4 if step.get("meta") else 0)
-                        | (8 if step.get("shift") else 0)
-                    )
-                    client.call(
-                        "Input.dispatchKeyEvent",
-                        {"type": "keyDown", "key": key, "modifiers": modifiers},
-                    )
-                    client.call(
-                        "Input.dispatchKeyEvent",
-                        {"type": "keyUp", "key": key, "modifiers": modifiers},
-                    )
-                    result = True
-                elif kind == "upload":
-                    if not confirm:
-                        raise AgentWebError(
-                            f"web step {index + 1} can upload data to the website; repeat with confirm=true"
-                        )
-                    upload = Path(str(step.get("path") or "")).expanduser().resolve()
-                    if not upload.is_file():
-                        raise AgentWebError("upload path must be an existing file")
-                    node_id = self._node_id_for_ref(client, str(step.get("ref") or ""))
-                    client.call(
-                        "DOM.setFileInputFiles",
-                        {"nodeId": node_id, "files": [str(upload)]},
-                    )
-                    result = {"filename": upload.name, "bytes": upload.stat().st_size}
-                elif kind == "hover":
-                    result = self._evaluate_ref(
-                        client,
-                        str(step.get("ref") or ""),
-                        "el.scrollIntoView({block:'center'}); el.dispatchEvent(new PointerEvent('pointerover',{bubbles:true})); el.dispatchEvent(new MouseEvent('mouseover',{bubbles:true})); return true;",
-                    )
-                elif kind == "drag":
-                    if not confirm:
-                        raise AgentWebError(
-                            f"web step {index + 1} may reorder or change website state; repeat with confirm=true"
-                        )
-                    source = self._control_center(client, str(step.get("ref") or ""))
-                    if step.get("target_ref"):
-                        target = self._control_center(
-                            client, str(step.get("target_ref"))
-                        )
-                    else:
-                        target = {
-                            "x": float(step.get("x", source["x"])),
-                            "y": float(step.get("y", source["y"])),
-                        }
-                    client.call(
-                        "Input.dispatchMouseEvent", {"type": "mouseMoved", **source}
-                    )
-                    client.call(
-                        "Input.dispatchMouseEvent",
-                        {
-                            "type": "mousePressed",
-                            "button": "left",
-                            "clickCount": 1,
-                            **source,
-                        },
-                    )
-                    for position in range(1, 11):
-                        ratio = position / 10
-                        client.call(
-                            "Input.dispatchMouseEvent",
-                            {
-                                "type": "mouseMoved",
-                                "button": "left",
-                                "buttons": 1,
-                                "x": source["x"] + (target["x"] - source["x"]) * ratio,
-                                "y": source["y"] + (target["y"] - source["y"]) * ratio,
-                            },
-                        )
-                    client.call(
-                        "Input.dispatchMouseEvent",
-                        {
-                            "type": "mouseReleased",
-                            "button": "left",
-                            "clickCount": 1,
-                            **target,
-                        },
-                    )
-                    result = {"from": source, "to": target}
-                elif kind == "scroll":
-                    if step.get("ref"):
-                        result = self._evaluate_ref(
-                            client,
-                            str(step.get("ref")),
-                            "el.scrollIntoView({block:'center',behavior:'instant'}); return true;",
-                        )
-                    else:
-                        delta_y = int(step.get("delta_y", 700))
-                        if abs(delta_y) > 10000:
-                            raise AgentWebError("scroll delta_y cannot exceed 10000")
-                        result = self._evaluate(
-                            client, f"window.scrollBy(0,{delta_y}); window.scrollY"
-                        )
-                elif kind == "screenshot":
-                    requested = step.get("path")
-                    if requested:
-                        screenshot_path = Path(str(requested)).expanduser().resolve()
-                        screenshot_path.parent.mkdir(parents=True, exist_ok=True)
-                    else:
-                        screenshot_dir = self.root / "screenshots"
-                        screenshot_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
-                        screenshot_path = (
-                            screenshot_dir / f"page-{int(time.time() * 1000)}.png"
-                        )
-                    captured = client.call(
-                        "Page.captureScreenshot",
-                        {
-                            "format": "png",
-                            "captureBeyondViewport": bool(step.get("full_page", False)),
-                        },
-                    )
-                    screenshot_path.write_bytes(base64.b64decode(captured["data"]))
-                    result = {
-                        "path": str(screenshot_path),
-                        "bytes": screenshot_path.stat().st_size,
-                    }
-                elif kind == "download":
-                    download_dir = (
-                        Path(
-                            str(
-                                step.get("output_directory")
-                                or (self.root / "downloads")
-                            )
-                        )
-                        .expanduser()
-                        .resolve()
-                    )
-                    download_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
-                    before = {
-                        item.name for item in download_dir.iterdir() if item.is_file()
-                    }
-                    client.call(
-                        "Browser.setDownloadBehavior",
-                        {
-                            "behavior": "allow",
-                            "downloadPath": str(download_dir),
-                            "eventsEnabled": True,
-                        },
-                    )
-                    risk = self._control_risk(client, str(step.get("ref") or ""))
-                    if risk and not confirm:
-                        raise AgentWebError(
-                            f"web step {index + 1} may change website state ({risk}); repeat with confirm=true"
-                        )
-                    self._evaluate_ref(
-                        client, str(step.get("ref") or ""), "el.click(); return true;"
-                    )
-                    deadline = time.monotonic() + min(
-                        max(int(step.get("timeout_seconds", 30)), 1), 120
-                    )
-                    completed_files: list[Path] = []
-                    while time.monotonic() < deadline:
-                        completed_files = [
-                            item
-                            for item in download_dir.iterdir()
-                            if item.is_file()
-                            and item.name not in before
-                            and not item.name.endswith((".crdownload", ".tmp"))
-                        ]
-                        partial = any(
-                            item.name.endswith((".crdownload", ".tmp"))
-                            for item in download_dir.iterdir()
-                        )
-                        if completed_files and not partial:
-                            break
-                        time.sleep(0.2)
-                    if not completed_files:
-                        raise AgentWebError("download did not complete before timeout")
-                    result = {
-                        "files": [
-                            {"path": str(item), "bytes": item.stat().st_size}
-                            for item in completed_files
-                        ]
-                    }
-                elif kind == "dialog":
-                    accept = bool(step.get("accept", True))
-                    if accept and not confirm:
-                        raise AgentWebError(
-                            f"web step {index + 1} accepts a website confirmation dialog; repeat with confirm=true"
-                        )
-                    params: dict[str, Any] = {"accept": accept}
-                    if step.get("prompt_text") is not None:
-                        params["promptText"] = str(step.get("prompt_text"))
-                    client.call("Page.handleJavaScriptDialog", params)
-                    result = {"accepted": accept}
-                elif kind == "wait":
-                    if (
-                        "ms" in step
-                        and "milliseconds" in step
-                        and step["ms"] != step["milliseconds"]
-                    ):
-                        raise AgentWebError(
-                            "wait action received conflicting ms and milliseconds fields",
-                            code="invalid_web_action",
-                            field=f"steps.{index}.ms",
-                        )
-                    raw_ms = step.get("ms", step.get("milliseconds", 500))
-                    milliseconds = int(raw_ms) if raw_ms is not None else 500
-                    if milliseconds < 0 or milliseconds > 15000:
-                        raise AgentWebError(
-                            "wait milliseconds must be between 0 and 15000"
-                        )
-                    time.sleep(milliseconds / 1000)
-                    result = {"waited_ms": milliseconds}
-                else:
-                    raise AgentWebError(
-                        "web action must be goto, back, forward, reload, click, double_click, fill, type, select, check, uncheck, submit, focus, blur, press, upload, hover, drag, scroll, screenshot, download, dialog, or wait"
-                    )
+                result = self._execute_step(client, step, index, confirm)
                 wait_after = int(
                     step.get(
                         "wait_after_ms",
@@ -1129,48 +1200,9 @@ class WebRuntime:
                     inspection_error = str(exc)
             trace_result = None
             if capture_name:
-                from .capture import (
-                    capture_response_bodies,
-                    compile_network_trace,
-                    write_trace,
+                trace_result = self._capture_trace(
+                    client, steps, capture_name, page_before, page
                 )
-
-                events = client.drain_events(timeout=0.5)
-                response_bodies = capture_response_bodies(
-                    client,
-                    events,
-                    allowed_domains=self.allowed_domains,
-                )
-                page_after = page
-                if page_after is None:
-                    try:
-                        page_after = self._inspect_when_ready(client)
-                    except AgentWebError:
-                        page_after = None
-                trace = compile_network_trace(
-                    events,
-                    site=self.site,
-                    profile=self.profile,
-                    allowed_domains=self.allowed_domains,
-                    action_steps=steps,
-                    page_before=page_before,
-                    page_after=page_after,
-                    response_bodies=response_bodies,
-                )
-                # Keep the author's stable operation name inside the portable
-                # trace. Batch compilation should not have to reverse-engineer
-                # it from a timestamped filename.
-                trace["operation"] = capture_name
-                trace_path = write_trace(self.root / "captures", capture_name, trace)
-                trace_result = {
-                    "path": str(trace_path),
-                    "request_count": trace["request_count"],
-                    "redacted": True,
-                    "response_bodies_captured": len(response_bodies),
-                    "endpoint_count": trace["compiler"]["endpoint_count"],
-                    "recipe_draft": trace["compiler"]["recipe_draft"],
-                    "review_required": trace["compiler"]["review_required"],
-                }
             return {
                 "operation": f"{self.site}.web_action",
                 "completed_steps": len(results),
