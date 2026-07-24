@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "flows": [
+    {
+      "command": "repository",
+      "status": "passed",
+      "browser_capture": "evidence/github-public-2026-07-21.json#flows.repository",
+      "direct_recipe": "adapter.py#Adapter.repository",
+      "fixture": "evidence/conformance.json#flows.repository",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "branches",
+      "status": "passed",
+      "browser_capture": "evidence/github-public-2026-07-21.json#flows.branches",
+      "direct_recipe": "adapter.py#Adapter.branches",
+      "fixture": "evidence/conformance.json#flows.branches",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "tags",
+      "status": "passed",
+      "browser_capture": "evidence/github-public-2026-07-21.json#flows.tags",
+      "direct_recipe": "adapter.py#Adapter.tags",
+      "fixture": "evidence/conformance.json#flows.tags",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "website_graphql",
+      "status": "passed",
+      "browser_capture": "evidence/github-public-2026-07-21.json#flows.website_graphql",
+      "direct_recipe": "adapter.py#Adapter.website_graphql",
+      "fixture": "evidence/conformance.json#flows.website_graphql",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "commits",
+      "status": "passed",
+      "browser_capture": "evidence/github-public-2026-07-21.json#flows.commits",
+      "direct_recipe": "adapter.py#Adapter.commits",
+      "fixture": "evidence/conformance.json#flows.commits",
+      "last_verified": "2026-07-21"
+    }
+  ]
+}

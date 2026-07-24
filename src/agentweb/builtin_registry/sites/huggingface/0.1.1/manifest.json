@@ -13272,5 +13272,5 @@
       "path_regex": "/papers/(?P<paper_id>[^/]+)/?"
     }
   ],
-  "version": "0.1.0"
+  "version": "0.1.1"
 }

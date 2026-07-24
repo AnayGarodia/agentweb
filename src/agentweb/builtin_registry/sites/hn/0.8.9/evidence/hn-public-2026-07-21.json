@@ -1,0 +1,21 @@
+{
+  "captured_at": "2026-07-21",
+  "site": "hn",
+  "flows": {
+    "stories": {
+      "kind": "top",
+      "browser_first_titles": [
+        "OpenAI and Hugging Face address security incident during model evaluation",
+        "FreeInk: Open ecosystem for e-readers",
+        "Gemini 3.6 Flash, 3.5 Flash-Lite, and 3.5 Flash Cyber"
+      ],
+      "direct_first_titles": [
+        "OpenAI and Hugging Face address security incident during model evaluation",
+        "FreeInk: Open ecosystem for e-readers",
+        "Gemini 3.6 Flash, 3.5 Flash-Lite, and 3.5 Flash Cyber"
+      ],
+      "matched": true,
+      "note": "Scores and comment counts are live and can change between observations."
+    }
+  }
+}

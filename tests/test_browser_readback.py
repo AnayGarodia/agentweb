@@ -234,8 +234,8 @@ def test_browser_execute_isolated_does_not_seed(
 def test_browser_transport_op_routes_through_browser(
     tmp_path: Path, monkeypatch
 ) -> None:
-    # A bundled op declaring transport: "browser" (LinkedIn member ops) is
-    # dispatched through browser_execute, never the browserless execute path.
+    # An op declaring transport: "browser" is dispatched through
+    # browser_execute, never the browserless execute path.
     import agentweb.browser_readback as br
     import agentweb.cli as cli
 
@@ -249,9 +249,29 @@ def test_browser_transport_op_routes_through_browser(
     def fail_execute(self, *a, **k):  # pragma: no cover - must not be called
         raise AssertionError("browser-transport op must not use browserless execute")
 
+    class _Resolved:
+        site = "linkedin"
+        domain = "linkedin.com"
+        url = None
+
     monkeypatch.setenv("AGENTWEB_HOME", str(tmp_path))
     monkeypatch.setattr(br, "browser_execute", fake_browser_execute)
     monkeypatch.setattr(Runtime, "execute", fail_execute)
+    monkeypatch.setattr(Runtime, "resolve", lambda self, target: _Resolved())
+    monkeypatch.setattr(Runtime, "resolve_action", lambda self, site, action: action)
+    monkeypatch.setattr(
+        Runtime,
+        "describe",
+        lambda self, site: {
+            "commands": {
+                "account_status": {
+                    "transport": "browser",
+                    "cli": {"positionals": []},
+                    "input_schema": {"type": "object", "properties": {}},
+                }
+            }
+        },
+    )
     assert cli.main(["linkedin.com", "account_status"]) == 0
     assert seen["site"] in {"linkedin", "linkedin.com"}
     assert seen["operation"] == "account_status"

@@ -56,6 +56,8 @@ def test_run_upgrade_runs_installer_when_newer() -> None:
         runner=lambda cmd: calls.append(cmd) or 0,
     )
     assert result["upgraded"] is True
+    assert result["installed"] == "0.20.0"
+    assert result["previous"] == "0.19.3"
     assert len(calls) == 1 and calls[0][0] == "sh"
 
 

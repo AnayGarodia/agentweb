@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "site": "amazon",
+  "marketplace": "amazon.com",
+  "account_state": "signed_out",
+  "verified_at": "2026-07-21",
+  "browser": "Codex in-app browser",
+  "direct_transport": "curl_cffi:chrome",
+  "flows": {
+    "batch_products": {
+      "input": {"asins": ["B08Z6X4NK3", "B0FC2KJMNV"]},
+      "browser_capture": "Amazon Deals document plus data.amazon.com product-v2 batch Fetch",
+      "captured_contract": "public Deals HTML supplies encrypted-slate-token and csrfToken; both are replayed in request headers and never exposed to the caller",
+      "direct_result": {"status": 200, "count": 2, "missing_asins": [], "browser_required": false},
+      "direct_elapsed_ms": 1408.6,
+      "direct_wall_ms": 1790,
+      "legacy_comparison_wall_ms": 4540,
+      "speedup": 2.54,
+      "comparison": "exact title, price, list price, discount, and addability match against the existing two-product HTML comparison for the returned fields"
+    },
+    "deals": {
+      "input": {"query": "laptop", "limit": 5},
+      "browser_url": "https://www.amazon.com/s?k=laptop&i=todays-deals&ref=nb_sb_noss",
+      "direct_elapsed_ms": 1681.0,
+      "comparison": "exact ASIN, order, title, and price match for all five results",
+      "asins": ["B0GRVFY42Q", "B0GNLXPCMT", "B0H5QC6QW4", "B0GZZ6FNYD", "B0GLXHHYYD"],
+      "prices": [414.99, 449.99, 259.99, 664.98, 369.99]
+    },
+    "best_sellers": {
+      "input": {"department": "electronics", "limit": 5},
+      "browser_url": "https://www.amazon.com/Best-Sellers/zgbs/electronics",
+      "direct_elapsed_ms": 1071.4,
+      "comparison": "exact rank, ASIN, title, and price match for all five results",
+      "asins": ["B08JHCVHTY", "B0DCH8VDXF", "B0GJTFXNRX", "B0DGHMNQ5Z", "B0F7Z4QZTT"],
+      "prices": [11.99, 19.0, 27.0, 99.0, 49.99]
+    },
+    "product": {
+      "input": {"asin": "B0DCH8VDXF"},
+      "direct_elapsed_ms": 3555.8,
+      "comparison": "exact title, price, rating, and availability match",
+      "title": "Apple EarPods Headphones with USB-C Plug, Wired Ear Buds with Built-in Remote to Control Music, Phone Calls, and Volume",
+      "price": 19.0,
+      "rating": "4.6 out of 5 stars",
+      "availability": "In Stock"
+    },
+    "anonymous_cart": {
+      "input": {"asin": "B0DCH8VDXF", "quantity": 1, "cart_scope": "anonymous"},
+      "browser_result": {"after_add_count": 1, "after_add_subtotal": 19.0, "after_remove_count": 0, "after_remove_subtotal": 0.0},
+      "direct_result": {"after_add_count": 1, "after_add_subtotal": 19.0, "after_remove_count": 0, "after_remove_subtotal": 0.0},
+      "direct_elapsed_ms": {"add_and_verify": 6444.1, "read": 1403.2, "remove_and_verify": 3087.9},
+      "comparison": "same item, quantity, unit price, and zero-item state after removal; both routes normalize the empty subtotal to $0.00"
+    }
+  },
+  "five_run_benchmark": {
+    "method": "Warm browser session and warm direct process; direct response cache disabled; browser waits until compared result fields are present. Deals browser timing includes opening Deals, filling the search form, submitting, and observing results.",
+    "browser_ms": {
+      "product": {"samples": [1041, 1581, 1586, 1415, 1497], "median": 1497, "p90_nearest_rank": 1586},
+      "deals": {"samples": [2219, 2370, 2277, 2062, 2157], "median": 2219, "p90_nearest_rank": 2370},
+      "best_sellers": {"samples": [766, 692, 703, 712, 750], "median": 712, "p90_nearest_rank": 766}
+    },
+    "direct_ms": {
+      "product": {"samples": [1922.1, 1585.8, 1537.5, 1701.0, 1652.4], "median": 1652.4, "p90_nearest_rank": 1922.1},
+      "deals": {"samples": [1268.1, 1099.0, 923.7, 870.9, 1019.0], "median": 1019.0, "p90_nearest_rank": 1268.1},
+      "best_sellers": {"samples": [829.9, 706.8, 794.7, 729.6, 809.7], "median": 794.7, "p90_nearest_rank": 829.9}
+    },
+    "interpretation": "Direct replay was 2.18x faster for the multi-step Deals search, but about 10 percent slower for the one-page product and Best Sellers reads. The network benchmark excludes model reasoning and token cost; direct replay still needs one compact structured call while browser automation needs navigation, page inspection, interaction, and extraction."
+  },
+  "limitations": [
+    "The browser and direct anonymous carts used separate cookie jars, so semantic state was compared rather than shared-session identity.",
+    "The benchmark measures website and automation wall time, not model token usage; this runtime does not expose an exact per-tool token counter.",
+    "No authenticated Amazon operation was tested because no account was available."
+  ]
+}

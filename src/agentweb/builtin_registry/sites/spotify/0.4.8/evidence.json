@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "flows": [
+    {
+      "command": "devices",
+      "status": "passed",
+      "browser_capture": "evidence/spotify-web-player-2026-07-21.json#flows.devices",
+      "direct_recipe": "adapter.py#Adapter.devices",
+      "fixture": "evidence/conformance.json#flows.devices",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "recently_played",
+      "status": "passed",
+      "browser_capture": "evidence/spotify-web-player-2026-07-21.json#flows.recently_played",
+      "direct_recipe": "adapter.py#Adapter.recently_played",
+      "fixture": "evidence/conformance.json#flows.recently_played",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "play",
+      "status": "passed",
+      "browser_capture": "evidence/spotify-web-player-2026-07-21.json#flows.play",
+      "direct_recipe": "adapter.py#Adapter.play",
+      "fixture": "evidence/conformance.json#flows.play",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "pause",
+      "status": "passed",
+      "browser_capture": "evidence/spotify-web-player-2026-07-21.json#flows.pause",
+      "direct_recipe": "adapter.py#Adapter.pause",
+      "fixture": "evidence/conformance.json#flows.pause",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "shuffle",
+      "status": "passed",
+      "browser_capture": "evidence/spotify-web-player-2026-07-21.json#flows.shuffle",
+      "direct_recipe": "adapter.py#Adapter.shuffle",
+      "fixture": "evidence/conformance.json#flows.shuffle",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "repeat",
+      "status": "passed",
+      "browser_capture": "evidence/spotify-web-player-2026-07-21.json#flows.repeat",
+      "direct_recipe": "adapter.py#Adapter.repeat",
+      "fixture": "evidence/conformance.json#flows.repeat",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "add_to_queue",
+      "status": "passed",
+      "browser_capture": "evidence/spotify-web-player-2026-07-21.json#flows.add_to_queue_and_next",
+      "direct_recipe": "adapter.py#Adapter.add_to_queue",
+      "fixture": "evidence/conformance.json#flows.add_to_queue",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "next",
+      "status": "passed",
+      "browser_capture": "evidence/spotify-web-player-2026-07-21.json#flows.add_to_queue_and_next",
+      "direct_recipe": "adapter.py#Adapter.next",
+      "fixture": "evidence/conformance.json#flows.next",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "search",
+      "status": "passed",
+      "browser_capture": "evidence/spotify-web-player-2026-07-21.json#flows.search",
+      "direct_recipe": "adapter.py#Adapter.search",
+      "fixture": "evidence/conformance.json#flows.search",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "account",
+      "status": "passed",
+      "browser_capture": "evidence/spotify-web-player-2026-07-21.json#flows.account",
+      "direct_recipe": "adapter.py#Adapter.account",
+      "fixture": "evidence/conformance.json#flows.account",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "playlists",
+      "status": "passed",
+      "browser_capture": "evidence/spotify-web-player-2026-07-21.json#flows.playlists",
+      "direct_recipe": "adapter.py#Adapter.playlists",
+      "fixture": "evidence/conformance.json#flows.playlists",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "library",
+      "status": "passed",
+      "browser_capture": "evidence/spotify-web-player-2026-07-21.json#flows.library_playlists",
+      "direct_recipe": "adapter.py#Adapter.library",
+      "fixture": "evidence/conformance.json#flows.library",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "playlist",
+      "status": "passed",
+      "browser_capture": "evidence/spotify-web-player-2026-07-21.json#flows.playlist_roundtrip",
+      "direct_recipe": "adapter.py#Adapter.playlist",
+      "fixture": "evidence/conformance.json#flows.playlist",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "create_playlist",
+      "status": "passed",
+      "browser_capture": "evidence/spotify-web-player-2026-07-21.json#flows.playlist_roundtrip",
+      "direct_recipe": "adapter.py#Adapter.create_playlist",
+      "fixture": "evidence/conformance.json#flows.create_playlist",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "add_playlist_items",
+      "status": "passed",
+      "browser_capture": "evidence/spotify-web-player-2026-07-21.json#flows.playlist_roundtrip",
+      "direct_recipe": "adapter.py#Adapter.add_playlist_items",
+      "fixture": "evidence/conformance.json#flows.add_playlist_items",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "update_playlist",
+      "status": "passed",
+      "browser_capture": "evidence/spotify-web-player-2026-07-21.json#flows.playlist_roundtrip",
+      "direct_recipe": "adapter.py#Adapter.update_playlist",
+      "fixture": "evidence/conformance.json#flows.update_playlist",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "remove_playlist_items",
+      "status": "passed",
+      "browser_capture": "evidence/spotify-web-player-2026-07-21.json#flows.playlist_roundtrip",
+      "direct_recipe": "adapter.py#Adapter.remove_playlist_items",
+      "fixture": "evidence/conformance.json#flows.remove_playlist_items",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "delete_playlist",
+      "status": "passed",
+      "browser_capture": "evidence/spotify-web-player-2026-07-21.json#flows.playlist_roundtrip",
+      "direct_recipe": "adapter.py#Adapter.delete_playlist",
+      "fixture": "evidence/conformance.json#flows.delete_playlist",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "replace_playlist_items",
+      "status": "passed",
+      "browser_capture": "evidence/spotify-web-player-2026-07-21.json#flows.playlist_replace_and_reorder",
+      "direct_recipe": "adapter.py#Adapter.replace_playlist_items",
+      "fixture": "evidence/conformance.json#flows.replace_playlist_items",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "reorder_playlist_items",
+      "status": "passed",
+      "browser_capture": "evidence/spotify-web-player-2026-07-21.json#flows.playlist_replace_and_reorder",
+      "direct_recipe": "adapter.py#Adapter.reorder_playlist_items",
+      "fixture": "evidence/conformance.json#flows.reorder_playlist_items",
+      "last_verified": "2026-07-21"
+    }
+  ]
+}

@@ -3418,5 +3418,5 @@
       "path_regex": "/(?P<kind>track|album|artist|show|episode|audiobook|chapter)/(?P<id>[A-Za-z0-9]+)(?:/.*)?"
     }
   ],
-  "version": "0.4.7"
+  "version": "0.4.8"
 }

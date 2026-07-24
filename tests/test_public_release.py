@@ -23,7 +23,6 @@ def test_only_reference_adapters_are_bundled() -> None:
         "gst",
         "hn",
         "huggingface",
-        "linkedin",
         "npm",
         "pypi",
         "spotify",

@@ -3,11 +3,15 @@
   "sites": [
     {
       "files": {
-        "adapter.py": "78bb7326346f76d1530a95e37f82298a9399f47ec7cc1717f34302f2db5ff6c3",
-        "manifest.json": "09bf2cc687e3a0d7b9f74a5a005c80dae3ed5db891aeeea0a4df5ae699356293"
+        "adapter.py": "aa710d200ad6165e0c4b7eafd9d4867e97802b91d75fa2ed1f870e3501833e61",
+        "evidence.json": "f9e313cc6d6ed21d8864bf3bbd3ecf8d58bf6d5823220d343a6bc8dc3994f388",
+        "evidence/amazon-account-2026-07-21.json": "e723454f1f822c47405006a5f887245ed2b4b01bb4734ef6b9ae49a79b4dd249",
+        "evidence/amazon-public-2026-07-21.json": "c6e6e652d3dad936b0ebd63f543b840d1404fa215c833922eee95540c1645e39",
+        "evidence/conformance.json": "70c53051bacc6ecd62087ebabaa1e043e750d712732f205391854bf4e134fae5",
+        "manifest.json": "f32f5a3ad793069ed483a90eac5e7a97f828ab5a28834736b58744f2ce1850da"
       },
       "name": "amazon",
-      "version": "0.9.23"
+      "version": "0.9.24"
     },
     {
       "files": {
@@ -34,10 +38,13 @@
     {
       "files": {
         "adapter.py": "06e3edf6bf0f433c2d2980a7d7b971fa9eb39a69feb0eba9fee452f28f632211",
-        "manifest.json": "565d7cecb2ac49df215a86dda00a0be50c76140f871c71ba0426132aea78e99d"
+        "evidence.json": "b6a7941462d7636ed3d606e68164ad3953715687e85ca7ce59918936b82675da",
+        "evidence/conformance.json": "6c763fbfafc590a10d83fe276c7749010b29d017eeb21321400021ae24f35570",
+        "evidence/github-public-2026-07-21.json": "a4bca7bb94523c2dca025aa5d5f0b3e5e5511f3188f90107b232fc15523f0f77",
+        "manifest.json": "df266d3d59d493c5dd22458471f5e5c5aa7582bbe01a051fd709cd6bef8aee58"
       },
       "name": "github",
-      "version": "0.9.11"
+      "version": "0.9.12"
     },
     {
       "files": {
@@ -62,15 +69,19 @@
     },
     {
       "files": {
-        "adapter.py": "c1410b04b6bfff62fc2fc785343bb629b7ad11fdbcda87768bea632c028b9389",
-        "manifest.json": "9a962d28b9e360db363d6e628a98129f2b481bb0f3d21924e512f1cfe320ab28"
+        "adapter.py": "d5213a9a5050529e7905b10d3b1491df8e72698ec19c9c51d3e4f4b513233c87",
+        "evidence.json": "0c040dec91ea90f7c39dafecb55d1add007991d3c0c7bce17fe055425a17826a",
+        "evidence/conformance.json": "d0f5351088c4b77db1e382ce9ca39eb188d712b1a210b47280ba42566178e5b0",
+        "evidence/hn-account-actions-2026-07-21.json": "91bccf9cceabc4146116c7e39a4e60c1435ffddc3e298f5bae7772f416f05f0d",
+        "evidence/hn-public-2026-07-21.json": "7d54e755ebcbe971330c0c9210bfeac3994ba7d7372bc999b7f6b2aaee274c8f",
+        "manifest.json": "3bfeaf22d7c40556039737eb3c2e1bc91ee015f508f08f9d868be5d1cbdc203c"
       },
       "name": "hn",
-      "version": "0.8.8"
+      "version": "0.8.9"
     },
     {
       "files": {
-        "adapter.py": "ab8d2ba9003d1585f1412cfa1fdc21d94f79b76dba18c80a678a15fdc65f53ae",
+        "adapter.py": "e36929074c1af73fdc98ae1395b5c416ddec99c14f90ada7c04adc0a6de01203",
         "authoring-report.json": "d577434b081175a434b0bdeedf8385e632b38a73bf66157aae02e863ad044c64",
         "flows/agent_harnesses_list.json": "80b0eac582b6de82303cd6d2b47d822ab668555537bd904f9ab49e3299d3525c",
         "flows/collection_get.json": "c7110418b0015f08f346675fe5b0f914abad175d06e539346e107e20096c0232",
@@ -125,22 +136,14 @@
         "flows/tasks_list.json": "881b43e1a029ae88086e5817165c71a09303855135d95adc0aa59d294cbe3491",
         "flows/user_get.json": "da9bbe07f78545a61f04cf7426bb3152fe5922efe302b5501a9e8ee3532fe629",
         "flows/user_likes_list.json": "0f4a260fe1f83292e92eda42cc08c3025254d8dbf85fe42651bac1d206f12653",
-        "manifest.json": "44e9d6cf3d7a6e77197a801b8171a63634ec6c1821f1bd2b0fb0061045c098f6"
+        "manifest.json": "809c8d50b8f1b36eb5fec99316207d6fd73ab9649b97a73bd3963252d0775848"
       },
       "name": "huggingface",
-      "version": "0.1.0"
+      "version": "0.1.1"
     },
     {
       "files": {
-        "adapter.py": "ed8d553414bcdc64ac1a914ee37b023aea74e96849db4baa4fce1b94b793a9a9",
-        "manifest.json": "b10982df1ad561053dba95c86a863b8085b447b1f3f4493a5cca345cb18ec07c"
-      },
-      "name": "linkedin",
-      "version": "0.2.3"
-    },
-    {
-      "files": {
-        "adapter.py": "d6052c15698dcd4839c3bbd7e17f8e452dbb0b3dc73ff9821783c20aeac94d29",
+        "adapter.py": "ea65537051b6e32367f213a3837d72838532099e1c0b4b42532083bb1a629e03",
         "authoring-report.json": "ee3929c8bd588a5f7ab0b6504d340d265b35085ca9c3653c0652f11907b79f9e",
         "flows/audit_versions.json": "75c3819f3bcc8961e369acad3c2260862bc2a2b6c0d0afddd08075f0a5457123",
         "flows/download_tarball.json": "edda7f12f85dfbd544ae1fdc80dd55ebd0687e153d857269feff77bfb0e15c68",
@@ -159,10 +162,10 @@
         "flows/read_package_file.json": "0f2df96641dbf7bc6f319b99e22ef1ea2ac5724fda5fddfff156f0f93de50123",
         "flows/read_site_resource.json": "42e44fbd7e14cdf3d4a9a16e2d7ea740d208af27ee00fbdef4141df52bfa50c6",
         "flows/search_packages.json": "892f88032732dae93730d6af173e9a3c3a676791995b5a66586d974b3aea395b",
-        "manifest.json": "6ef4b5e2837896ea989ab3ba877c6ef7daa206dd83c9138442f7cef365e007d3"
+        "manifest.json": "7e1e526ee86013861ee972ce8017e427686f5fc6da9116816abc320b281448ac"
       },
       "name": "npm",
-      "version": "0.1.0"
+      "version": "0.1.1"
     },
     {
       "files": {
@@ -193,11 +196,14 @@
     },
     {
       "files": {
-        "adapter.py": "8a68b58588e3769aa38498c1af131619c801bca622771db87bdacbc4e5f68650",
-        "manifest.json": "50ab24bd0e5be9ea5d275c22ff3d9424907b6d05435580923561ad2c09700216"
+        "adapter.py": "12a409c03fd4573151953bffb5b58286b97b670a1d8f1bcbddcb7303cf0615c5",
+        "evidence.json": "8511ca1aa4f9326ef1ccf0fcb5486c80de98745444daac8a77df0901da449ec3",
+        "evidence/conformance.json": "c969bc7938a9076611f8a7f9698d5682c4704fa5f09eaf0c2e4cdacb06815ec2",
+        "evidence/spotify-web-player-2026-07-21.json": "fab0f61c6a13e7bcee815274c122e3cce3c7a6f2689284aefb216d4d6d63dae5",
+        "manifest.json": "09e62e8e400dd5f98c6cb31d3e861c642b4e2b9bdcd0f52981bc1a71cac69a1a"
       },
       "name": "spotify",
-      "version": "0.4.7"
+      "version": "0.4.8"
     },
     {
       "files": {
@@ -213,10 +219,10 @@
         "evidence.json": "6cc2e8e863467ff3ca1590fefd5f727bc6465df329fa7d725466636165e9ecab",
         "evidence/conformance.json": "c5ae80b005ccac2612d8ce3d1aa7f20cf217692d5ece1fe282e2563d02b12f40",
         "evidence/wikipedia-public-2026-07-21.json": "6d08f768c3319959dc95bab6952189b3e1343c44e8504cfe038d07ba7d693ef7",
-        "manifest.json": "70d7eff5ab17733af7a65f3019b314a37b82a940d36ce872a50db1b335ea1a2d"
+        "manifest.json": "b9486cfa6733280f3499b5b5fb47f9a31e24d8774335c93d41493a10d005803a"
       },
       "name": "wikipedia",
-      "version": "0.8.5"
+      "version": "0.8.6"
     }
   ]
 }

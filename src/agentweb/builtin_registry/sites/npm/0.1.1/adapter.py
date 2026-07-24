@@ -20,6 +20,63 @@ _VERSION = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._+\-]*$")
 _PERIOD = re.compile(
     r"^(?:last-day|last-week|last-month|last-year|[0-9]{4}-[0-9]{2}-[0-9]{2}:[0-9]{4}-[0-9]{2}-[0-9]{2})$"
 )
+_COMPARATOR = re.compile(r"^(>=|<=|>|<|=)?\s*(\d[\w.+-]*)$")
+
+
+def _semver_key(version: str) -> tuple[tuple[int, ...], tuple[Any, ...]] | None:
+    """A sortable key for a plain semver version, or None if unparsable."""
+    core, _, prerelease = version.partition("-")
+    prerelease = prerelease.split("+", 1)[0]
+    core = core.split("+", 1)[0]
+    parts = core.split(".")
+    if not all(part.isdigit() for part in parts):
+        return None
+    numbers = tuple(int(part) for part in parts[:3]) + (0,) * max(0, 3 - len(parts))
+    if not prerelease:
+        return numbers, (1,)
+    identifiers: list[Any] = [0]
+    for token in prerelease.split("."):
+        identifiers.append((0, int(token)) if token.isdigit() else (1, token))
+    return numbers, tuple(identifiers)
+
+
+def _version_in_range(version: str, range_spec: Any) -> bool | None:
+    """Whether a version satisfies an npm advisory range.
+
+    Supports the comparator sets and ``||`` unions that npm advisories use
+    (e.g. ``<4.17.21``, ``>=1.0.0 <2.0.0 || >=3.0.0 <3.2.1``, ``*``).
+    Returns None when either side cannot be parsed.
+    """
+    key = _semver_key(str(version))
+    if key is None or not isinstance(range_spec, str) or not range_spec.strip():
+        return None
+    for alternative in range_spec.split("||"):
+        comparators = alternative.split()
+        if comparators == ["*"]:
+            return True
+        satisfied: bool | None = True
+        for comparator in comparators:
+            match = _COMPARATOR.match(comparator)
+            bound = _semver_key(match.group(2)) if match else None
+            if bound is None:
+                satisfied = None
+                break
+            op = match.group(1) or "="
+            ok = {
+                ">=": key >= bound,
+                "<=": key <= bound,
+                ">": key > bound,
+                "<": key < bound,
+                "=": key == bound,
+            }[op]
+            if not ok:
+                satisfied = False
+                break
+        if satisfied:
+            return True
+        if satisfied is None:
+            return None
+    return False
 
 
 class _NpmHTML(HTMLParser):
@@ -781,6 +838,13 @@ class Adapter(RequestRecipeAdapter):
             for item in values if isinstance(values, list) else []:
                 if not isinstance(item, dict):
                     continue
+                vulnerable_range = item.get("vulnerable_versions")
+                queried = normalized.get(package, [])
+                affected = [
+                    version
+                    for version in queried
+                    if _version_in_range(version, vulnerable_range) is not False
+                ]
                 advisories.append(
                     {
                         key: value
@@ -789,20 +853,36 @@ class Adapter(RequestRecipeAdapter):
                             "id": item.get("id"),
                             "title": item.get("title"),
                             "severity": item.get("severity"),
-                            "vulnerable_versions": item.get("vulnerable_versions"),
+                            "vulnerable_versions": vulnerable_range,
                             "patched_versions": item.get("patched_versions"),
                             "url": item.get("url"),
                             "cves": item.get("cves") or [],
+                            "affected_queried_versions": affected,
                         }.items()
                         if value not in (None, "")
                     }
                 )
+        per_version: dict[str, dict[str, Any]] = {}
+        for package, versions in normalized.items():
+            per_version[package] = {}
+            for version in versions:
+                matched = [
+                    advisory
+                    for advisory in advisories
+                    if advisory.get("package") == package
+                    and version in advisory.get("affected_queried_versions", [])
+                ]
+                per_version[package][version] = {
+                    "advisory_ids": [a.get("id") for a in matched],
+                    "advisory_count": len(matched),
+                }
         return self._result(
             "audit_versions",
             {
                 "packages": sorted(normalized),
                 "advisories": advisories,
                 "advisory_count": len(advisories),
+                "versions": per_version,
             },
         )
 

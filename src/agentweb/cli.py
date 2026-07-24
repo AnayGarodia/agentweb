@@ -292,9 +292,9 @@ def dynamic_site_call(
         from .browser_readback import browser_execute
 
         return browser_execute(runtime, site, action, parsed)
-    if resolved:
-        return runtime.execute(site, action, parsed)
-    return runtime.call(f"{site}.{action}", parsed)
+    # Direct calls and `run` share the same response envelope so callers can
+    # unwrap `.data` regardless of which invocation style they used.
+    return runtime.execute(site, action, parsed)
 
 
 def parse_global_args(argv: list[str]) -> tuple[argparse.Namespace, list[str]]:
@@ -1141,12 +1141,21 @@ def main(argv: list[str] | None = None) -> int:
         # Treat --version as a global command only when it is the whole command.
         # Dynamic site operations are allowed to expose a field named "version"
         # (for example, `npmjs.com get_version --version latest`).
-        if argv == ["--version"]:
+        if argv in (["--version"], ["-v"], ["-V"]):
             print(__version__)
             return 0
+        if argv in (["--help"], ["-h"], ["help"]):
+            parser.print_help()
+            return 0
         global_args, remaining = parse_global_args(argv)
+        if remaining and remaining[0] == "update":
+            remaining[0] = "upgrade"
         first_command = remaining[0] if remaining else None
-        if first_command and first_command not in known:
+        if (
+            first_command
+            and first_command not in known
+            and not first_command.startswith("-")
+        ):
             result: Any = dynamic_site_call(remaining, global_args)
             emit(result, not global_args.compact)
             return 0

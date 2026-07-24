@@ -1,6 +1,6 @@
 {
   "name": "amazon",
-  "version": "0.9.23",
+  "version": "0.9.24",
   "description": "Amazon.com mapping for filtered product discovery, comparisons, reviews, sale checks, account carts, delivery addresses, checkout and explicitly confirmed order placement, Lists reading and typed (UNVERIFIED) Amazon List item add/remove, and order-history reads.",
   "canonical_domain": "amazon.com",
   "aliases": [

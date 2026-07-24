@@ -92,6 +92,20 @@ LIBRARY_CONTAINS_HASH = "134337999233cc6fdd6b1e6dbf94841409f04a946c5c7b744b09ba0
 LIBRARY_MUTATION_HASH = "1ad0d40b3c09660d818b9e770eb1e84745dfbe941df159a64f8772b6fa2bfc3a"
 
 
+def _visibility_from_permission(level: str) -> str | None:
+    """Human-readable visibility for Spotify's playlist base permission.
+
+    The base permission is the access level granted to users other than the
+    owner: ``BLOCKED`` means the playlist is private, ``VIEWER`` public, and
+    ``CONTRIBUTOR`` collaborative.
+    """
+    return {
+        "BLOCKED": "private",
+        "VIEWER": "public",
+        "CONTRIBUTOR": "collaborative",
+    }.get(level)
+
+
 class Adapter(SiteAdapter):
     site_name = "spotify"
     base_url = "https://open.spotify.com"
@@ -1596,7 +1610,11 @@ class Adapter(SiteAdapter):
         )
         observed_level = str(verified.get("permissionLevel") or "UNKNOWN")
         return {
+            # Spotify's playlist "base permission" is the access level granted
+            # to OTHER users: BLOCKED means private, VIEWER means public. It
+            # says nothing about the owner's own access.
             "permission_level": observed_level,
+            "visibility": _visibility_from_permission(observed_level),
             "public": observed_level == "VIEWER",
             "collaborative": observed_level == "CONTRIBUTOR",
             "state_changed": changed,
@@ -1788,7 +1806,11 @@ class Adapter(SiteAdapter):
                 f"Spotify API is rate limited; retry after {remaining} seconds",
                 code="spotify_rate_limited",
                 retryable=True,
-                details={"retry_after_seconds": remaining, "retry_at_unix": blocked_until},
+                details={
+                    "status": 429,
+                    "retry_after_seconds": remaining,
+                    "retry_at_unix": round(blocked_until, 3),
+                },
             )
         token = self._access_token(force_refresh=retried)
         response = self.session().request(
@@ -1825,23 +1847,29 @@ class Adapter(SiteAdapter):
                 (value for key, value in response.headers.items() if key.lower() == "retry-after"),
                 None,
             )
+            try:
+                delay = max(1, int(float(retry_after or 1)))
+            except (TypeError, ValueError):
+                delay = 1
             if response.status == 429:
-                try:
-                    delay = max(1, int(float(retry_after or 1)))
-                except (TypeError, ValueError):
-                    delay = 1
                 write_json(
                     self.api_backoff_path,
                     {"until": time.time() + delay, "retry_after_seconds": delay},
                 )
-            suffix = f"; retry after {retry_after} seconds" if retry_after else ""
+            suffix = f"; retry after {delay} seconds" if retry_after else ""
             if response.status == 403:
                 suffix += "; check Premium, app user allowlist, scopes, and device restrictions"
+            details: dict[str, Any] = {"status": response.status}
+            if response.status == 429:
+                details["retry_after_seconds"] = delay
+                details["retry_at_unix"] = round(time.time() + delay, 3)
+            elif retry_after is not None:
+                details["retry_after_seconds"] = delay
             raise AgentWebError(
                 f"Spotify returned HTTP {response.status}: {detail or 'request failed'}{suffix}",
                 code="spotify_rate_limited" if response.status == 429 else "spotify_http_error",
                 retryable=response.status in {408, 409, 425, 429} or response.status >= 500,
-                details={"status": response.status, "retry_after_seconds": retry_after},
+                details=details,
             )
         return payload, response.status, response.headers, response.elapsed_ms
 
@@ -2953,9 +2981,11 @@ class Adapter(SiteAdapter):
                 summary["public"] = base_permission == "VIEWER"
                 summary["collaborative"] = base_permission == "CONTRIBUTOR"
                 summary["permission_level"] = base_permission
+                summary["visibility"] = _visibility_from_permission(base_permission)
             else:
                 summary["public"] = None
                 summary["permission_level"] = None
+                summary["visibility"] = None
             items = []
             for row in content.get("items") or []:
                 data = ((row.get("itemV2") or {}).get("data") or {})

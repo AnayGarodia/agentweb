@@ -159,7 +159,7 @@ are JSON, so agents do not need site-specific parsing code.
 
 ## What is included today?
 
-This installer bundles **twelve adapters**, and `agentweb setup` (run for you by
+This installer bundles **eleven adapters**, and `agentweb setup` (run for you by
 the one-line installer) registers all of them on first run. Public operations work
 immediately; the login-required sites request a browser sign-in only when you use
 an operation that needs it (`agentweb connect DOMAIN`).
@@ -175,7 +175,6 @@ an operation that needs it (`agentweb connect DOMAIN`).
 | Hugging Face | `huggingface.co` | Explore models, datasets, Spaces, repositories, files, papers, documentation, collections, and discussions |
 | GST | `gst.gov.in` | Search HSN/SAC data and browse practitioners, advisories, due dates, holidays, laws, statistics, and tools |
 | Amazon | `amazon.com` | Search and compare products, inspect reviews and deals, manage a cart and addresses, read orders, and complete a confirmed checkout |
-| LinkedIn | `linkedin.com` | Search public jobs, inspect jobs and companies, keep a normal website login, and call approved official API endpoints |
 | Spotify | `open.spotify.com` | Search and play music, control the desktop player, and manage playback, devices, queues, libraries, and playlists after login |
 | Stack Overflow | `stackoverflow.com` | Search and read questions, answers, comments, users, and tags; ask, answer, comment, and vote when signed in |
 

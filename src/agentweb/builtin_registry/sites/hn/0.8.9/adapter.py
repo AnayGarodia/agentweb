@@ -705,14 +705,45 @@ class Adapter(SiteAdapter):
         )
         if response.status >= 400:
             raise AgentWebError(f"Hacker News comment returned HTTP {response.status}")
+        comment_id = self._find_own_comment_id(parent_id, text)
         return {
             "operation": "hn.comment",
             "parent_id": parent_id,
+            "comment_id": comment_id,
             "state_changed": True,
             "submitted": True,
             "text_exposed": False,
             "meta": response_meta(response),
         }
+
+    def _find_own_comment_id(self, parent_id: int, text: str) -> int | None:
+        """The id of the just-posted comment, located by author + text prefix.
+
+        Returns ``None`` when the new comment cannot be identified (e.g. the
+        page has not caught up yet); the submission itself already succeeded.
+        """
+        try:
+            soup, _response = self._html(f"/item?id={parent_id}")
+        except AgentWebError:
+            return None
+        me = self._identity(soup)
+        if not me:
+            return None
+        prefix = " ".join(text.split())[:80].lower()
+        best: int | None = None
+        for row in soup.select("tr.athing.comtr"):
+            author = row.select_one("a.hnuser")
+            body = row.select_one("div.commtext")
+            row_id = str(row.get("id") or "")
+            if author is None or body is None or not row_id.isdigit():
+                continue
+            if author.get_text(strip=True) != me:
+                continue
+            body_text = " ".join(body.get_text(" ", strip=True).split()).lower()
+            if prefix and not body_text.startswith(prefix):
+                continue
+            best = max(best or 0, int(row_id))
+        return best
 
     def _submit_form(
         self,
@@ -845,31 +876,50 @@ class Adapter(SiteAdapter):
         }
 
     def delete(self, item_id: int, confirm: bool = False) -> dict[str, Any]:
+        # The item page's `delete?id=...` anchor only leads to the confirmation
+        # page; following it never deletes anything. The real deletion is the
+        # delete-confirm form POST, and success is verified by re-reading the
+        # item page afterwards.
         soup, preflight = self._authenticated_page(item_id)
-        link = soup.find(
+        offered = soup.find(
             "a", href=lambda value: bool(value and value.startswith(f"delete?id={item_id}"))
         )
-        if link and link.get("href"):
-            _soup, response = self._confirmed_link(str(link.get("href")), "hn.delete", confirm)
-            request_count = 2
-        else:
-            confirm_soup, confirm_page = self._html(f"/delete-confirm?id={item_id}")
-            form = confirm_soup.select_one("form")
-            if form is None:
+        confirm_soup, confirm_page = self._html(f"/delete-confirm?id={item_id}")
+        form = confirm_soup.select_one("form")
+        if form is None:
+            if offered is None:
                 raise AgentWebError(
                     f"Hacker News did not offer deletion for item {item_id}"
                 )
-            response = self._submit_form(form, {}, "hn.delete", confirm)
-            preflight.elapsed_ms += confirm_page.elapsed_ms
-            request_count = 3
+            raise AgentWebError(
+                f"Hacker News delete-confirm page had no form for item {item_id}"
+            )
+        response = self._submit_form(form, {}, "hn.delete", confirm)
+        preflight.elapsed_ms += confirm_page.elapsed_ms
+        verify_soup, verify_response = self._html(f"/item?id={item_id}")
+        still_deletable = verify_soup.find(
+            "a", href=lambda value: bool(value and value.startswith(f"delete?id={item_id}"))
+        )
+        deleted = response.status < 400 and still_deletable is None
+        if not deleted:
+            raise AgentWebError(
+                f"Hacker News did not delete item {item_id}; it is still live "
+                "with a delete link offered. No state was changed."
+            )
         return {
             "operation": "hn.delete",
             "item_id": item_id,
             "state_changed": True,
-            "deleted": response.status < 400,
+            "deleted": True,
+            "verified": True,
             "meta": {
-                "request_count": request_count,
-                "elapsed_ms": round(preflight.elapsed_ms + response.elapsed_ms, 1),
+                "request_count": 4,
+                "elapsed_ms": round(
+                    preflight.elapsed_ms
+                    + response.elapsed_ms
+                    + verify_response.elapsed_ms,
+                    1,
+                ),
                 "url": f"{HN_URL}/item?id={item_id}",
             },
         }

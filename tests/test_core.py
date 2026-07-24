@@ -60,7 +60,6 @@ def test_reference_registry_contains_only_public_adapters(tmp_path: Path) -> Non
         "gst",
         "hn",
         "huggingface",
-        "linkedin",
         "npm",
         "pypi",
         "spotify",
@@ -74,7 +73,6 @@ def test_reference_registry_contains_only_public_adapters(tmp_path: Path) -> Non
         "gst",
         "hn",
         "huggingface",
-        "linkedin",
         "npm",
         "pypi",
         "spotify",
@@ -103,7 +101,6 @@ def test_sync_preserves_adapters_from_other_registries(tmp_path: Path) -> None:
         "gst",
         "hn",
         "huggingface",
-        "linkedin",
         "npm",
         "pypi",
         "spotify",
@@ -132,7 +129,6 @@ def test_sync_prune_explicitly_removes_adapters_not_in_source(tmp_path: Path) ->
         "gst",
         "hn",
         "huggingface",
-        "linkedin",
         "npm",
         "pypi",
         "spotify",
@@ -518,7 +514,6 @@ def test_public_registry_audit_reports_real_state() -> None:
         "gst",
         "hn",
         "huggingface",
-        "linkedin",
         "npm",
         "pypi",
         "spotify",
@@ -623,7 +618,9 @@ def test_dynamic_cli_accepts_positional_or_flag_for_declared_positionals(
         },
     )
     monkeypatch.setattr(
-        Runtime, "call", lambda self, operation, arguments: dict(arguments)
+        Runtime,
+        "execute",
+        lambda self, target, action, arguments, dry_run=False: dict(arguments),
     )
     args = SimpleNamespace(profile="default", fresh=False, mapping_mode=False)
     positional = dynamic_site_call(["wikipedia", "page", "Alan Turing"], args)
