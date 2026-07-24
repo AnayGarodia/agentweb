@@ -871,11 +871,34 @@ def cookie_inventory(
     return sorted(result, key=lambda item: (item["domain"], item["path"], item["name"]))
 
 
+def session_meta_path(paths: Any, site: str, profile: str) -> Path:
+    return paths.profile_dir(site, profile) / "session-meta.json"
+
+
+def session_health(paths: Any, site: str, profile: str) -> dict[str, Any] | None:
+    """Lifecycle summary of the captured session: when it was imported and
+    when its authenticating cookies expire, so callers can distinguish an
+    expired session from a broken adapter."""
+    meta = read_json(session_meta_path(paths, site, profile), None)
+    if not isinstance(meta, dict):
+        return None
+    health = dict(meta)
+    expires_at = meta.get("session_expires_at_unix")
+    if isinstance(expires_at, (int, float)) and expires_at > 0:
+        remaining = int(expires_at - time.time())
+        health["expires_in_seconds"] = max(remaining, 0)
+        health["expired"] = remaining <= 0
+    return health
+
+
 def import_cdp_cookies(runtime: Runtime, site: str, cookies: list[dict[str, Any]]) -> int:
     manifest = runtime.describe(site)
     adapter = runtime.adapter(site)
     session = adapter.session()
     allowed_domain = manifest.get("cookie_domain", f".{site}.com").lstrip(".")
+    auth_cookie_names = set(manifest.get("auth_cookie_names") or [])
+    imported_auth_expiries: list[int] = []
+    imported_auth_names: set[str] = set()
     count = 0
     for item in cookies:
         domain = str(item.get("domain") or "")
@@ -918,7 +941,23 @@ def import_cdp_cookies(runtime: Runtime, site: str, cookies: list[dict[str, Any]
         )
         session.cookies.set_cookie(cookie)
         count += 1
+        if cookie.name in auth_cookie_names:
+            imported_auth_names.add(cookie.name)
+            if expires_value:
+                imported_auth_expiries.append(expires_value)
     session.save_cookies()
+    if count:
+        write_json(
+            session_meta_path(runtime.paths, site, runtime.profile),
+            {
+                "imported_at_unix": int(time.time()),
+                "cookie_count": count,
+                "auth_cookies_captured": sorted(imported_auth_names),
+                "session_expires_at_unix": (
+                    min(imported_auth_expiries) if imported_auth_expiries else None
+                ),
+            },
+        )
     return count
 
 
@@ -1003,6 +1042,43 @@ def _stop_auth_browser(
     except subprocess.TimeoutExpired:
         process.kill()
         process.wait(timeout=5)
+
+
+def _login_ready(
+    *,
+    mode: str,
+    manifest: dict[str, Any],
+    capture_now: bool,
+    cookie_names: set[Any],
+    site_cookies: list[dict[str, Any]],
+    snapshot: dict[str, Any],
+    auth_cookie_names: set[str],
+    session_cookie_names: set[str],
+) -> bool:
+    """Whether the observed browser state satisfies the manifest's declared
+    sign-in condition, so cookies should be captured and verified.
+
+    Precedence:
+    1. session mode with a declared ``session_browser_check``: the protected
+       page itself must report ready;
+    2. immediate capture with declared ``session_cookie_names``: any one of
+       those cookies must exist;
+    3. immediate capture otherwise: any cookie for the site suffices;
+    4. login/signup: the page reports signed-in, or one of the manifest's
+       ``auth_cookie_names`` has been set (a manifest that declares none
+       captures as soon as the flow reaches this point).
+    """
+    if mode == "session" and manifest.get("session_browser_check"):
+        return bool(snapshot.get("session_ready"))
+    if capture_now and session_cookie_names:
+        return bool(cookie_names.intersection(session_cookie_names))
+    if capture_now:
+        return bool(site_cookies)
+    return (
+        bool(snapshot.get("signed_in"))
+        or not auth_cookie_names
+        or bool(cookie_names.intersection(auth_cookie_names))
+    )
 
 
 def _monitor_cookie_auth_attempt(
@@ -1159,18 +1235,15 @@ def _monitor_cookie_auth_attempt(
                     "." + allowed_domain
                 )
             ]
-            ready = (
-                bool(last_snapshot.get("session_ready"))
-                if attempt.mode == "session" and manifest.get("session_browser_check")
-                else bool(names.intersection(session_cookie_names))
-                if capture_now and session_cookie_names
-                else bool(site_cookies)
-                if capture_now
-                else (
-                    bool(last_snapshot.get("signed_in"))
-                    or not auth_cookie_names
-                    or bool(names.intersection(auth_cookie_names))
-                )
+            ready = _login_ready(
+                mode=attempt.mode,
+                manifest=manifest,
+                capture_now=capture_now,
+                cookie_names=names,
+                site_cookies=site_cookies,
+                snapshot=last_snapshot,
+                auth_cookie_names=auth_cookie_names,
+                session_cookie_names=session_cookie_names,
             )
             if ready:
                 store.update(attempt, state=AuthState.VERIFYING.value)
@@ -1868,18 +1941,29 @@ def authentication_status(runtime: Runtime, site: str) -> dict[str, Any]:
         except AgentWebError:
             account = None
     attempt = AuthAttemptStore(runtime.paths, site, runtime.profile).load()
-    return {
+    connected = status_is_connected(account)
+    result = {
         "site": site,
         "profile": runtime.profile,
         "state": (
             AuthState.CONNECTED.value
-            if status_is_connected(account)
+            if connected
             else attempt.state if attempt else AuthState.DISCONNECTED.value
         ),
-        "connected": status_is_connected(account),
+        "connected": connected,
         "account": account,
         "attempt": attempt.public() if attempt else None,
+        "session": session_health(runtime.paths, site, runtime.profile),
     }
+    if not connected:
+        result["reconnect_command"] = [
+            "agentweb",
+            "--profile",
+            runtime.profile,
+            "connect",
+            site,
+        ]
+    return result
 
 
 def cancel_authentication(runtime: Runtime, site: str) -> dict[str, Any]:

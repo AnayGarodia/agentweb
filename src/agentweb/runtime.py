@@ -20,6 +20,7 @@ from .registry import Registry, validate_manifest
 from .sdk import (
     AdapterContext,
     AgentWebError,
+    AuthenticationRequired,
     CancellationToken,
     enforce_data_budget,
     map_operation_inputs,
@@ -1119,6 +1120,8 @@ class Runtime:
         try:
             result = self._call_uninstrumented(operation, arguments)
         except AgentWebError as exc:
+            if isinstance(exc, AuthenticationRequired) and site:
+                self._enrich_authentication_error(exc, site)
             self.analytics.record(
                 "operation_completed",
                 site=site,
@@ -1155,6 +1158,30 @@ class Runtime:
             from_cache=meta.get("from_cache"),
         )
         return result
+
+    def _enrich_authentication_error(
+        self, exc: AuthenticationRequired, site: str
+    ) -> None:
+        """Attach the reconnect command and, when the stored session has
+        provably expired, a `session_expired` marker so callers can tell an
+        expired session apart from a site or adapter failure."""
+        exc.details.setdefault(
+            "reconnect_command",
+            ["agentweb", "--profile", self.profile, "connect", site],
+        )
+        meta = read_json(
+            self.paths.profile_dir(site, self.profile) / "session-meta.json", None
+        )
+        expires_at = (meta or {}).get("session_expires_at_unix")
+        if isinstance(expires_at, (int, float)) and 0 < expires_at <= time.time():
+            exc.details.setdefault("session_expired", True)
+            exc.details.setdefault("session_expired_at_unix", int(expires_at))
+        if not exc.user_action:
+            exc.user_action = (
+                f"Run `agentweb connect {site}` and sign in to refresh the session"
+                if exc.details.get("session_expired")
+                else f"Run `agentweb connect {site}` and sign in"
+            )
 
     def _call_uninstrumented(
         self, operation: str, arguments: dict[str, Any]
