@@ -1,0 +1,83 @@
+{
+  "captured_at_unix": 1784930046.9996018,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://www.nseindia.com",
+      "before": "https://www.nseindia.com"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "announcements",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "announcements",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "index"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "headers": {
+          "Referer": "https://www.nseindia.com/"
+        },
+        "method": "GET",
+        "mutating": false,
+        "name": "announcements",
+        "path": "https://www.nseindia.com/api/corporate-announcements",
+        "query": {
+          "index": "{index}"
+        }
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "nse",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns matching records",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "6e922c2fb9d3ffb4b5f28fb4bd78125dace126c68fa7907f4a37b5b54e40a648",
+    "evidence_version": 2,
+    "recipe_hash": "9ab9c4b42ffd0f415c4f7c69f55988e8267a59ff9ac53183ca2698d377b6de60",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784930079.8912783
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "captured_at_unix": 1784929541.541661,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://www.bseindia.com",
+      "before": "https://www.bseindia.com"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "corporate_actions",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "corporate_actions",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "from_date",
+      "scrip_code",
+      "to_date"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "headers": {
+          "Referer": "https://www.bseindia.com/"
+        },
+        "method": "GET",
+        "name": "corporate_actions",
+        "path": "https://api.bseindia.com/BseIndiaAPI/api/DefaultData/w",
+        "query": {
+          "fmdt": "{from_date}",
+          "scripcode": "{scrip_code}",
+          "todt": "{to_date}"
+        }
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "bse",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns corporate actions",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "cbfb7e5768f1de1c12bdd14b969fa213a807123c9eb7a54c2cb6835fe3a60198",
+    "evidence_version": 2,
+    "recipe_hash": "5e69c353529362a589196e922a8339c3a3b2efc58643c717a7f4101ce094e27b",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784929552.44982
+  }
+}

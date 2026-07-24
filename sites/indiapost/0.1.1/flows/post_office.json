@@ -1,0 +1,76 @@
+{
+  "captured_at_unix": 1784929541.834307,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://www.indiapost.gov.in",
+      "before": "https://www.indiapost.gov.in"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "post_office",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "post_office",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "office"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "post_office",
+        "path": "https://api.postalpincode.in/postoffice/{office}"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "indiapost",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns post offices",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "329d38a4a354b319e18d5e0d1a2aa6ffa89a2fe85cef9f7a1f91df73e19fbed5",
+    "evidence_version": 2,
+    "recipe_hash": "b62925ee57325b5f885aff734826eff34a5841eb8b9c150f59b757996792bdea",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784929555.8153777
+  }
+}

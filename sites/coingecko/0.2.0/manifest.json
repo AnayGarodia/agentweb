@@ -1,0 +1,1031 @@
+{
+  "aliases": [
+    "coingecko"
+  ],
+  "allowed_domains": [
+    "api.coingecko.com",
+    "coingecko.com",
+    "www.coingecko.com"
+  ],
+  "auth": {
+    "interaction": "not_required",
+    "strategy": "none"
+  },
+  "authoring": {
+    "browserless_parity": true,
+    "catalog_complete": true,
+    "exhaustive": true,
+    "matrix_verified": true,
+    "tool_quality_verified": true
+  },
+  "base_url": "https://www.coingecko.com",
+  "canonical_domain": "coingecko.com",
+  "commands": {
+    "market_chart": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "monitoring",
+      "description": "Historical price, market cap, and volume series for one coin over a chosen number of days.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "coin": "bitcoin",
+            "days": 7
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "coin": {
+            "description": "CoinGecko coin id such as bitcoin or ethereum; find ids with search.",
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "days": {
+            "default": 30,
+            "description": "How many days of history to return, ending now.",
+            "maximum": 365,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "vs_currency": {
+            "default": "usd",
+            "description": "Quote currency code, such as usd, eur, or inr.",
+            "maxLength": 10,
+            "type": "string"
+          }
+        },
+        "required": [
+          "coin"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Time series for the requested coin; each entry is a [timestamp, value] pair.",
+        "properties": {
+          "market_caps": {
+            "description": "Daily [unix_millis, market_cap] pairs, aligned with prices.",
+            "items": {
+              "type": "array"
+            },
+            "type": "array"
+          },
+          "prices": {
+            "description": "Daily [unix_millis, price] pairs in the quote currency, oldest first.",
+            "items": {
+              "type": "array"
+            },
+            "type": "array"
+          },
+          "total_volumes": {
+            "description": "Daily [unix_millis, volume] pairs, aligned with prices.",
+            "items": {
+              "type": "array"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "prices"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns one bounded daily series for the requested window.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this for a current snapshot across many coins; use markets.",
+      "when_to_use": "Use this for price history and trend questions, such as bitcoin's price over the last 30 days."
+    },
+    "markets": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "market_data",
+      "description": "List coins ranked by market cap with live price, market cap, and 24h change in a chosen fiat currency.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "page": 1,
+            "per_page": 5,
+            "vs_currency": "usd"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "page": {
+            "default": 1,
+            "description": "Result page, starting at 1.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "per_page": {
+            "default": 5,
+            "description": "Coins per page.",
+            "maximum": 250,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "vs_currency": {
+            "description": "Fiat or quote currency code such as usd, eur, or inr.",
+            "maxLength": 10,
+            "minLength": 2,
+            "type": "string"
+          }
+        },
+        "required": [
+          "vs_currency"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Coins ordered by market cap, largest first.",
+            "items": {
+              "properties": {
+                "current_price": {
+                  "description": "Live price in the requested currency."
+                },
+                "id": {
+                  "description": "CoinGecko coin id such as bitcoin.",
+                  "type": "string"
+                },
+                "market_cap": {
+                  "description": "Market capitalization in the requested currency.",
+                  "type": "integer"
+                },
+                "market_cap_rank": {
+                  "description": "Rank by market cap.",
+                  "type": "integer"
+                },
+                "name": {
+                  "description": "Coin name.",
+                  "type": "string"
+                },
+                "price_change_percentage_24h": {
+                  "description": "24h price change percentage.",
+                  "type": "number"
+                },
+                "symbol": {
+                  "description": "Ticker symbol.",
+                  "type": "string"
+                },
+                "total_volume": {
+                  "description": "24h traded volume.",
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Increase page to read further down the market-cap ranking; per_page bounds each page.",
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this to find a coin id from words; use search.",
+      "when_to_use": "Use this when an agent needs current prices or market ranking for many coins at once."
+    },
+    "search": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "discovery",
+      "description": "Search CoinGecko for coins by name or symbol and return their CoinGecko ids and market cap ranks.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "query": "bitcoin"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Coin name or ticker words.",
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Matching coins, best match first.",
+            "items": {
+              "properties": {
+                "id": {
+                  "description": "CoinGecko coin id.",
+                  "type": "string"
+                },
+                "market_cap_rank": {
+                  "description": "Rank by market cap when ranked."
+                },
+                "name": {
+                  "description": "Coin name.",
+                  "type": "string"
+                },
+                "symbol": {
+                  "description": "Ticker symbol.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Refine the query; CoinGecko returns the best matches first.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this for prices; use markets.",
+      "when_to_use": "Use this when an agent knows a coin's name or ticker and needs its CoinGecko id or rank."
+    }
+  },
+  "cookie_domain": ".www.coingecko.com",
+  "coverage": {
+    "constraints": [
+      "Site permissions, rate limits, and anti-automation rules still apply"
+    ],
+    "human_boundaries": [
+      "CoinGecko Pro endpoints require an API key that this mapping does not hold."
+    ],
+    "not_mapped": [],
+    "protocol_fallback": null,
+    "typed_fast_paths": [
+      "market_chart",
+      "markets",
+      "search"
+    ],
+    "website_parity": "Mapping mode can inspect the remaining website while direct request recipes are compiled. Browser commands are never counted as runtime parity."
+  },
+  "description": "Complete agent interface for www.coingecko.com",
+  "entrypoint": "adapter.py",
+  "evidence_capsules": {},
+  "flow_capsules": {
+    "market_chart": {
+      "contract": "market_chart",
+      "path": "flows/market_chart.json"
+    },
+    "markets": {
+      "contract": "markets",
+      "path": "flows/markets.json"
+    },
+    "search": {
+      "contract": "search",
+      "path": "flows/search.json"
+    }
+  },
+  "name": "coingecko",
+  "operation_contracts": {
+    "market_chart": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "fields": {
+            "market_caps": {
+              "path": "$.market_caps"
+            },
+            "prices": {
+              "path": "$.prices"
+            },
+            "total_volumes": {
+              "path": "$.total_volumes"
+            }
+          },
+          "source": "$"
+        },
+        "recipe_hash": "bc9738afb035693f1643ef66e6818df4cc4008cc900bdf6c61114ae0bead2149",
+        "type": "generated_recipe",
+        "variables": {
+          "coin": "coin",
+          "days": {
+            "default": 30,
+            "source": "days"
+          },
+          "vs_currency": {
+            "default": "usd",
+            "source": "vs_currency"
+          }
+        }
+      },
+      "capabilities": [
+        "market_chart"
+      ],
+      "category": "monitoring",
+      "contract_hash": "976efdb988194f684c10cad4a89056076ed07c3e36bfd014779c7edc4d2672df",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "coin": "bitcoin",
+            "days": 7
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "coin": {
+            "description": "CoinGecko coin id such as bitcoin or ethereum; find ids with search.",
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "days": {
+            "default": 30,
+            "description": "How many days of history to return, ending now.",
+            "maximum": 365,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "vs_currency": {
+            "default": "usd",
+            "description": "Quote currency code, such as usd, eur, or inr.",
+            "maxLength": 10,
+            "type": "string"
+          }
+        },
+        "required": [
+          "coin"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "market_chart",
+      "output_schema": {
+        "description": "Time series for the requested coin; each entry is a [timestamp, value] pair.",
+        "properties": {
+          "market_caps": {
+            "description": "Daily [unix_millis, market_cap] pairs, aligned with prices.",
+            "items": {
+              "type": "array"
+            },
+            "type": "array"
+          },
+          "prices": {
+            "description": "Daily [unix_millis, price] pairs in the quote currency, oldest first.",
+            "items": {
+              "type": "array"
+            },
+            "type": "array"
+          },
+          "total_volumes": {
+            "description": "Daily [unix_millis, volume] pairs, aligned with prices.",
+            "items": {
+              "type": "array"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "prices"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns one bounded daily series for the requested window.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live from CoinGecko when the operation runs.",
+        "max_items": 366,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784930152.8730145,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Historical price, market cap, and volume series for one coin over a chosen number of days.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns a price series",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "976efdb988194f684c10cad4a89056076ed07c3e36bfd014779c7edc4d2672df",
+            "input_names": [
+              "coin",
+              "days",
+              "vs_currency"
+            ],
+            "passed": true,
+            "recipe_hash": "bc9738afb035693f1643ef66e6818df4cc4008cc900bdf6c61114ae0bead2149",
+            "verified_at_unix": 1784930075.3527915
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns a price series",
+            "path": "$.data.prices",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for a current snapshot across many coins; use markets.",
+      "when_to_use": "Use this for price history and trend questions, such as bitcoin's price over the last 30 days."
+    },
+    "markets": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "current_price": {
+              "path": "$.current_price"
+            },
+            "id": {
+              "path": "$.id"
+            },
+            "market_cap": {
+              "path": "$.market_cap"
+            },
+            "market_cap_rank": {
+              "path": "$.market_cap_rank"
+            },
+            "name": {
+              "path": "$.name"
+            },
+            "price_change_percentage_24h": {
+              "path": "$.price_change_percentage_24h"
+            },
+            "symbol": {
+              "path": "$.symbol"
+            },
+            "total_volume": {
+              "path": "$.total_volume"
+            }
+          },
+          "source": "$"
+        },
+        "recipe_hash": "655a20490b8f579d5b2ee44c7e05f70d5183ee3f939d2d95190152fbbdd98898",
+        "type": "generated_recipe",
+        "variables": {
+          "page": "page",
+          "per_page": "per_page",
+          "vs_currency": "vs_currency"
+        }
+      },
+      "capabilities": [
+        "public_markets"
+      ],
+      "category": "market_data",
+      "contract_hash": "ce3cd8a9849ea44b07580da745d9db4090960cf27cd977f5e45c25cb7518a98f",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "page": 1,
+            "per_page": 5,
+            "vs_currency": "usd"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "page": {
+            "default": 1,
+            "description": "Result page, starting at 1.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "per_page": {
+            "default": 5,
+            "description": "Coins per page.",
+            "maximum": 250,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "vs_currency": {
+            "description": "Fiat or quote currency code such as usd, eur, or inr.",
+            "maxLength": 10,
+            "minLength": 2,
+            "type": "string"
+          }
+        },
+        "required": [
+          "vs_currency"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "markets",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Coins ordered by market cap, largest first.",
+            "items": {
+              "properties": {
+                "current_price": {
+                  "description": "Live price in the requested currency."
+                },
+                "id": {
+                  "description": "CoinGecko coin id such as bitcoin.",
+                  "type": "string"
+                },
+                "market_cap": {
+                  "description": "Market capitalization in the requested currency.",
+                  "type": "integer"
+                },
+                "market_cap_rank": {
+                  "description": "Rank by market cap.",
+                  "type": "integer"
+                },
+                "name": {
+                  "description": "Coin name.",
+                  "type": "string"
+                },
+                "price_change_percentage_24h": {
+                  "description": "24h price change percentage.",
+                  "type": "number"
+                },
+                "symbol": {
+                  "description": "Ticker symbol.",
+                  "type": "string"
+                },
+                "total_volume": {
+                  "description": "24h traded volume.",
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Increase page to read further down the market-cap ranking; per_page bounds each page.",
+        "supported": true
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784930152.8815765,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "List coins ranked by market cap with live price, market cap, and 24h change in a chosen fiat currency.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns matching records",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "ce3cd8a9849ea44b07580da745d9db4090960cf27cd977f5e45c25cb7518a98f",
+            "input_names": [
+              "page",
+              "per_page",
+              "vs_currency"
+            ],
+            "passed": true,
+            "recipe_hash": "655a20490b8f579d5b2ee44c7e05f70d5183ee3f939d2d95190152fbbdd98898",
+            "verified_at_unix": 1784930075.5193155
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns matching records",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this to find a coin id from words; use search.",
+      "when_to_use": "Use this when an agent needs current prices or market ranking for many coins at once."
+    },
+    "search": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "id": {
+              "path": "$.id"
+            },
+            "market_cap_rank": {
+              "default": null,
+              "path": "$.market_cap_rank"
+            },
+            "name": {
+              "path": "$.name"
+            },
+            "symbol": {
+              "path": "$.symbol"
+            }
+          },
+          "source": "$.nfts"
+        },
+        "recipe_hash": "d19a3d85dff5b331de6d4caf92502d9405a94c910c7c5221baa60b80109d4529",
+        "type": "generated_recipe",
+        "variables": {
+          "query": "query"
+        }
+      },
+      "capabilities": [
+        "public_search"
+      ],
+      "category": "discovery",
+      "contract_hash": "74a2bd4e04e9591082017d351dcf7f624c35f80652388c92bc842bab64e805b9",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "query": "bitcoin"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Coin name or ticker words.",
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "search",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Matching coins, best match first.",
+            "items": {
+              "properties": {
+                "id": {
+                  "description": "CoinGecko coin id.",
+                  "type": "string"
+                },
+                "market_cap_rank": {
+                  "description": "Rank by market cap when ranked."
+                },
+                "name": {
+                  "description": "Coin name.",
+                  "type": "string"
+                },
+                "symbol": {
+                  "description": "Ticker symbol.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Refine the query; CoinGecko returns the best matches first.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784930152.8854535,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Search CoinGecko for coins by name or symbol and return their CoinGecko ids and market cap ranks.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns matching records",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "74a2bd4e04e9591082017d351dcf7f624c35f80652388c92bc842bab64e805b9",
+            "input_names": [
+              "query"
+            ],
+            "passed": true,
+            "recipe_hash": "d19a3d85dff5b331de6d4caf92502d9405a94c910c7c5221baa60b80109d4529",
+            "verified_at_unix": 1784930075.6263204
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns matching records",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for prices; use markets.",
+      "when_to_use": "Use this when an agent knows a coin's name or ticker and needs its CoinGecko id or rank."
+    }
+  },
+  "runtime": {
+    "auth_interaction": "not_yet_mapped",
+    "browserless_replay": true
+  },
+  "url_routes": [],
+  "version": "0.2.0"
+}

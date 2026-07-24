@@ -1,0 +1,74 @@
+{
+  "browserless_parity": true,
+  "capabilities": {
+    "authenticated_services": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "India Post's parcel tracking and complaint portals require session tokens and CAPTCHAs; only the public PIN-code directory is mapped.",
+      "roles": [
+        "account_holder"
+      ],
+      "state": "blocked",
+      "surface": "public_api"
+    },
+    "public_pincode": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_post_office": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    }
+  },
+  "catalog_complete": true,
+  "excluded_operations": {},
+  "exhaustive": true,
+  "generated_at_unix": 1784929555.8390124,
+  "matrix": {
+    "locales": [
+      "en-US"
+    ],
+    "roles": [
+      "public"
+    ],
+    "surfaces": [
+      "public_api"
+    ]
+  },
+  "matrix_verified": true,
+  "operations": {
+    "pincode": {
+      "capabilities": [
+        "public_pincode"
+      ],
+      "contract_hash": "c7d38b3ea3d450cfb21642036d16972ff1f6ae8e4d2a402ffc9e8c1b4ed9038f",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "post_office": {
+      "capabilities": [
+        "public_post_office"
+      ],
+      "contract_hash": "329d38a4a354b319e18d5e0d1a2aa6ffa89a2fe85cef9f7a1f91df73e19fbed5",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    }
+  },
+  "project_hash": "6fe0d2d93bd5a51f216ad93b561ad82499880d6eb1263add581a05f0ac638da5",
+  "publication_mode": "reviewed",
+  "schema_version": 1,
+  "tool_quality_verified": true,
+  "uncovered_verified_capabilities": []
+}

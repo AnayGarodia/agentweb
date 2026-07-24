@@ -1,0 +1,81 @@
+{
+  "captured_at_unix": 1784930046.295176,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://www.sec.gov",
+      "before": "https://www.sec.gov"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "company_concept",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "company_concept",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "cik",
+      "tag"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "headers": {
+          "User-Agent": "AgentWeb research (ag5250@columbia.edu)"
+        },
+        "method": "GET",
+        "mutating": false,
+        "name": "company_concept",
+        "path": "https://data.sec.gov/api/xbrl/companyconcept/CIK{cik}/us-gaap/{tag}.json"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "secedgar",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns reported values",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "955b2c0abd75921c8ebc188cf8955c4b4af0d07a1f07cb96cef7b24053ac7066",
+    "evidence_version": 2,
+    "recipe_hash": "b54e5f8a4b618423fe0fb55ecbcbbc9f6362661ffe9ee20a52fed731f23a16d0",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784930073.8611853
+  }
+}

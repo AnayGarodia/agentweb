@@ -1,0 +1,84 @@
+{
+  "captured_at_unix": 1784930046.5450048,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://www.coingecko.com",
+      "before": "https://www.coingecko.com"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "market_chart",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "market_chart",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "coin",
+      "days",
+      "vs_currency"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "mutating": false,
+        "name": "market_chart",
+        "path": "https://api.coingecko.com/api/v3/coins/{coin}/market_chart",
+        "query": {
+          "days": "{days}",
+          "interval": "daily",
+          "vs_currency": "{vs_currency}"
+        }
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "coingecko",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns a price series",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "976efdb988194f684c10cad4a89056076ed07c3e36bfd014779c7edc4d2672df",
+    "evidence_version": 2,
+    "recipe_hash": "bc9738afb035693f1643ef66e6818df4cc4008cc900bdf6c61114ae0bead2149",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784930075.3527915
+  }
+}

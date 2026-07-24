@@ -3,7 +3,7 @@
   "signature": {
     "algorithm": "ed25519",
     "key_id": "d3237069b559fa7b",
-    "value": "Jcy0j3Mnz92pDi5NbGG7zqIi1KTBbm4jfLkbp2SqXZe6zOxsHAz38X/cJeX/t0s64aEoir5F8IzTGhLA2y20Cw=="
+    "value": "5o5h+nBeSrVpzElPBOx2Up4HRWUZiWoVUAhSz9OZ/M8Xa7WtIWCKO4MfMQ3ZqxiRhBlBLxY+7glXNDfyRwP+CQ=="
   },
   "sites": [
     {
@@ -43,26 +43,27 @@
     {
       "files": {
         "adapter.py": "da6400c9e7c9ed39fe28f81e3a49c0353112bc029d155784c9680fa2cae3a9b3",
-        "authoring-report.json": "7331c55c2e876ebd96454a9e246402938a7494f921c716f939c0608d1af8903e",
-        "flows/announcements.json": "79261bbe889dd14e9249f795301076a43b556b8c65a6e369ee25973e2f279741",
-        "flows/corporate_actions.json": "8a6527ed795ab503f870aa66e0e11eebcd5847d6dd26021c1187d7bb8c9e83af",
-        "flows/dividends.json": "8feae5d89a47f62104d382a6fd4e6955487452116bdda0511a767f8bbecaf4e6",
-        "flows/quote.json": "97b7a1037c7be31ae04f81f013330f3a29304f74e3855b43c8c978c789e864ea",
-        "manifest.json": "950b34d49548e2331b8ad4ea32ba7012580a159b9df6928c7b5f23d4a397b4e9"
+        "authoring-report.json": "ff5b33004307771d626aa53bd7a804001e8aac913267d52e3e59903506b7947c",
+        "flows/announcements.json": "7531cf28f3baf5530ee4e51d742f0a8990355cb581949c87261c71adcd5fd0d7",
+        "flows/corporate_actions.json": "4d03b2229d6bb01857cec6375384ac2777ec211459cd1e41f3388e8188823f6b",
+        "flows/dividends.json": "c35005f681addba93dc6ce9ee8fc06b9e5766eb3fb47d2ac9889040c76128a3b",
+        "flows/quote.json": "eccd6280cd6fc7588482424c79a5fc625f381ea3623f790e3cc9f3df6759711e",
+        "manifest.json": "270e416bf941627f12c72608b2663bd6d8f31f08f65c965095d010459eeb112d"
       },
       "name": "bse",
-      "version": "0.2.0"
+      "version": "0.3.0"
     },
     {
       "files": {
         "adapter.py": "278e87ef4340cfc1f74528faf185e3470bb1372321c55b8ffe54f0b3ccad2aa5",
-        "authoring-report.json": "107a00ae54e1a200bbf1deb0433e53ee8ff7c669100557edbde6b4c9015aba8a",
-        "flows/markets.json": "7425d5b03f426d38fc91f286a9c03bfa1d580f04aec36d31e870d759c901bfc5",
-        "flows/search.json": "6ce0c7cc24a15c8b00f6d649cd1d8ea5795d4d108ab071775648f85b6fb23716",
-        "manifest.json": "e29e0d4a30531a383fc55e237176b7fa8489d72c7adf08a3bdd9624d3c8f0088"
+        "authoring-report.json": "a092525bb83750d8f78a009db1c47dee7b538b0a31fddfbbbd932adb4c94db68",
+        "flows/market_chart.json": "3d4f54ff25f51b3f8c76762bbcbe3682f551c274ce3a350954aecda19f557ff9",
+        "flows/markets.json": "bad467f91c7b42a8d01e32319becd6796d8dfce2c1ade35646a077a4c06b1850",
+        "flows/search.json": "616023d00dda7f1dfe461bea719d13b4ce0f19398e90a8cdbe030f8fd8eb8138",
+        "manifest.json": "3ef382a0d1c40b4262a4368244406d52d9b463fe7b3c5d8d4f5d04bd9074f95f"
       },
       "name": "coingecko",
-      "version": "0.1.0"
+      "version": "0.2.0"
     },
     {
       "files": {
@@ -207,13 +208,13 @@
     {
       "files": {
         "adapter.py": "27519048a4d73f2d45e7b1880d4dc3492fb8b6de8142211ebbf318b7169eaecd",
-        "authoring-report.json": "78c91014a16f4d46cbc12547d0170067a74560e5d6d5ae0343f6ce3f111ec0c0",
-        "flows/pincode.json": "baf148f584707f088295bd14099c57dd6d0cfc89bbe6fc23ca55655c52dcaa68",
-        "flows/post_office.json": "a33833e9e87400c62c4beb96c9f44a0574450d4a04f29168c72c21f06dadd37f",
-        "manifest.json": "1d1dd1eb031db29129faa39bfbcce0d45ccf77f07b7c8f6e171996d2160de3ad"
+        "authoring-report.json": "806e4a3e8567ad3aaa88e67503e02c74a860b198a18f4ca74e13a0b732e83994",
+        "flows/pincode.json": "39453f0a671f9368712a3fb4cb3a0a015a4c5792103463c6ec554a254eefef1b",
+        "flows/post_office.json": "68c6b29b35e9029c5ac564c6531dce8997dc6f0d1a869321c655d42e14663ca0",
+        "manifest.json": "7f7aa58c79658b54bf378a2c8d398552451bd157f694ae3b85509da6c813a066"
       },
       "name": "indiapost",
-      "version": "0.1.0"
+      "version": "0.1.1"
     },
     {
       "files": {
@@ -255,14 +256,15 @@
     {
       "files": {
         "adapter.py": "23946e8b74c1e2bedc88ff7132be7ffb040977f39d14ba7b35aa000dd17912f9",
-        "authoring-report.json": "7fe5328d2d6a639e21c865ce9d544c2ef3e6b8de02592e3e7b0765606461baad",
-        "flows/announcements.json": "363f2e2417bb327e621d6b9aca2e311379e8e307d7adada988447ce1c6cd9304",
-        "flows/corporate_actions.json": "f9485f8fca52dea5b7002cc90c2bb1d0fc5f4ca406dae9aa175c241a65d85ce8",
-        "flows/shareholding.json": "738b114759e728e2497b657ba3722ac4bd6c1327df3c8287805d28e1f60b42fb",
-        "manifest.json": "2fc96ab238273e2aa1267077d887439c99e5dacc17a19024af3604d26649846f"
+        "authoring-report.json": "117e4919015a22808c588bf83fa7443077feda08881af6b2b4037b2296c44794",
+        "flows/announcements.json": "c3689bd36fa11ad710029cb0d71d106fcc51d578704b8e74ac2e502394d8f1b0",
+        "flows/corporate_actions.json": "85b13d909b0d4dd2c87a9208fdaff179fbb4ac4dbc5df36dd6111da1bd1b21c7",
+        "flows/indices.json": "6fb9d591540104c87fec7f4bce3c41ef061620584b9673141f10a6d016f8e761",
+        "flows/shareholding.json": "3023d53afcae865ae78c892c77c82307f61318189b3d96f1d309b35c1ef57289",
+        "manifest.json": "bc205c787c2042d38e42e18cf86048de986d63dadd7e0a2806839fd693071aea"
       },
       "name": "nse",
-      "version": "0.2.0"
+      "version": "0.3.0"
     },
     {
       "files": {
@@ -281,14 +283,15 @@
     {
       "files": {
         "adapter.py": "33c8ad9244aac8033fe5ddad08a18a362521b508a82b533410e8ce86e9637c0f",
-        "authoring-report.json": "b451b7e1ac994602455d44a0a436cf4c26ad9b24208877b1bad794736572b47e",
-        "flows/author_get.json": "48f10fb0c257f5146286135e540732462a087f9e86f9547ee824bec1ed27d0f2",
-        "flows/search.json": "77f26f67cb8f9ccf7b77f561e2f5cf27a74c2e3802f8b8a478ccde3488a70db4",
-        "flows/work_get.json": "48d70c81951e06e486ed5f48c6e8199383a0b337a9443ff0902d676cfb49e5d8",
-        "manifest.json": "fda955916672f297ff8c9e69ac26409c72a31c3625f909d5b365f0afe90eedd7"
+        "authoring-report.json": "dffddaced6f6f7bc4d19cb5cb0c4b39426c43b2fb2352d158533b187dc990f58",
+        "flows/author_get.json": "f3aa0aee4d04876067fe15f4eae766501cc42a968308ee8c8bc4f0927c911f44",
+        "flows/isbn.json": "a2959109107593ca47b2c88acf09ba38c5049c9876adfe9ac051ffd824aaf32d",
+        "flows/search.json": "2cc9bb696997c2de69abd744f33f48935c39a030908e58d380be5cb55edf5097",
+        "flows/work_get.json": "42b6a311d1e2d9c39366c6d1d208593cd24962c2c6162b62ca27b964e46b6132",
+        "manifest.json": "6d293f01f4be890f1c7aa1069e9839c1e2ceaea94072242458f360c281510350"
       },
       "name": "openlibrary",
-      "version": "0.1.0"
+      "version": "0.2.0"
     },
     {
       "files": {
@@ -333,14 +336,14 @@
     {
       "files": {
         "adapter.py": "f866617f5e6831fecf4b1496a86524d29bb409469c1aa3fa4a2a62f4f48ac49a",
-        "authoring-report.json": "65fdc41316afa3d12993b92c7a3b8bbe25c0895fb8ac8ae6141ac8baefd4a868",
-        "flows/press_releases.json": "4aaecc81780ef7d43b9ad71d70a238b4b0764c5a3b8c90dddf67eb9a6fedcae7",
-        "flows/press_releases_by_year.json": "38c60d5de128bd47178195ce10099d547348611d551d396490822407395e2931",
-        "flows/press_releases_feed.json": "f38e1223c97f7b3ef94ec8556e9ca18d582a69fcc47193e656ec247adc833963",
-        "manifest.json": "87d0677ab38161850c17c11d534e593b05177549b00b099662769d0e4343e10e"
+        "authoring-report.json": "7364d0d03d6b998e943d91572ad5fcd8a79a84aa9495a5a9560fade6403a361c",
+        "flows/press_releases.json": "35951a631f2bc33e1c78fbbd2fa56f9f2c122e7d8554b49b5ed6657229ec13c6",
+        "flows/press_releases_by_year.json": "cff17f2ab1cd5dc74882a7a0d6c2e3054dd80c3a74e8339b2ccc604521ef4e84",
+        "flows/press_releases_feed.json": "cc1cefbe24d77bcccae51de5ed80fc42c709de137fdf9bb3f889838cd91c8a06",
+        "manifest.json": "7eebbe81e85579310dc5d73143435ec385d23231b207f9da2434cae830afce51"
       },
       "name": "rbi",
-      "version": "0.2.0"
+      "version": "0.3.0"
     },
     {
       "files": {
@@ -355,14 +358,15 @@
     {
       "files": {
         "adapter.py": "59fff0145e03a4583c317a8164a03cb998f34ab954bc706e80cba887ac593093",
-        "authoring-report.json": "4568bc59c08a151ff896355f68bb0e1f576d0a840638125fa05534a38a0404b8",
-        "flows/company_concept.json": "009e7bf4d6285dbcb7b1cced04d57e1dddebcdfb534dfca42007ab48b39c9736",
-        "flows/company_profile.json": "387fdbff0b981fe8c28e1ed0537c8c606ae80a048e80d448622892a23eac1637",
-        "flows/full_text_search.json": "2512bee144796edb3e17a56a6456df1697bdbd81c6b4bfc396a6937946850f18",
-        "manifest.json": "fb276adc91e0f83c3f9adc42155fb7832e6479b59c1f1615dcd5f02b311d6ae5"
+        "authoring-report.json": "3558596a45e86a72a79759fe8bc0d3e4c37a2b723beb37c2acd53f11457d5946",
+        "flows/company_concept.json": "78e63270a0a5183ec626c14d4555db12b1d446e00e14337ecbb7931910a5d95e",
+        "flows/company_profile.json": "0fc18981efecd746050cf6f93e5cc373693bc1cca6a5336202f2876cee8431f0",
+        "flows/filings.json": "0cc3913301ad153ce55ff4a670c1277673391e488d8c644c72911ddc5257a11f",
+        "flows/full_text_search.json": "efecee7d935133ae0480f9486804ce82063e8953ae6022abdd729862e63dd9d8",
+        "manifest.json": "af670a87414ca9ac862c807d2f7b406e6ef36b2e22a763d159fcef936d0f43ab"
       },
       "name": "secedgar",
-      "version": "0.1.0"
+      "version": "0.2.0"
     },
     {
       "files": {

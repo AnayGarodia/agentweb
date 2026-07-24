@@ -1,0 +1,110 @@
+{
+  "browserless_parity": true,
+  "capabilities": {
+    "authenticated_member_services": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "Broker, member, and listing-centre services require BSE member credentials that this mapping does not hold.",
+      "roles": [
+        "bse_member"
+      ],
+      "state": "blocked",
+      "surface": "public_api"
+    },
+    "public_announcements": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_corporate_actions": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_dividends": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_quote": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    }
+  },
+  "catalog_complete": true,
+  "excluded_operations": {},
+  "exhaustive": true,
+  "generated_at_unix": 1784929554.0066576,
+  "matrix": {
+    "locales": [
+      "en-IN"
+    ],
+    "roles": [
+      "public"
+    ],
+    "surfaces": [
+      "public_api"
+    ]
+  },
+  "matrix_verified": true,
+  "operations": {
+    "announcements": {
+      "capabilities": [
+        "public_announcements"
+      ],
+      "contract_hash": "4d846309c836ff45597ead5db26ce1e3077495a04e427308db3448ace7082817",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "corporate_actions": {
+      "capabilities": [
+        "public_corporate_actions"
+      ],
+      "contract_hash": "cbfb7e5768f1de1c12bdd14b969fa213a807123c9eb7a54c2cb6835fe3a60198",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "dividends": {
+      "capabilities": [
+        "public_dividends"
+      ],
+      "contract_hash": "24d45722122780234c3730d40f3a0745eba3339cb183edaef6d578fff1bc8ed4",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "quote": {
+      "capabilities": [
+        "public_quote"
+      ],
+      "contract_hash": "7bf12b9a20eec4a865577e3b38f12821244625de56f3b0bc3721d882eb162bf0",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    }
+  },
+  "project_hash": "27728a31140251d095fe83029686ec32a70ea45639475be722b6a6d82ae01867",
+  "publication_mode": "reviewed",
+  "schema_version": 1,
+  "tool_quality_verified": true,
+  "uncovered_verified_capabilities": []
+}

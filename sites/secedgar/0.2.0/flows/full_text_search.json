@@ -1,0 +1,85 @@
+{
+  "captured_at_unix": 1784930046.310162,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://www.sec.gov",
+      "before": "https://www.sec.gov"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "full_text_search",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "full_text_search",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "forms",
+      "q"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "headers": {
+          "User-Agent": "AgentWeb research (ag5250@columbia.edu)"
+        },
+        "method": "GET",
+        "mutating": false,
+        "name": "full_text_search",
+        "path": "https://efts.sec.gov/LATEST/search-index",
+        "query": {
+          "forms": "{forms}",
+          "q": "{q}"
+        }
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "secedgar",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns matching filings",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "c222d40ae0644114154322417feb7a2af3be6b0e6dbaf6b2bccdfe7bfeac687b",
+    "evidence_version": 2,
+    "recipe_hash": "126316a558571706b6e3937eb0a2dc216a6c34cda8d2eed0289dde53589fc525",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784930074.4746366
+  }
+}

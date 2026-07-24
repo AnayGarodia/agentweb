@@ -1,0 +1,110 @@
+{
+  "browserless_parity": true,
+  "capabilities": {
+    "account_services": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "Lists, reading logs, and edits require an Open Library account login that this mapping does not hold.",
+      "roles": [
+        "account_holder"
+      ],
+      "state": "blocked",
+      "surface": "public_api"
+    },
+    "isbn": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_author_get": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_search": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_work_get": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    }
+  },
+  "catalog_complete": true,
+  "excluded_operations": {},
+  "exhaustive": true,
+  "generated_at_unix": 1784930077.2087429,
+  "matrix": {
+    "locales": [
+      "en-US"
+    ],
+    "roles": [
+      "public"
+    ],
+    "surfaces": [
+      "public_api"
+    ]
+  },
+  "matrix_verified": true,
+  "operations": {
+    "author_get": {
+      "capabilities": [
+        "public_author_get"
+      ],
+      "contract_hash": "7b985307b05356c8b8afb983fa3fbec45cef4bccfc2043d45dc74f950a368e08",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "isbn": {
+      "capabilities": [
+        "isbn"
+      ],
+      "contract_hash": "691211cd8edbc48cf03cf69f101950e949ecf319b250251a74b674c7eb8453c0",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "search": {
+      "capabilities": [
+        "public_search"
+      ],
+      "contract_hash": "4e3d24e4333cc6d8d42944d6633a3be7292eb7cb0c2df8b8dd58234a24837455",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "work_get": {
+      "capabilities": [
+        "public_work_get"
+      ],
+      "contract_hash": "925d7c2d6fd37d2e46923d182360089b971ac0ab4e52f30953a5c44e9482934b",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    }
+  },
+  "project_hash": "31e3364378b0e4bb820bf02701e92331fe4028c51b8ef423e9760e592975b8b9",
+  "publication_mode": "reviewed",
+  "schema_version": 1,
+  "tool_quality_verified": true,
+  "uncovered_verified_capabilities": []
+}

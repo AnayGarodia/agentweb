@@ -1,0 +1,92 @@
+{
+  "browserless_parity": true,
+  "capabilities": {
+    "market_chart": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "pro_api": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "CoinGecko Pro endpoints require an API key that this mapping does not hold.",
+      "roles": [
+        "account_holder"
+      ],
+      "state": "blocked",
+      "surface": "public_api"
+    },
+    "public_markets": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_search": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    }
+  },
+  "catalog_complete": true,
+  "excluded_operations": {},
+  "exhaustive": true,
+  "generated_at_unix": 1784930152.903087,
+  "matrix": {
+    "locales": [
+      "en-US"
+    ],
+    "roles": [
+      "public"
+    ],
+    "surfaces": [
+      "public_api"
+    ]
+  },
+  "matrix_verified": true,
+  "operations": {
+    "market_chart": {
+      "capabilities": [
+        "market_chart"
+      ],
+      "contract_hash": "976efdb988194f684c10cad4a89056076ed07c3e36bfd014779c7edc4d2672df",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "markets": {
+      "capabilities": [
+        "public_markets"
+      ],
+      "contract_hash": "ce3cd8a9849ea44b07580da745d9db4090960cf27cd977f5e45c25cb7518a98f",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "search": {
+      "capabilities": [
+        "public_search"
+      ],
+      "contract_hash": "74a2bd4e04e9591082017d351dcf7f624c35f80652388c92bc842bab64e805b9",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    }
+  },
+  "project_hash": "aeec136e55189e90d77007080f903644f23bdb60d1cc9a7d349fd4a826b69ef1",
+  "publication_mode": "reviewed",
+  "schema_version": 1,
+  "tool_quality_verified": true,
+  "uncovered_verified_capabilities": []
+}
