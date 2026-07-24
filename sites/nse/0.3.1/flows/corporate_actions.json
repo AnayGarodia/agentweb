@@ -1,42 +1,42 @@
 {
-  "captured_at_unix": 1784930430.3302374,
+  "captured_at_unix": 1784930595.667603,
   "kind": "agentweb_flow_capsule",
   "observed": {
     "final_response_shape": {},
     "page_transition": {
-      "after": "https://www.sec.gov",
-      "before": "https://www.sec.gov"
+      "after": "https://www.nseindia.com",
+      "before": "https://www.nseindia.com"
     },
     "source": "reviewed_mapping_specification",
     "steps": [
       {
-        "name": "full_text_search",
+        "name": "corporate_actions",
         "status": 200
       }
     ]
   },
-  "operation": "full_text_search",
+  "operation": "corporate_actions",
   "recipe": {
     "dependencies": [],
     "human_inputs": [],
     "required_inputs": [
-      "forms",
-      "q"
+      "index",
+      "symbol"
     ],
     "session_cookies": false,
     "steps": [
       {
         "classification": "read",
         "headers": {
-          "User-Agent": "AgentWeb research (ag5250@columbia.edu)"
+          "Referer": "https://www.nseindia.com/"
         },
         "method": "GET",
         "mutating": false,
-        "name": "full_text_search",
-        "path": "https://efts.sec.gov/LATEST/search-index",
+        "name": "corporate_actions",
+        "path": "https://www.nseindia.com/api/corporates-corporateActions",
         "query": {
-          "forms": "{forms}",
-          "q": "{q}"
+          "index": "{index}",
+          "symbol": "{symbol}"
         }
       }
     ]
@@ -47,11 +47,11 @@
     "uses_session_cookies": false
   },
   "schema_version": 1,
-  "site": "secedgar",
+  "site": "nse",
   "verification": {
     "assertions": [
       {
-        "name": "returns matching filings",
+        "name": "returns corporate actions",
         "passed": true,
         "type": "non_empty"
       },
@@ -65,9 +65,9 @@
     "cases": [
       "success"
     ],
-    "contract_hash": "c222d40ae0644114154322417feb7a2af3be6b0e6dbaf6b2bccdfe7bfeac687b",
+    "contract_hash": "9cc3f68997247f3d0efebad44340522ab7e3838b72848d47715c7aba81989287",
     "evidence_version": 2,
-    "recipe_hash": "126316a558571706b6e3937eb0a2dc216a6c34cda8d2eed0289dde53589fc525",
+    "recipe_hash": "1eff5b36ba9a5e0840f9b8f0b0fa0fe6417d7e8b15e8fc642d3194fe97ea2e1c",
     "review_required": [],
     "reviewed": true,
     "runner": {
@@ -80,6 +80,6 @@
       "version": 1
     },
     "status": "passed",
-    "verified_at_unix": 1784930431.5421658
+    "verified_at_unix": 1784930596.586602
   }
 }

@@ -1,39 +1,35 @@
 {
-  "captured_at_unix": 1784930430.316207,
+  "captured_at_unix": 1784930590.764574,
   "kind": "agentweb_flow_capsule",
   "observed": {
     "final_response_shape": {},
     "page_transition": {
-      "after": "https://www.sec.gov",
-      "before": "https://www.sec.gov"
+      "after": "https://openlibrary.org",
+      "before": "https://openlibrary.org"
     },
     "source": "reviewed_mapping_specification",
     "steps": [
       {
-        "name": "company_concept",
+        "name": "isbn",
         "status": 200
       }
     ]
   },
-  "operation": "company_concept",
+  "operation": "isbn",
   "recipe": {
     "dependencies": [],
     "human_inputs": [],
     "required_inputs": [
-      "cik",
-      "tag"
+      "isbn"
     ],
     "session_cookies": false,
     "steps": [
       {
         "classification": "read",
-        "headers": {
-          "User-Agent": "AgentWeb research (ag5250@columbia.edu)"
-        },
         "method": "GET",
         "mutating": false,
-        "name": "company_concept",
-        "path": "https://data.sec.gov/api/xbrl/companyconcept/CIK{cik}/us-gaap/{tag}.json"
+        "name": "isbn",
+        "path": "https://openlibrary.org/isbn/{isbn}.json"
       }
     ]
   },
@@ -43,11 +39,11 @@
     "uses_session_cookies": false
   },
   "schema_version": 1,
-  "site": "secedgar",
+  "site": "openlibrary",
   "verification": {
     "assertions": [
       {
-        "name": "returns reported values",
+        "name": "returns the edition title",
         "passed": true,
         "type": "non_empty"
       },
@@ -61,9 +57,9 @@
     "cases": [
       "success"
     ],
-    "contract_hash": "aab1243fc4ef6022e38bf78aefc16c93748d77c4324269c84e4d6fbd3a85ecf0",
+    "contract_hash": "34d9b7c3d28bd98c418c950c3ce83951a941e996f5b695bfca9da0f86954c24c",
     "evidence_version": 2,
-    "recipe_hash": "b54e5f8a4b618423fe0fb55ecbcbbc9f6362661ffe9ee20a52fed731f23a16d0",
+    "recipe_hash": "7b7184234dd97bcf4c11eca6c7d154018adf916bcc04fce88a9453ddca9e9fda",
     "review_required": [],
     "reviewed": true,
     "runner": {
@@ -76,6 +72,6 @@
       "version": 1
     },
     "status": "passed",
-    "verified_at_unix": 1784930430.7093768
+    "verified_at_unix": 1784930591.3268507
   }
 }

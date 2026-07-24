@@ -1,35 +1,38 @@
 {
-  "captured_at_unix": 1784930432.3404112,
+  "captured_at_unix": 1784930588.730501,
   "kind": "agentweb_flow_capsule",
   "observed": {
     "final_response_shape": {},
     "page_transition": {
-      "after": "https://openlibrary.org",
-      "before": "https://openlibrary.org"
+      "after": "https://www.sec.gov",
+      "before": "https://www.sec.gov"
     },
     "source": "reviewed_mapping_specification",
     "steps": [
       {
-        "name": "author_get",
+        "name": "filings",
         "status": 200
       }
     ]
   },
-  "operation": "author_get",
+  "operation": "filings",
   "recipe": {
     "dependencies": [],
     "human_inputs": [],
     "required_inputs": [
-      "author_id"
+      "cik"
     ],
     "session_cookies": false,
     "steps": [
       {
         "classification": "read",
+        "headers": {
+          "User-Agent": "AgentWeb research agent ag5250@columbia.edu"
+        },
         "method": "GET",
         "mutating": false,
-        "name": "author_get",
-        "path": "https://openlibrary.org/authors/{author_id}.json"
+        "name": "filings",
+        "path": "https://data.sec.gov/submissions/CIK{cik}.json"
       }
     ]
   },
@@ -39,11 +42,16 @@
     "uses_session_cookies": false
   },
   "schema_version": 1,
-  "site": "openlibrary",
+  "site": "secedgar",
   "verification": {
     "assertions": [
       {
-        "name": "returns the author name",
+        "name": "lists real filings",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "dates align with forms",
         "passed": true,
         "type": "non_empty"
       },
@@ -57,9 +65,9 @@
     "cases": [
       "success"
     ],
-    "contract_hash": "7b985307b05356c8b8afb983fa3fbec45cef4bccfc2043d45dc74f950a368e08",
+    "contract_hash": "d75309f99d502f1c5df263df7d58f0692059e2a90f8e0b6ad541e01f9ecddce0",
     "evidence_version": 2,
-    "recipe_hash": "250b71d3b0212c58d6ebefef3a2c51f40985226ccb7bfad972f009006cd0f316",
+    "recipe_hash": "c657d0a9f4a40109386b01201f0248ebc7fa7d022210baa5e7f041f24d6bde05",
     "review_required": [],
     "reviewed": true,
     "runner": {
@@ -72,6 +80,6 @@
       "version": 1
     },
     "status": "passed",
-    "verified_at_unix": 1784930432.7485394
+    "verified_at_unix": 1784930589.1605146
   }
 }

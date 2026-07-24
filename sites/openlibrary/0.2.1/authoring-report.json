@@ -1,7 +1,17 @@
 {
   "browserless_parity": true,
   "capabilities": {
-    "company_profile": {
+    "account_services": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "Lists, reading logs, and edits require an Open Library account login that this mapping does not hold.",
+      "roles": [
+        "account_holder"
+      ],
+      "state": "blocked",
+      "surface": "public_api"
+    },
+    "isbn": {
       "boundary_evidence": 0,
       "in_matrix": true,
       "reason": null,
@@ -11,37 +21,7 @@
       "state": "verified",
       "surface": "public_api"
     },
-    "fair_access": {
-      "boundary_evidence": 0,
-      "in_matrix": false,
-      "reason": "SEC fair-access policy asks for a declared User-Agent and at most 10 requests per second; the recorded header declares this client.",
-      "roles": [
-        "public"
-      ],
-      "state": "blocked",
-      "surface": "public_api"
-    },
-    "filing_documents": {
-      "boundary_evidence": 0,
-      "in_matrix": false,
-      "reason": "Downloading full filing documents from Archives is not mapped yet; results carry accession numbers to locate them.",
-      "roles": [
-        "public"
-      ],
-      "state": "blocked",
-      "surface": "public_api"
-    },
-    "filing_index": {
-      "boundary_evidence": 0,
-      "in_matrix": false,
-      "reason": "The recent-filings index inside the submissions payload is large and unmapped; full_text_search covers filing discovery.",
-      "roles": [
-        "public"
-      ],
-      "state": "blocked",
-      "surface": "public_api"
-    },
-    "filings": {
+    "public_author_get": {
       "boundary_evidence": 0,
       "in_matrix": true,
       "reason": null,
@@ -51,7 +31,7 @@
       "state": "verified",
       "surface": "public_api"
     },
-    "public_company_concept": {
+    "public_search": {
       "boundary_evidence": 0,
       "in_matrix": true,
       "reason": null,
@@ -61,7 +41,7 @@
       "state": "verified",
       "surface": "public_api"
     },
-    "public_full_text_search": {
+    "public_work_get": {
       "boundary_evidence": 0,
       "in_matrix": true,
       "reason": null,
@@ -75,7 +55,7 @@
   "catalog_complete": true,
   "excluded_operations": {},
   "exhaustive": true,
-  "generated_at_unix": 1784930431.5924735,
+  "generated_at_unix": 1784930593.3558712,
   "matrix": {
     "locales": [
       "en-US"
@@ -89,40 +69,40 @@
   },
   "matrix_verified": true,
   "operations": {
-    "company_concept": {
+    "author_get": {
       "capabilities": [
-        "public_company_concept"
+        "public_author_get"
       ],
-      "contract_hash": "aab1243fc4ef6022e38bf78aefc16c93748d77c4324269c84e4d6fbd3a85ecf0",
+      "contract_hash": "7b985307b05356c8b8afb983fa3fbec45cef4bccfc2043d45dc74f950a368e08",
       "implementation_artifact_sha256": null,
       "verification_status": "passed"
     },
-    "company_profile": {
+    "isbn": {
       "capabilities": [
-        "company_profile"
+        "isbn"
       ],
-      "contract_hash": "bb5ef18bf24d01e4cf03537e6671d46fea5ab800ad524210498fdd852128aa16",
+      "contract_hash": "34d9b7c3d28bd98c418c950c3ce83951a941e996f5b695bfca9da0f86954c24c",
       "implementation_artifact_sha256": null,
       "verification_status": "passed"
     },
-    "filings": {
+    "search": {
       "capabilities": [
-        "filings"
+        "public_search"
       ],
-      "contract_hash": "d75309f99d502f1c5df263df7d58f0692059e2a90f8e0b6ad541e01f9ecddce0",
+      "contract_hash": "4e3d24e4333cc6d8d42944d6633a3be7292eb7cb0c2df8b8dd58234a24837455",
       "implementation_artifact_sha256": null,
       "verification_status": "passed"
     },
-    "full_text_search": {
+    "work_get": {
       "capabilities": [
-        "public_full_text_search"
+        "public_work_get"
       ],
-      "contract_hash": "c222d40ae0644114154322417feb7a2af3be6b0e6dbaf6b2bccdfe7bfeac687b",
+      "contract_hash": "925d7c2d6fd37d2e46923d182360089b971ac0ab4e52f30953a5c44e9482934b",
       "implementation_artifact_sha256": null,
       "verification_status": "passed"
     }
   },
-  "project_hash": "079767c7309253b74594910b97950e56bb6289f2aae626f5ef46c2f9f943c1b5",
+  "project_hash": "66108f89e8b6eea446077c6768d977aab830d4bc1b87ac931e3c7d54c502c8ee",
   "publication_mode": "reviewed",
   "schema_version": 1,
   "tool_quality_verified": true,

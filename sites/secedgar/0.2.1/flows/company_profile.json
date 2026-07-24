@@ -1,36 +1,38 @@
 {
-  "captured_at_unix": 1784930437.1569731,
+  "captured_at_unix": 1784930588.7091331,
   "kind": "agentweb_flow_capsule",
   "observed": {
     "final_response_shape": {},
     "page_transition": {
-      "after": "https://www.nseindia.com",
-      "before": "https://www.nseindia.com"
+      "after": "https://www.sec.gov",
+      "before": "https://www.sec.gov"
     },
     "source": "reviewed_mapping_specification",
     "steps": [
       {
-        "name": "indices",
+        "name": "company_profile",
         "status": 200
       }
     ]
   },
-  "operation": "indices",
+  "operation": "company_profile",
   "recipe": {
     "dependencies": [],
     "human_inputs": [],
-    "required_inputs": [],
+    "required_inputs": [
+      "cik"
+    ],
     "session_cookies": false,
     "steps": [
       {
         "classification": "read",
         "headers": {
-          "Referer": "https://www.nseindia.com/"
+          "User-Agent": "AgentWeb research (ag5250@columbia.edu)"
         },
         "method": "GET",
         "mutating": false,
-        "name": "indices",
-        "path": "https://www.nseindia.com/api/allIndices"
+        "name": "company_profile",
+        "path": "https://data.sec.gov/submissions/CIK{cik}.json"
       }
     ]
   },
@@ -40,11 +42,11 @@
     "uses_session_cookies": false
   },
   "schema_version": 1,
-  "site": "nse",
+  "site": "secedgar",
   "verification": {
     "assertions": [
       {
-        "name": "returns live index rows",
+        "name": "returns the company profile",
         "passed": true,
         "type": "non_empty"
       },
@@ -58,9 +60,9 @@
     "cases": [
       "success"
     ],
-    "contract_hash": "d526d35bd529fbeefbaa4237e5c1115dcd033924719a310ed65ce793fc67533b",
+    "contract_hash": "bb5ef18bf24d01e4cf03537e6671d46fea5ab800ad524210498fdd852128aa16",
     "evidence_version": 2,
-    "recipe_hash": "fa96fc647da8694c16f28b10e54d8ac7f3bdc3174e599d94cf90469c8cfb4b07",
+    "recipe_hash": "e5a6b8c761e26bfd2a7f0b4b7bb3a5e96e41ee6b11048e4f14ed30551d750e19",
     "review_required": [],
     "reviewed": true,
     "runner": {
@@ -73,6 +75,6 @@
       "version": 1
     },
     "status": "passed",
-    "verified_at_unix": 1784930439.143908
+    "verified_at_unix": 1784930589.1041205
   }
 }

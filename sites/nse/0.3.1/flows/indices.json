@@ -1,5 +1,5 @@
 {
-  "captured_at_unix": 1784930437.1275418,
+  "captured_at_unix": 1784930595.6881127,
   "kind": "agentweb_flow_capsule",
   "observed": {
     "final_response_shape": {},
@@ -10,18 +10,16 @@
     "source": "reviewed_mapping_specification",
     "steps": [
       {
-        "name": "announcements",
+        "name": "indices",
         "status": 200
       }
     ]
   },
-  "operation": "announcements",
+  "operation": "indices",
   "recipe": {
     "dependencies": [],
     "human_inputs": [],
-    "required_inputs": [
-      "index"
-    ],
+    "required_inputs": [],
     "session_cookies": false,
     "steps": [
       {
@@ -31,11 +29,8 @@
         },
         "method": "GET",
         "mutating": false,
-        "name": "announcements",
-        "path": "https://www.nseindia.com/api/corporate-announcements",
-        "query": {
-          "index": "{index}"
-        }
+        "name": "indices",
+        "path": "https://www.nseindia.com/api/allIndices"
       }
     ]
   },
@@ -49,7 +44,7 @@
   "verification": {
     "assertions": [
       {
-        "name": "returns matching records",
+        "name": "returns live index rows",
         "passed": true,
         "type": "non_empty"
       },
@@ -63,9 +58,9 @@
     "cases": [
       "success"
     ],
-    "contract_hash": "6e922c2fb9d3ffb4b5f28fb4bd78125dace126c68fa7907f4a37b5b54e40a648",
+    "contract_hash": "d526d35bd529fbeefbaa4237e5c1115dcd033924719a310ed65ce793fc67533b",
     "evidence_version": 2,
-    "recipe_hash": "9ab9c4b42ffd0f415c4f7c69f55988e8267a59ff9ac53183ca2698d377b6de60",
+    "recipe_hash": "fa96fc647da8694c16f28b10e54d8ac7f3bdc3174e599d94cf90469c8cfb4b07",
     "review_required": [],
     "reviewed": true,
     "runner": {
@@ -78,6 +73,6 @@
       "version": 1
     },
     "status": "passed",
-    "verified_at_unix": 1784930438.5206904
+    "verified_at_unix": 1784930596.664564
   }
 }

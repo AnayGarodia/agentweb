@@ -1,17 +1,47 @@
 {
   "browserless_parity": true,
   "capabilities": {
-    "historical_search": {
+    "company_profile": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "fair_access": {
       "boundary_evidence": 0,
       "in_matrix": false,
-      "reason": "NSE's dated historical announcement search is not mapped; this covers the live feed.",
+      "reason": "SEC fair-access policy asks for a declared User-Agent and at most 10 requests per second; the recorded header declares this client.",
       "roles": [
         "public"
       ],
       "state": "blocked",
       "surface": "public_api"
     },
-    "indices": {
+    "filing_documents": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "Downloading full filing documents from Archives is not mapped yet; results carry accession numbers to locate them.",
+      "roles": [
+        "public"
+      ],
+      "state": "blocked",
+      "surface": "public_api"
+    },
+    "filing_index": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "The recent-filings index inside the submissions payload is large and unmapped; full_text_search covers filing discovery.",
+      "roles": [
+        "public"
+      ],
+      "state": "blocked",
+      "surface": "public_api"
+    },
+    "filings": {
       "boundary_evidence": 0,
       "in_matrix": true,
       "reason": null,
@@ -21,7 +51,7 @@
       "state": "verified",
       "surface": "public_api"
     },
-    "public_announcements": {
+    "public_company_concept": {
       "boundary_evidence": 0,
       "in_matrix": true,
       "reason": null,
@@ -31,17 +61,7 @@
       "state": "verified",
       "surface": "public_api"
     },
-    "public_corporate_actions": {
-      "boundary_evidence": 0,
-      "in_matrix": true,
-      "reason": null,
-      "roles": [
-        "public"
-      ],
-      "state": "verified",
-      "surface": "public_api"
-    },
-    "public_shareholding": {
+    "public_full_text_search": {
       "boundary_evidence": 0,
       "in_matrix": true,
       "reason": null,
@@ -55,7 +75,7 @@
   "catalog_complete": true,
   "excluded_operations": {},
   "exhaustive": true,
-  "generated_at_unix": 1784930439.5022516,
+  "generated_at_unix": 1784930589.9457746,
   "matrix": {
     "locales": [
       "en-US"
@@ -69,40 +89,40 @@
   },
   "matrix_verified": true,
   "operations": {
-    "announcements": {
+    "company_concept": {
       "capabilities": [
-        "public_announcements"
+        "public_company_concept"
       ],
-      "contract_hash": "6e922c2fb9d3ffb4b5f28fb4bd78125dace126c68fa7907f4a37b5b54e40a648",
+      "contract_hash": "aab1243fc4ef6022e38bf78aefc16c93748d77c4324269c84e4d6fbd3a85ecf0",
       "implementation_artifact_sha256": null,
       "verification_status": "passed"
     },
-    "corporate_actions": {
+    "company_profile": {
       "capabilities": [
-        "public_corporate_actions"
+        "company_profile"
       ],
-      "contract_hash": "9cc3f68997247f3d0efebad44340522ab7e3838b72848d47715c7aba81989287",
+      "contract_hash": "bb5ef18bf24d01e4cf03537e6671d46fea5ab800ad524210498fdd852128aa16",
       "implementation_artifact_sha256": null,
       "verification_status": "passed"
     },
-    "indices": {
+    "filings": {
       "capabilities": [
-        "indices"
+        "filings"
       ],
-      "contract_hash": "d526d35bd529fbeefbaa4237e5c1115dcd033924719a310ed65ce793fc67533b",
+      "contract_hash": "d75309f99d502f1c5df263df7d58f0692059e2a90f8e0b6ad541e01f9ecddce0",
       "implementation_artifact_sha256": null,
       "verification_status": "passed"
     },
-    "shareholding": {
+    "full_text_search": {
       "capabilities": [
-        "public_shareholding"
+        "public_full_text_search"
       ],
-      "contract_hash": "e0de16de928414ca3416c4aee16bc9bf05bfbd1b80d8051002d1522035b84950",
+      "contract_hash": "c222d40ae0644114154322417feb7a2af3be6b0e6dbaf6b2bccdfe7bfeac687b",
       "implementation_artifact_sha256": null,
       "verification_status": "passed"
     }
   },
-  "project_hash": "f0b3bd17e62126fde4212339b2faf93321dbbcbddaea3dfe43544b6f00788cd4",
+  "project_hash": "1244b8ab6350420705b9da2607b7578e841f472c4d3d4d9158b523756feb9732",
   "publication_mode": "reviewed",
   "schema_version": 1,
   "tool_quality_verified": true,

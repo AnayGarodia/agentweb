@@ -1,17 +1,17 @@
 {
   "browserless_parity": true,
   "capabilities": {
-    "account_services": {
+    "historical_search": {
       "boundary_evidence": 0,
       "in_matrix": false,
-      "reason": "Lists, reading logs, and edits require an Open Library account login that this mapping does not hold.",
+      "reason": "NSE's dated historical announcement search is not mapped; this covers the live feed.",
       "roles": [
-        "account_holder"
+        "public"
       ],
       "state": "blocked",
       "surface": "public_api"
     },
-    "isbn": {
+    "indices": {
       "boundary_evidence": 0,
       "in_matrix": true,
       "reason": null,
@@ -21,7 +21,7 @@
       "state": "verified",
       "surface": "public_api"
     },
-    "public_author_get": {
+    "public_announcements": {
       "boundary_evidence": 0,
       "in_matrix": true,
       "reason": null,
@@ -31,7 +31,7 @@
       "state": "verified",
       "surface": "public_api"
     },
-    "public_search": {
+    "public_corporate_actions": {
       "boundary_evidence": 0,
       "in_matrix": true,
       "reason": null,
@@ -41,7 +41,7 @@
       "state": "verified",
       "surface": "public_api"
     },
-    "public_work_get": {
+    "public_shareholding": {
       "boundary_evidence": 0,
       "in_matrix": true,
       "reason": null,
@@ -55,7 +55,7 @@
   "catalog_complete": true,
   "excluded_operations": {},
   "exhaustive": true,
-  "generated_at_unix": 1784930434.3747828,
+  "generated_at_unix": 1784930597.0281074,
   "matrix": {
     "locales": [
       "en-US"
@@ -69,40 +69,40 @@
   },
   "matrix_verified": true,
   "operations": {
-    "author_get": {
+    "announcements": {
       "capabilities": [
-        "public_author_get"
+        "public_announcements"
       ],
-      "contract_hash": "7b985307b05356c8b8afb983fa3fbec45cef4bccfc2043d45dc74f950a368e08",
+      "contract_hash": "6e922c2fb9d3ffb4b5f28fb4bd78125dace126c68fa7907f4a37b5b54e40a648",
       "implementation_artifact_sha256": null,
       "verification_status": "passed"
     },
-    "isbn": {
+    "corporate_actions": {
       "capabilities": [
-        "isbn"
+        "public_corporate_actions"
       ],
-      "contract_hash": "34d9b7c3d28bd98c418c950c3ce83951a941e996f5b695bfca9da0f86954c24c",
+      "contract_hash": "9cc3f68997247f3d0efebad44340522ab7e3838b72848d47715c7aba81989287",
       "implementation_artifact_sha256": null,
       "verification_status": "passed"
     },
-    "search": {
+    "indices": {
       "capabilities": [
-        "public_search"
+        "indices"
       ],
-      "contract_hash": "4e3d24e4333cc6d8d42944d6633a3be7292eb7cb0c2df8b8dd58234a24837455",
+      "contract_hash": "d526d35bd529fbeefbaa4237e5c1115dcd033924719a310ed65ce793fc67533b",
       "implementation_artifact_sha256": null,
       "verification_status": "passed"
     },
-    "work_get": {
+    "shareholding": {
       "capabilities": [
-        "public_work_get"
+        "public_shareholding"
       ],
-      "contract_hash": "925d7c2d6fd37d2e46923d182360089b971ac0ab4e52f30953a5c44e9482934b",
+      "contract_hash": "e0de16de928414ca3416c4aee16bc9bf05bfbd1b80d8051002d1522035b84950",
       "implementation_artifact_sha256": null,
       "verification_status": "passed"
     }
   },
-  "project_hash": "84c639dc27df3adca05956bb71541dec4ee1ba337fe7b99c0806c9c3d00ee322",
+  "project_hash": "ec3027b8ea42d8a9a59acc064129f3feb4b8cbf11df55d8bd54f4824b363e2d5",
   "publication_mode": "reviewed",
   "schema_version": 1,
   "tool_quality_verified": true,

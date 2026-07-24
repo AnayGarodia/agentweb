@@ -1,42 +1,39 @@
 {
-  "captured_at_unix": 1784930437.1505315,
+  "captured_at_unix": 1784930590.7472486,
   "kind": "agentweb_flow_capsule",
   "observed": {
     "final_response_shape": {},
     "page_transition": {
-      "after": "https://www.nseindia.com",
-      "before": "https://www.nseindia.com"
+      "after": "https://openlibrary.org",
+      "before": "https://openlibrary.org"
     },
     "source": "reviewed_mapping_specification",
     "steps": [
       {
-        "name": "shareholding",
+        "name": "search",
         "status": 200
       }
     ]
   },
-  "operation": "shareholding",
+  "operation": "search",
   "recipe": {
     "dependencies": [],
     "human_inputs": [],
     "required_inputs": [
-      "index",
-      "symbol"
+      "limit",
+      "q"
     ],
     "session_cookies": false,
     "steps": [
       {
         "classification": "read",
-        "headers": {
-          "Referer": "https://www.nseindia.com/"
-        },
         "method": "GET",
         "mutating": false,
-        "name": "shareholding",
-        "path": "https://www.nseindia.com/api/corporate-share-holdings-master",
+        "name": "search",
+        "path": "https://openlibrary.org/search.json",
         "query": {
-          "index": "{index}",
-          "symbol": "{symbol}"
+          "limit": "{limit}",
+          "q": "{q}"
         }
       }
     ]
@@ -47,11 +44,11 @@
     "uses_session_cookies": false
   },
   "schema_version": 1,
-  "site": "nse",
+  "site": "openlibrary",
   "verification": {
     "assertions": [
       {
-        "name": "returns disclosures",
+        "name": "returns matching records",
         "passed": true,
         "type": "non_empty"
       },
@@ -65,9 +62,9 @@
     "cases": [
       "success"
     ],
-    "contract_hash": "e0de16de928414ca3416c4aee16bc9bf05bfbd1b80d8051002d1522035b84950",
+    "contract_hash": "4e3d24e4333cc6d8d42944d6633a3be7292eb7cb0c2df8b8dd58234a24837455",
     "evidence_version": 2,
-    "recipe_hash": "2bbfbdc49dcf7a931618f42f462a81dbcf5c5759ee646a4b6147fda3547e2a10",
+    "recipe_hash": "67745908a6bfa45f4ac65fd5d93e956cfc532043193c63f06dfa9ac94057a2ca",
     "review_required": [],
     "reviewed": true,
     "runner": {
@@ -80,6 +77,6 @@
       "version": 1
     },
     "status": "passed",
-    "verified_at_unix": 1784930439.466458
+    "verified_at_unix": 1784930593.181285
   }
 }

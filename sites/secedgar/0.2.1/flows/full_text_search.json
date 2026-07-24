@@ -1,5 +1,5 @@
 {
-  "captured_at_unix": 1784930430.3435082,
+  "captured_at_unix": 1784930588.7199485,
   "kind": "agentweb_flow_capsule",
   "observed": {
     "final_response_shape": {},
@@ -10,29 +10,34 @@
     "source": "reviewed_mapping_specification",
     "steps": [
       {
-        "name": "filings",
+        "name": "full_text_search",
         "status": 200
       }
     ]
   },
-  "operation": "filings",
+  "operation": "full_text_search",
   "recipe": {
     "dependencies": [],
     "human_inputs": [],
     "required_inputs": [
-      "cik"
+      "forms",
+      "q"
     ],
     "session_cookies": false,
     "steps": [
       {
         "classification": "read",
         "headers": {
-          "User-Agent": "AgentWeb research agent ag5250@columbia.edu"
+          "User-Agent": "AgentWeb research (ag5250@columbia.edu)"
         },
         "method": "GET",
         "mutating": false,
-        "name": "filings",
-        "path": "https://data.sec.gov/submissions/CIK{cik}.json"
+        "name": "full_text_search",
+        "path": "https://efts.sec.gov/LATEST/search-index",
+        "query": {
+          "forms": "{forms}",
+          "q": "{q}"
+        }
       }
     ]
   },
@@ -46,12 +51,7 @@
   "verification": {
     "assertions": [
       {
-        "name": "lists real filings",
-        "passed": true,
-        "type": "non_empty"
-      },
-      {
-        "name": "dates align with forms",
+        "name": "returns matching filings",
         "passed": true,
         "type": "non_empty"
       },
@@ -65,9 +65,9 @@
     "cases": [
       "success"
     ],
-    "contract_hash": "d75309f99d502f1c5df263df7d58f0692059e2a90f8e0b6ad541e01f9ecddce0",
+    "contract_hash": "c222d40ae0644114154322417feb7a2af3be6b0e6dbaf6b2bccdfe7bfeac687b",
     "evidence_version": 2,
-    "recipe_hash": "c657d0a9f4a40109386b01201f0248ebc7fa7d022210baa5e7f041f24d6bde05",
+    "recipe_hash": "126316a558571706b6e3937eb0a2dc216a6c34cda8d2eed0289dde53589fc525",
     "review_required": [],
     "reviewed": true,
     "runner": {
@@ -80,6 +80,6 @@
       "version": 1
     },
     "status": "passed",
-    "verified_at_unix": 1784930430.8348777
+    "verified_at_unix": 1784930589.8893604
   }
 }

@@ -1,5 +1,5 @@
 {
-  "captured_at_unix": 1784930432.3516366,
+  "captured_at_unix": 1784930590.7551053,
   "kind": "agentweb_flow_capsule",
   "observed": {
     "final_response_shape": {},
@@ -10,18 +10,17 @@
     "source": "reviewed_mapping_specification",
     "steps": [
       {
-        "name": "search",
+        "name": "work_get",
         "status": 200
       }
     ]
   },
-  "operation": "search",
+  "operation": "work_get",
   "recipe": {
     "dependencies": [],
     "human_inputs": [],
     "required_inputs": [
-      "limit",
-      "q"
+      "work_id"
     ],
     "session_cookies": false,
     "steps": [
@@ -29,12 +28,8 @@
         "classification": "read",
         "method": "GET",
         "mutating": false,
-        "name": "search",
-        "path": "https://openlibrary.org/search.json",
-        "query": {
-          "limit": "{limit}",
-          "q": "{q}"
-        }
+        "name": "work_get",
+        "path": "https://openlibrary.org/works/{work_id}.json"
       }
     ]
   },
@@ -48,7 +43,7 @@
   "verification": {
     "assertions": [
       {
-        "name": "returns matching records",
+        "name": "returns the work title",
         "passed": true,
         "type": "non_empty"
       },
@@ -62,9 +57,9 @@
     "cases": [
       "success"
     ],
-    "contract_hash": "4e3d24e4333cc6d8d42944d6633a3be7292eb7cb0c2df8b8dd58234a24837455",
+    "contract_hash": "925d7c2d6fd37d2e46923d182360089b971ac0ab4e52f30953a5c44e9482934b",
     "evidence_version": 2,
-    "recipe_hash": "67745908a6bfa45f4ac65fd5d93e956cfc532043193c63f06dfa9ac94057a2ca",
+    "recipe_hash": "85de9f8c33069da53690a70db2ca8e8752c5154ad94906a9bf28d55ff00df094",
     "review_required": [],
     "reviewed": true,
     "runner": {
@@ -77,6 +72,6 @@
       "version": 1
     },
     "status": "passed",
-    "verified_at_unix": 1784930434.2083495
+    "verified_at_unix": 1784930593.2981582
   }
 }

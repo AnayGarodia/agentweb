@@ -1,35 +1,43 @@
 {
-  "captured_at_unix": 1784930432.3686595,
+  "captured_at_unix": 1784930595.678783,
   "kind": "agentweb_flow_capsule",
   "observed": {
     "final_response_shape": {},
     "page_transition": {
-      "after": "https://openlibrary.org",
-      "before": "https://openlibrary.org"
+      "after": "https://www.nseindia.com",
+      "before": "https://www.nseindia.com"
     },
     "source": "reviewed_mapping_specification",
     "steps": [
       {
-        "name": "isbn",
+        "name": "shareholding",
         "status": 200
       }
     ]
   },
-  "operation": "isbn",
+  "operation": "shareholding",
   "recipe": {
     "dependencies": [],
     "human_inputs": [],
     "required_inputs": [
-      "isbn"
+      "index",
+      "symbol"
     ],
     "session_cookies": false,
     "steps": [
       {
         "classification": "read",
+        "headers": {
+          "Referer": "https://www.nseindia.com/"
+        },
         "method": "GET",
         "mutating": false,
-        "name": "isbn",
-        "path": "https://openlibrary.org/isbn/{isbn}.json"
+        "name": "shareholding",
+        "path": "https://www.nseindia.com/api/corporate-share-holdings-master",
+        "query": {
+          "index": "{index}",
+          "symbol": "{symbol}"
+        }
       }
     ]
   },
@@ -39,11 +47,11 @@
     "uses_session_cookies": false
   },
   "schema_version": 1,
-  "site": "openlibrary",
+  "site": "nse",
   "verification": {
     "assertions": [
       {
-        "name": "returns the edition title",
+        "name": "returns disclosures",
         "passed": true,
         "type": "non_empty"
       },
@@ -57,9 +65,9 @@
     "cases": [
       "success"
     ],
-    "contract_hash": "34d9b7c3d28bd98c418c950c3ce83951a941e996f5b695bfca9da0f86954c24c",
+    "contract_hash": "e0de16de928414ca3416c4aee16bc9bf05bfbd1b80d8051002d1522035b84950",
     "evidence_version": 2,
-    "recipe_hash": "7b7184234dd97bcf4c11eca6c7d154018adf916bcc04fce88a9453ddca9e9fda",
+    "recipe_hash": "2bbfbdc49dcf7a931618f42f462a81dbcf5c5759ee646a4b6147fda3547e2a10",
     "review_required": [],
     "reviewed": true,
     "runner": {
@@ -72,6 +80,6 @@
       "version": 1
     },
     "status": "passed",
-    "verified_at_unix": 1784930433.0272443
+    "verified_at_unix": 1784930596.979746
   }
 }
