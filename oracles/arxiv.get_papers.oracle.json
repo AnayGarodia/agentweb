@@ -1,0 +1,93 @@
+{
+  "captured_at_unix": 1784853477,
+  "input": {
+    "ids": "1706.03762"
+  },
+  "kind": "agentweb_response_oracle",
+  "mutating": false,
+  "observed": {
+    "assertions": [
+      {
+        "name": "$.data.papers.0.title",
+        "path": "$.data.papers.0.title",
+        "type": "str"
+      },
+      {
+        "name": "$.data.papers.0.id",
+        "path": "$.data.papers.0.id",
+        "type": "str"
+      }
+    ],
+    "data_shape": [
+      {
+        "path": "total_results",
+        "type": "int"
+      },
+      {
+        "path": "start_index",
+        "type": "int"
+      },
+      {
+        "path": "items_per_page",
+        "type": "int"
+      },
+      {
+        "path": "papers.0.id",
+        "type": "str"
+      },
+      {
+        "path": "papers.0.url",
+        "type": "str"
+      },
+      {
+        "path": "papers.0.title",
+        "type": "str"
+      },
+      {
+        "path": "papers.0.summary",
+        "type": "str"
+      },
+      {
+        "path": "papers.0.published",
+        "type": "str"
+      },
+      {
+        "path": "papers.0.updated",
+        "type": "str"
+      },
+      {
+        "path": "papers.0.authors.0",
+        "type": "str"
+      },
+      {
+        "path": "papers.0.categories.0",
+        "type": "str"
+      },
+      {
+        "path": "papers.0.primary_category",
+        "type": "str"
+      },
+      {
+        "path": "papers.0.comment",
+        "type": "str"
+      },
+      {
+        "path": "papers.0.links.0.url",
+        "type": "str"
+      },
+      {
+        "path": "papers.0.links.0.rel",
+        "type": "str"
+      },
+      {
+        "path": "papers.0.links.0.type",
+        "type": "str"
+      }
+    ],
+    "ok": true,
+    "operation": "get_papers"
+  },
+  "operation": "get_papers",
+  "schema_version": 1,
+  "site": "arxiv"
+}
