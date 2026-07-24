@@ -1433,7 +1433,13 @@ class Runtime:
             "boolean": isinstance(value, bool),
             "null": value is None,
         }
-        if expected in valid and not valid[expected]:
+        if isinstance(expected, list):
+            if not any(valid.get(option, True) for option in expected):
+                return [f"{path} must be one of {', '.join(map(str, expected))}"]
+            expected = next(
+                (option for option in expected if valid.get(option)), None
+            )
+        elif expected in valid and not valid[expected]:
             return [f"{path} must be {expected}"]
         if "enum" in schema and value not in schema["enum"]:
             problems.append(f"{path} is not one of the declared values")

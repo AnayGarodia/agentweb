@@ -28,6 +28,14 @@ def test_parse_query_pairs_from_list_and_dict():
     assert parse_query_pairs(None) == {}
 
 
+def test_parse_query_pairs_accepts_bracketed_rails_names():
+    assert parse_query_pairs(["conditions[term]=climate"]) == {
+        "conditions[term]": "climate"
+    }
+    with pytest.raises(AgentWebError):
+        parse_query_pairs(["bad name!=1"])
+
+
 def test_parse_query_pairs_repeated_key_becomes_list():
     assert parse_query_pairs(["a=1", "a=2", "a=3"]) == {"a": ["1", "2", "3"]}
 

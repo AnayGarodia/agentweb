@@ -656,7 +656,9 @@ def parse_query_pairs(
             entries.append((key_part, value_part))
     for key, item in entries:
         key = key.strip()
-        if not key or not key.replace("_", "").replace("-", "").isalnum():
+        # Rails-style APIs nest query names in brackets, e.g. conditions[term].
+        stripped = key.replace("_", "").replace("-", "").replace("[", "").replace("]", "")
+        if not key or not stripped.isalnum():
             raise AgentWebError(f"Query parameter name {key!r} is invalid")
         existing = result.get(key)
         if existing is None:
