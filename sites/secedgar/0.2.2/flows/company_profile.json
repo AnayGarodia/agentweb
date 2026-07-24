@@ -1,0 +1,80 @@
+{
+  "captured_at_unix": 1784930588.7091331,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://www.sec.gov",
+      "before": "https://www.sec.gov"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "company_profile",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "company_profile",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "cik"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "headers": {
+          "User-Agent": "AgentWeb research (ag5250@columbia.edu)"
+        },
+        "method": "GET",
+        "mutating": false,
+        "name": "company_profile",
+        "path": "https://data.sec.gov/submissions/CIK{cik}.json"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "secedgar",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns the company profile",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "bb5ef18bf24d01e4cf03537e6671d46fea5ab800ad524210498fdd852128aa16",
+    "evidence_version": 2,
+    "recipe_hash": "e5a6b8c761e26bfd2a7f0b4b7bb3a5e96e41ee6b11048e4f14ed30551d750e19",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784930589.1041205
+  }
+}

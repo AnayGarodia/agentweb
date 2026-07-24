@@ -1,0 +1,1955 @@
+{
+  "aliases": [
+    "openbrewerydb"
+  ],
+  "allowed_domains": [
+    "api.openbrewerydb.org",
+    "openbrewerydb.org",
+    "www.openbrewerydb.org"
+  ],
+  "auth": {
+    "interaction": "not_required",
+    "strategy": "none"
+  },
+  "authoring": {
+    "browserless_parity": true,
+    "catalog_complete": true,
+    "exhaustive": true,
+    "matrix_verified": true,
+    "tool_quality_verified": true
+  },
+  "base_url": "https://api.openbrewerydb.org",
+  "canonical_domain": "openbrewerydb.org",
+  "commands": {
+    "breweries": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "other",
+      "description": "Filtered directory listing of breweries (by state, city, type, and more).",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "by_state": "california",
+            "per_page": 10
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "by_state": {
+            "description": "US state to filter by, lowercase with underscores.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          },
+          "per_page": {
+            "default": 10,
+            "description": "Number of breweries to return (max 200).",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "by_state"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Breweries matching the request.",
+            "items": {
+              "properties": {
+                "address_1": {
+                  "description": "Street address line 1."
+                },
+                "address_2": {
+                  "description": "Street address line 2."
+                },
+                "address_3": {
+                  "description": "Street address line 3."
+                },
+                "brewery_type": {
+                  "description": "Type: micro, brewpub, regional, large, planning, contract, or closed.",
+                  "type": "string"
+                },
+                "city": {
+                  "description": "City.",
+                  "type": "string"
+                },
+                "country": {
+                  "description": "Country.",
+                  "type": "string"
+                },
+                "id": {
+                  "description": "Brewery id (slug or UUID), usable with the brewery operation.",
+                  "type": "string"
+                },
+                "latitude": {
+                  "description": "Latitude of the brewery.",
+                  "type": "number"
+                },
+                "longitude": {
+                  "description": "Longitude of the brewery.",
+                  "type": "number"
+                },
+                "name": {
+                  "description": "Brewery name.",
+                  "type": "string"
+                },
+                "phone": {
+                  "description": "Phone number."
+                },
+                "postal_code": {
+                  "description": "Postal code.",
+                  "type": "string"
+                },
+                "state": {
+                  "description": "US state (duplicate of state_province).",
+                  "type": "string"
+                },
+                "state_province": {
+                  "description": "State or province.",
+                  "type": "string"
+                },
+                "street": {
+                  "description": "Street address (duplicate of address_1)."
+                },
+                "website_url": {
+                  "description": "Brewery website.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns per_page breweries; deeper pages are not mapped.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this operation for free-text search; use search.",
+      "when_to_use": "Use this operation to list breweries for a location, e.g. by_state=california."
+    },
+    "brewery": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "other",
+      "description": "Fetch one brewery's full record by id.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "id": "ae7b3174-8be8-4d53-a3a5-9b8240970eea"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "Brewery id (slug or UUID).",
+            "maxLength": 144,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "address_1": {
+            "description": "Street address line 1.",
+            "type": "string"
+          },
+          "address_2": {
+            "description": "Street address line 2."
+          },
+          "address_3": {
+            "description": "Street address line 3."
+          },
+          "brewery_type": {
+            "description": "Type: micro, brewpub, regional, large, planning, contract, or closed.",
+            "type": "string"
+          },
+          "city": {
+            "description": "City.",
+            "type": "string"
+          },
+          "country": {
+            "description": "Country.",
+            "type": "string"
+          },
+          "id": {
+            "description": "Brewery id (slug or UUID), usable with the brewery operation.",
+            "type": "string"
+          },
+          "latitude": {
+            "description": "Latitude of the brewery.",
+            "type": "number"
+          },
+          "longitude": {
+            "description": "Longitude of the brewery.",
+            "type": "number"
+          },
+          "name": {
+            "description": "Brewery name.",
+            "type": "string"
+          },
+          "phone": {
+            "description": "Phone number.",
+            "type": "string"
+          },
+          "postal_code": {
+            "description": "Postal code.",
+            "type": "string"
+          },
+          "state": {
+            "description": "US state (duplicate of state_province).",
+            "type": "string"
+          },
+          "state_province": {
+            "description": "State or province.",
+            "type": "string"
+          },
+          "street": {
+            "description": "Street address (duplicate of address_1).",
+            "type": "string"
+          },
+          "website_url": {
+            "description": "Brewery website.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns one bounded response; no pagination.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this operation without an exact id.",
+      "when_to_use": "Use this operation after breweries or search to get one brewery's address, phone, and website."
+    },
+    "meta": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "other",
+      "description": "Total count of breweries in the directory.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "total": {
+            "description": "Total number of breweries in the directory.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns one bounded response; no pagination.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this operation for per-state breakdowns; they are not mapped.",
+      "when_to_use": "Use this operation to check the directory's overall size."
+    },
+    "random": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "other",
+      "description": "Return one random brewery.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Breweries matching the request.",
+            "items": {
+              "properties": {
+                "address_1": {
+                  "description": "Street address line 1.",
+                  "type": "string"
+                },
+                "address_2": {
+                  "description": "Street address line 2."
+                },
+                "address_3": {
+                  "description": "Street address line 3."
+                },
+                "brewery_type": {
+                  "description": "Type: micro, brewpub, regional, large, planning, contract, or closed.",
+                  "type": "string"
+                },
+                "city": {
+                  "description": "City.",
+                  "type": "string"
+                },
+                "country": {
+                  "description": "Country.",
+                  "type": "string"
+                },
+                "id": {
+                  "description": "Brewery id (slug or UUID), usable with the brewery operation.",
+                  "type": "string"
+                },
+                "latitude": {
+                  "description": "Latitude of the brewery.",
+                  "type": "number"
+                },
+                "longitude": {
+                  "description": "Longitude of the brewery.",
+                  "type": "number"
+                },
+                "name": {
+                  "description": "Brewery name.",
+                  "type": "string"
+                },
+                "phone": {
+                  "description": "Phone number.",
+                  "type": "string"
+                },
+                "postal_code": {
+                  "description": "Postal code.",
+                  "type": "string"
+                },
+                "state": {
+                  "description": "US state (duplicate of state_province).",
+                  "type": "string"
+                },
+                "state_province": {
+                  "description": "State or province.",
+                  "type": "string"
+                },
+                "street": {
+                  "description": "Street address (duplicate of address_1).",
+                  "type": "string"
+                },
+                "website_url": {
+                  "description": "Brewery website.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns one bounded response; no pagination.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this operation to look up a specific brewery.",
+      "when_to_use": "Use this operation for a random brewery suggestion."
+    },
+    "search": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "other",
+      "description": "Free-text search over brewery names and cities.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "per_page": 10,
+            "query": "dog"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "per_page": {
+            "default": 10,
+            "description": "Number of breweries to return (max 200).",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "query": {
+            "description": "Free-text search over brewery names and cities.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Breweries matching the request.",
+            "items": {
+              "properties": {
+                "address_1": {
+                  "description": "Street address line 1.",
+                  "type": "string"
+                },
+                "address_2": {
+                  "description": "Street address line 2."
+                },
+                "address_3": {
+                  "description": "Street address line 3."
+                },
+                "brewery_type": {
+                  "description": "Type: micro, brewpub, regional, large, planning, contract, or closed.",
+                  "type": "string"
+                },
+                "city": {
+                  "description": "City.",
+                  "type": "string"
+                },
+                "country": {
+                  "description": "Country.",
+                  "type": "string"
+                },
+                "id": {
+                  "description": "Brewery id (slug or UUID), usable with the brewery operation.",
+                  "type": "string"
+                },
+                "latitude": {
+                  "description": "Latitude of the brewery."
+                },
+                "longitude": {
+                  "description": "Longitude of the brewery."
+                },
+                "name": {
+                  "description": "Brewery name.",
+                  "type": "string"
+                },
+                "phone": {
+                  "description": "Phone number."
+                },
+                "postal_code": {
+                  "description": "Postal code.",
+                  "type": "string"
+                },
+                "state": {
+                  "description": "US state (duplicate of state_province).",
+                  "type": "string"
+                },
+                "state_province": {
+                  "description": "State or province.",
+                  "type": "string"
+                },
+                "street": {
+                  "description": "Street address (duplicate of address_1).",
+                  "type": "string"
+                },
+                "website_url": {
+                  "description": "Brewery website.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns per_page matches; deeper pages are not mapped.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this operation for structured filters like state or type; use breweries.",
+      "when_to_use": "Use this operation to find a brewery when you know part of its name."
+    }
+  },
+  "cookie_domain": ".api.openbrewerydb.org",
+  "coverage": {
+    "constraints": [
+      "Site permissions, rate limits, and anti-automation rules still apply"
+    ],
+    "human_boundaries": [
+      "Open Brewery DB is a read-only public dataset; contributions go through GitHub, which is not mapped.",
+      "Open Brewery DB is fully public; there are no authenticated surfaces to map."
+    ],
+    "not_mapped": [],
+    "protocol_fallback": null,
+    "typed_fast_paths": [
+      "breweries",
+      "brewery",
+      "meta",
+      "random",
+      "search"
+    ],
+    "website_parity": "Mapping mode can inspect the remaining website while direct request recipes are compiled. Browser commands are never counted as runtime parity."
+  },
+  "description": "Open Brewery DB: search and browse breweries by name, city, state, and type.",
+  "entrypoint": "adapter.py",
+  "evidence_capsules": {},
+  "flow_capsules": {
+    "breweries": {
+      "contract": "breweries",
+      "path": "flows/breweries.json"
+    },
+    "brewery": {
+      "contract": "brewery",
+      "path": "flows/brewery.json"
+    },
+    "meta": {
+      "contract": "meta",
+      "path": "flows/meta.json"
+    },
+    "random": {
+      "contract": "random",
+      "path": "flows/random.json"
+    },
+    "search": {
+      "contract": "search",
+      "path": "flows/search.json"
+    }
+  },
+  "name": "openbrewerydb",
+  "operation_contracts": {
+    "breweries": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "address_1": {
+              "default": null,
+              "path": "$.address_1"
+            },
+            "address_2": {
+              "default": null,
+              "path": "$.address_2"
+            },
+            "address_3": {
+              "default": null,
+              "path": "$.address_3"
+            },
+            "brewery_type": {
+              "path": "$.brewery_type"
+            },
+            "city": {
+              "path": "$.city"
+            },
+            "country": {
+              "path": "$.country"
+            },
+            "id": {
+              "path": "$.id"
+            },
+            "latitude": {
+              "path": "$.latitude"
+            },
+            "longitude": {
+              "path": "$.longitude"
+            },
+            "name": {
+              "path": "$.name"
+            },
+            "phone": {
+              "default": null,
+              "path": "$.phone"
+            },
+            "postal_code": {
+              "path": "$.postal_code"
+            },
+            "state": {
+              "path": "$.state"
+            },
+            "state_province": {
+              "path": "$.state_province"
+            },
+            "street": {
+              "default": null,
+              "path": "$.street"
+            },
+            "website_url": {
+              "path": "$.website_url"
+            }
+          },
+          "source": "$"
+        },
+        "recipe_hash": "c9c7095a38d3bcf2be150df9b9d400e7d0fe98b0b840598d16e3f0052f86b067",
+        "type": "generated_recipe",
+        "variables": {
+          "by_state": "by_state",
+          "per_page": {
+            "default": 10,
+            "source": "per_page"
+          }
+        }
+      },
+      "capabilities": [
+        "public_breweries"
+      ],
+      "category": "other",
+      "contract_hash": "7b2a35da18f8e493c3ff74aa27749138b5d247f67bad6de186aecc41305b4eb3",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "by_state": "california",
+            "per_page": 10
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "by_state": {
+            "description": "US state to filter by, lowercase with underscores.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          },
+          "per_page": {
+            "default": 10,
+            "description": "Number of breweries to return (max 200).",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "by_state"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "breweries",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Breweries matching the request.",
+            "items": {
+              "properties": {
+                "address_1": {
+                  "description": "Street address line 1."
+                },
+                "address_2": {
+                  "description": "Street address line 2."
+                },
+                "address_3": {
+                  "description": "Street address line 3."
+                },
+                "brewery_type": {
+                  "description": "Type: micro, brewpub, regional, large, planning, contract, or closed.",
+                  "type": "string"
+                },
+                "city": {
+                  "description": "City.",
+                  "type": "string"
+                },
+                "country": {
+                  "description": "Country.",
+                  "type": "string"
+                },
+                "id": {
+                  "description": "Brewery id (slug or UUID), usable with the brewery operation.",
+                  "type": "string"
+                },
+                "latitude": {
+                  "description": "Latitude of the brewery.",
+                  "type": "number"
+                },
+                "longitude": {
+                  "description": "Longitude of the brewery.",
+                  "type": "number"
+                },
+                "name": {
+                  "description": "Brewery name.",
+                  "type": "string"
+                },
+                "phone": {
+                  "description": "Phone number."
+                },
+                "postal_code": {
+                  "description": "Postal code.",
+                  "type": "string"
+                },
+                "state": {
+                  "description": "US state (duplicate of state_province).",
+                  "type": "string"
+                },
+                "state_province": {
+                  "description": "State or province.",
+                  "type": "string"
+                },
+                "street": {
+                  "description": "Street address (duplicate of address_1)."
+                },
+                "website_url": {
+                  "description": "Brewery website.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns per_page breweries; deeper pages are not mapped.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784925908.0902953,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Filtered directory listing of breweries (by state, city, type, and more).",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns matching records",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "7b2a35da18f8e493c3ff74aa27749138b5d247f67bad6de186aecc41305b4eb3",
+            "input_names": [
+              "by_state",
+              "per_page"
+            ],
+            "passed": true,
+            "recipe_hash": "c9c7095a38d3bcf2be150df9b9d400e7d0fe98b0b840598d16e3f0052f86b067",
+            "verified_at_unix": 1784925867.9049957
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns matching records",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this operation for free-text search; use search.",
+      "when_to_use": "Use this operation to list breweries for a location, e.g. by_state=california."
+    },
+    "brewery": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "fields": {
+            "address_1": {
+              "default": null,
+              "path": "$.address_1"
+            },
+            "address_2": {
+              "default": null,
+              "path": "$.address_2"
+            },
+            "address_3": {
+              "default": null,
+              "path": "$.address_3"
+            },
+            "brewery_type": {
+              "default": null,
+              "path": "$.brewery_type"
+            },
+            "city": {
+              "default": null,
+              "path": "$.city"
+            },
+            "country": {
+              "default": null,
+              "path": "$.country"
+            },
+            "id": {
+              "path": "$.id"
+            },
+            "latitude": {
+              "default": null,
+              "path": "$.latitude"
+            },
+            "longitude": {
+              "default": null,
+              "path": "$.longitude"
+            },
+            "name": {
+              "default": null,
+              "path": "$.name"
+            },
+            "phone": {
+              "default": null,
+              "path": "$.phone"
+            },
+            "postal_code": {
+              "default": null,
+              "path": "$.postal_code"
+            },
+            "state": {
+              "default": null,
+              "path": "$.state"
+            },
+            "state_province": {
+              "default": null,
+              "path": "$.state_province"
+            },
+            "street": {
+              "default": null,
+              "path": "$.street"
+            },
+            "website_url": {
+              "default": null,
+              "path": "$.website_url"
+            }
+          },
+          "source": "$"
+        },
+        "recipe_hash": "a61a1656c0d323510a975b337ae78013941244ea44c798c475a3ab83ec00320a",
+        "type": "generated_recipe",
+        "variables": {
+          "id": "id"
+        }
+      },
+      "capabilities": [
+        "public_brewery"
+      ],
+      "category": "other",
+      "contract_hash": "e40e3bc74cad2a7f2dc1caf9c893f45ba3ac2931bf44bcfdb8365ea77374cbfe",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "id": "ae7b3174-8be8-4d53-a3a5-9b8240970eea"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "Brewery id (slug or UUID).",
+            "maxLength": 144,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "brewery",
+      "output_schema": {
+        "properties": {
+          "address_1": {
+            "description": "Street address line 1.",
+            "type": "string"
+          },
+          "address_2": {
+            "description": "Street address line 2."
+          },
+          "address_3": {
+            "description": "Street address line 3."
+          },
+          "brewery_type": {
+            "description": "Type: micro, brewpub, regional, large, planning, contract, or closed.",
+            "type": "string"
+          },
+          "city": {
+            "description": "City.",
+            "type": "string"
+          },
+          "country": {
+            "description": "Country.",
+            "type": "string"
+          },
+          "id": {
+            "description": "Brewery id (slug or UUID), usable with the brewery operation.",
+            "type": "string"
+          },
+          "latitude": {
+            "description": "Latitude of the brewery.",
+            "type": "number"
+          },
+          "longitude": {
+            "description": "Longitude of the brewery.",
+            "type": "number"
+          },
+          "name": {
+            "description": "Brewery name.",
+            "type": "string"
+          },
+          "phone": {
+            "description": "Phone number.",
+            "type": "string"
+          },
+          "postal_code": {
+            "description": "Postal code.",
+            "type": "string"
+          },
+          "state": {
+            "description": "US state (duplicate of state_province).",
+            "type": "string"
+          },
+          "state_province": {
+            "description": "State or province.",
+            "type": "string"
+          },
+          "street": {
+            "description": "Street address (duplicate of address_1).",
+            "type": "string"
+          },
+          "website_url": {
+            "description": "Brewery website.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns one bounded response; no pagination.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784925908.0989232,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Fetch one brewery's full record by id.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns id",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "e40e3bc74cad2a7f2dc1caf9c893f45ba3ac2931bf44bcfdb8365ea77374cbfe",
+            "input_names": [
+              "id"
+            ],
+            "passed": true,
+            "recipe_hash": "a61a1656c0d323510a975b337ae78013941244ea44c798c475a3ab83ec00320a",
+            "verified_at_unix": 1784925867.9415503
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns id",
+            "path": "$.data.id",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this operation without an exact id.",
+      "when_to_use": "Use this operation after breweries or search to get one brewery's address, phone, and website."
+    },
+    "meta": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "fields": {
+            "total": {
+              "path": "$.total"
+            }
+          },
+          "source": "$"
+        },
+        "recipe_hash": "2605c0bbf70b0fa87794eeac2516b4fa06d2078e380d86a31d31ea6df17eec45",
+        "type": "generated_recipe",
+        "variables": {}
+      },
+      "capabilities": [
+        "public_meta"
+      ],
+      "category": "other",
+      "contract_hash": "31ef9feeae3b9ff1320b461a551774b5e533265f1e1567860c07a8aa4df590f9",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "meta",
+      "output_schema": {
+        "properties": {
+          "total": {
+            "description": "Total number of breweries in the directory.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns one bounded response; no pagination.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784925908.105256,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Total count of breweries in the directory.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns total",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "31ef9feeae3b9ff1320b461a551774b5e533265f1e1567860c07a8aa4df590f9",
+            "input_names": [],
+            "passed": true,
+            "recipe_hash": "2605c0bbf70b0fa87794eeac2516b4fa06d2078e380d86a31d31ea6df17eec45",
+            "verified_at_unix": 1784925867.9907765
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns total",
+            "path": "$.data.total",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this operation for per-state breakdowns; they are not mapped.",
+      "when_to_use": "Use this operation to check the directory's overall size."
+    },
+    "random": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "address_1": {
+              "path": "$.address_1"
+            },
+            "address_2": {
+              "default": null,
+              "path": "$.address_2"
+            },
+            "address_3": {
+              "default": null,
+              "path": "$.address_3"
+            },
+            "brewery_type": {
+              "path": "$.brewery_type"
+            },
+            "city": {
+              "path": "$.city"
+            },
+            "country": {
+              "path": "$.country"
+            },
+            "id": {
+              "path": "$.id"
+            },
+            "latitude": {
+              "path": "$.latitude"
+            },
+            "longitude": {
+              "path": "$.longitude"
+            },
+            "name": {
+              "path": "$.name"
+            },
+            "phone": {
+              "path": "$.phone"
+            },
+            "postal_code": {
+              "path": "$.postal_code"
+            },
+            "state": {
+              "path": "$.state"
+            },
+            "state_province": {
+              "path": "$.state_province"
+            },
+            "street": {
+              "path": "$.street"
+            },
+            "website_url": {
+              "path": "$.website_url"
+            }
+          },
+          "source": "$"
+        },
+        "recipe_hash": "7519d3ed0dde2c56ef1cd193ec78ac65741be0c20f01716423b053f971f4fb28",
+        "type": "generated_recipe",
+        "variables": {}
+      },
+      "capabilities": [
+        "public_random"
+      ],
+      "category": "other",
+      "contract_hash": "001c53649d1a8f6e2db78fd018e638262f4e9a32274be570f0f1d2f6e04ea1ad",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "random",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Breweries matching the request.",
+            "items": {
+              "properties": {
+                "address_1": {
+                  "description": "Street address line 1.",
+                  "type": "string"
+                },
+                "address_2": {
+                  "description": "Street address line 2."
+                },
+                "address_3": {
+                  "description": "Street address line 3."
+                },
+                "brewery_type": {
+                  "description": "Type: micro, brewpub, regional, large, planning, contract, or closed.",
+                  "type": "string"
+                },
+                "city": {
+                  "description": "City.",
+                  "type": "string"
+                },
+                "country": {
+                  "description": "Country.",
+                  "type": "string"
+                },
+                "id": {
+                  "description": "Brewery id (slug or UUID), usable with the brewery operation.",
+                  "type": "string"
+                },
+                "latitude": {
+                  "description": "Latitude of the brewery.",
+                  "type": "number"
+                },
+                "longitude": {
+                  "description": "Longitude of the brewery.",
+                  "type": "number"
+                },
+                "name": {
+                  "description": "Brewery name.",
+                  "type": "string"
+                },
+                "phone": {
+                  "description": "Phone number.",
+                  "type": "string"
+                },
+                "postal_code": {
+                  "description": "Postal code.",
+                  "type": "string"
+                },
+                "state": {
+                  "description": "US state (duplicate of state_province).",
+                  "type": "string"
+                },
+                "state_province": {
+                  "description": "State or province.",
+                  "type": "string"
+                },
+                "street": {
+                  "description": "Street address (duplicate of address_1).",
+                  "type": "string"
+                },
+                "website_url": {
+                  "description": "Brewery website.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns one bounded response; no pagination.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784925908.108467,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Return one random brewery.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns matching records",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "001c53649d1a8f6e2db78fd018e638262f4e9a32274be570f0f1d2f6e04ea1ad",
+            "input_names": [],
+            "passed": true,
+            "recipe_hash": "7519d3ed0dde2c56ef1cd193ec78ac65741be0c20f01716423b053f971f4fb28",
+            "verified_at_unix": 1784925868.1171925
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns matching records",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this operation to look up a specific brewery.",
+      "when_to_use": "Use this operation for a random brewery suggestion."
+    },
+    "search": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "address_1": {
+              "path": "$.address_1"
+            },
+            "address_2": {
+              "default": null,
+              "path": "$.address_2"
+            },
+            "address_3": {
+              "default": null,
+              "path": "$.address_3"
+            },
+            "brewery_type": {
+              "path": "$.brewery_type"
+            },
+            "city": {
+              "path": "$.city"
+            },
+            "country": {
+              "path": "$.country"
+            },
+            "id": {
+              "path": "$.id"
+            },
+            "latitude": {
+              "default": null,
+              "path": "$.latitude"
+            },
+            "longitude": {
+              "default": null,
+              "path": "$.longitude"
+            },
+            "name": {
+              "path": "$.name"
+            },
+            "phone": {
+              "default": null,
+              "path": "$.phone"
+            },
+            "postal_code": {
+              "path": "$.postal_code"
+            },
+            "state": {
+              "path": "$.state"
+            },
+            "state_province": {
+              "path": "$.state_province"
+            },
+            "street": {
+              "path": "$.street"
+            },
+            "website_url": {
+              "path": "$.website_url"
+            }
+          },
+          "source": "$"
+        },
+        "recipe_hash": "b1d053a98d945d2cc6f7687a8ac7168608f330498ac56829d9e30ef542235043",
+        "type": "generated_recipe",
+        "variables": {
+          "per_page": {
+            "default": 10,
+            "source": "per_page"
+          },
+          "query": "query"
+        }
+      },
+      "capabilities": [
+        "public_search"
+      ],
+      "category": "other",
+      "contract_hash": "c7605814014670c0411648ceaa63ad42961315815f89dd8cafdd0b5758f3e1fc",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "per_page": 10,
+            "query": "dog"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "per_page": {
+            "default": 10,
+            "description": "Number of breweries to return (max 200).",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "query": {
+            "description": "Free-text search over brewery names and cities.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "search",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Breweries matching the request.",
+            "items": {
+              "properties": {
+                "address_1": {
+                  "description": "Street address line 1.",
+                  "type": "string"
+                },
+                "address_2": {
+                  "description": "Street address line 2."
+                },
+                "address_3": {
+                  "description": "Street address line 3."
+                },
+                "brewery_type": {
+                  "description": "Type: micro, brewpub, regional, large, planning, contract, or closed.",
+                  "type": "string"
+                },
+                "city": {
+                  "description": "City.",
+                  "type": "string"
+                },
+                "country": {
+                  "description": "Country.",
+                  "type": "string"
+                },
+                "id": {
+                  "description": "Brewery id (slug or UUID), usable with the brewery operation.",
+                  "type": "string"
+                },
+                "latitude": {
+                  "description": "Latitude of the brewery."
+                },
+                "longitude": {
+                  "description": "Longitude of the brewery."
+                },
+                "name": {
+                  "description": "Brewery name.",
+                  "type": "string"
+                },
+                "phone": {
+                  "description": "Phone number."
+                },
+                "postal_code": {
+                  "description": "Postal code.",
+                  "type": "string"
+                },
+                "state": {
+                  "description": "US state (duplicate of state_province).",
+                  "type": "string"
+                },
+                "state_province": {
+                  "description": "State or province.",
+                  "type": "string"
+                },
+                "street": {
+                  "description": "Street address (duplicate of address_1).",
+                  "type": "string"
+                },
+                "website_url": {
+                  "description": "Brewery website.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns per_page matches; deeper pages are not mapped.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784925908.1121337,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Free-text search over brewery names and cities.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns matching records",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "c7605814014670c0411648ceaa63ad42961315815f89dd8cafdd0b5758f3e1fc",
+            "input_names": [
+              "per_page",
+              "query"
+            ],
+            "passed": true,
+            "recipe_hash": "b1d053a98d945d2cc6f7687a8ac7168608f330498ac56829d9e30ef542235043",
+            "verified_at_unix": 1784925868.2802742
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns matching records",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this operation for structured filters like state or type; use breweries.",
+      "when_to_use": "Use this operation to find a brewery when you know part of its name."
+    }
+  },
+  "runtime": {
+    "auth_interaction": "not_yet_mapped",
+    "browserless_replay": true
+  },
+  "url_routes": [],
+  "version": "0.1.2"
+}

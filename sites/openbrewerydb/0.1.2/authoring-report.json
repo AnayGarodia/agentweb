@@ -1,0 +1,138 @@
+{
+  "browserless_parity": true,
+  "capabilities": {
+    "authenticated_services": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "Open Brewery DB is fully public; there are no authenticated surfaces to map.",
+      "roles": [
+        "account_holder"
+      ],
+      "state": "blocked",
+      "surface": "public_api"
+    },
+    "public_breweries": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_brewery": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_meta": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_random": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_search": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "write_surface": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "Open Brewery DB is a read-only public dataset; contributions go through GitHub, which is not mapped.",
+      "roles": [
+        "public"
+      ],
+      "state": "blocked",
+      "surface": "public_api"
+    }
+  },
+  "catalog_complete": true,
+  "excluded_operations": {},
+  "exhaustive": true,
+  "generated_at_unix": 1784925908.1275089,
+  "matrix": {
+    "locales": [
+      "en-US"
+    ],
+    "roles": [
+      "public"
+    ],
+    "surfaces": [
+      "public_api"
+    ]
+  },
+  "matrix_verified": true,
+  "operations": {
+    "breweries": {
+      "capabilities": [
+        "public_breweries"
+      ],
+      "contract_hash": "7b2a35da18f8e493c3ff74aa27749138b5d247f67bad6de186aecc41305b4eb3",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "brewery": {
+      "capabilities": [
+        "public_brewery"
+      ],
+      "contract_hash": "e40e3bc74cad2a7f2dc1caf9c893f45ba3ac2931bf44bcfdb8365ea77374cbfe",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "meta": {
+      "capabilities": [
+        "public_meta"
+      ],
+      "contract_hash": "31ef9feeae3b9ff1320b461a551774b5e533265f1e1567860c07a8aa4df590f9",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "random": {
+      "capabilities": [
+        "public_random"
+      ],
+      "contract_hash": "001c53649d1a8f6e2db78fd018e638262f4e9a32274be570f0f1d2f6e04ea1ad",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "search": {
+      "capabilities": [
+        "public_search"
+      ],
+      "contract_hash": "c7605814014670c0411648ceaa63ad42961315815f89dd8cafdd0b5758f3e1fc",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    }
+  },
+  "project_hash": "c6c9f96e449ffa189da8c34f66d6c85fb614ce89461e53283e89d20e942953d5",
+  "publication_mode": "reviewed",
+  "schema_version": 1,
+  "tool_quality_verified": true,
+  "uncovered_verified_capabilities": []
+}

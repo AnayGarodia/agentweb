@@ -1,0 +1,82 @@
+{
+  "captured_at_unix": 1784929541.546881,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://www.bseindia.com",
+      "before": "https://www.bseindia.com"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "dividends",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "dividends",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "scrip_code"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "headers": {
+          "Referer": "https://www.bseindia.com/"
+        },
+        "method": "GET",
+        "name": "dividends",
+        "path": "https://api.bseindia.com/BseIndiaAPI/api/CorporateAction/w",
+        "query": {
+          "scripcode": "{scrip_code}"
+        }
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "bse",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns dividends",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "24d45722122780234c3730d40f3a0745eba3339cb183edaef6d578fff1bc8ed4",
+    "evidence_version": 2,
+    "recipe_hash": "635b713d9055274355232f54115df9243287c1db61869aafb718cd6c1770f58a",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784929553.5996861
+  }
+}

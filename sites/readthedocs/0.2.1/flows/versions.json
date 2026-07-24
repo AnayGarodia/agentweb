@@ -1,0 +1,85 @@
+{
+  "captured_at_unix": 1784934334.8842993,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://readthedocs.org",
+      "before": "https://readthedocs.org"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "versions",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "versions",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "active_only",
+      "limit",
+      "offset",
+      "project"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "versions",
+        "path": "https://readthedocs.org/api/v3/projects/{project}/versions/",
+        "query": {
+          "active": "{active_only}",
+          "format": "json",
+          "limit": "{limit}",
+          "offset": "{offset}"
+        }
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "readthedocs",
+  "verification": {
+    "assertions": [
+      {
+        "name": "lists published versions",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "dc5d56034a9163fdfde0bb67bf32c615d0aeaa06f59e5b9703be4e18d8bc9414",
+    "evidence_version": 2,
+    "recipe_hash": "3f5a15266d0f03a8bb19bf81d9ef619d1e17be5800a1e584c777d8a475b25600",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784934453.5373638
+  }
+}

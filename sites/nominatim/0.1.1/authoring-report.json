@@ -1,0 +1,74 @@
+{
+  "browserless_parity": true,
+  "capabilities": {
+    "authenticated_services": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "Nominatim's usage policy caps clients at one request per second and forbids bulk geocoding; heavy or systematic scraping is out of scope.",
+      "roles": [
+        "account_holder"
+      ],
+      "state": "blocked",
+      "surface": "public_api"
+    },
+    "public_reverse": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_search": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    }
+  },
+  "catalog_complete": true,
+  "excluded_operations": {},
+  "exhaustive": true,
+  "generated_at_unix": 1784920873.3048534,
+  "matrix": {
+    "locales": [
+      "en-US"
+    ],
+    "roles": [
+      "public"
+    ],
+    "surfaces": [
+      "public_api"
+    ]
+  },
+  "matrix_verified": true,
+  "operations": {
+    "reverse": {
+      "capabilities": [
+        "public_reverse"
+      ],
+      "contract_hash": "d04d0c74777d5eb36e6f1e2532c49db3be9da0047a75bb326e2fdf884895a5ef",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "search": {
+      "capabilities": [
+        "public_search"
+      ],
+      "contract_hash": "539754f86a2c29b69aca3bdadea64eb29f58cce105e4940d37d47dd5c5a453d6",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    }
+  },
+  "project_hash": "706706c89c47b4dc5d9d2d6c42b129d81391a13b4bcfc02bbaa052ff4285aadd",
+  "publication_mode": "reviewed",
+  "schema_version": 1,
+  "tool_quality_verified": true,
+  "uncovered_verified_capabilities": []
+}

@@ -1,0 +1,592 @@
+{
+  "aliases": [
+    "ibbi"
+  ],
+  "allowed_domains": [
+    "gov.in",
+    "ibbi.gov.in"
+  ],
+  "auth": {
+    "interaction": "not_required",
+    "strategy": "none"
+  },
+  "authoring": {
+    "browserless_parity": true,
+    "catalog_complete": true,
+    "exhaustive": true,
+    "matrix_verified": true,
+    "tool_quality_verified": true
+  },
+  "base_url": "https://ibbi.gov.in",
+  "canonical_domain": "gov.in",
+  "commands": {
+    "orders": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "monitoring",
+      "description": "List IBBI's latest disciplinary and adjudication orders with document links.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "page": 1
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "page": {
+            "default": 1,
+            "description": "Archive page number; 1 is the newest.",
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Latest IBBI orders, newest first.",
+            "items": {
+              "properties": {
+                "title": {
+                  "description": "Order title as listed.",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "Order document URL.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass page to walk older entries; each page lists 20.",
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this for circulars or general updates; use whats_new.",
+      "when_to_use": "Use this when an agent needs recent IBBI orders against insolvency professionals or entities."
+    },
+    "whats_new": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "monitoring",
+      "description": "List the newest circulars, orders, and notices from IBBI's What's New page with document links.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "page": 1
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "page": {
+            "default": 1,
+            "description": "Archive page number; 1 is the newest.",
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Newest IBBI updates, newest first.",
+            "items": {
+              "properties": {
+                "title": {
+                  "description": "Update title as listed.",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "Document or page URL.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass page to walk older entries; each page lists 20.",
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this for disciplinary orders only; use orders.",
+      "when_to_use": "Use this when an agent needs the latest IBBI insolvency regulator updates."
+    }
+  },
+  "cookie_domain": ".ibbi.gov.in",
+  "coverage": {
+    "constraints": [
+      "Site permissions, rate limits, and anti-automation rules still apply"
+    ],
+    "human_boundaries": [
+      "IBBI's paginated archives and search forms are not mapped; this covers the newest listings."
+    ],
+    "not_mapped": [],
+    "protocol_fallback": null,
+    "typed_fast_paths": [
+      "orders",
+      "whats_new"
+    ],
+    "website_parity": "Mapping mode can inspect the remaining website while direct request recipes are compiled. Browser commands are never counted as runtime parity."
+  },
+  "description": "IBBI (Insolvency and Bankruptcy Board of India): orders and what's-new circulars and announcements.",
+  "entrypoint": "adapter.py",
+  "evidence_capsules": {},
+  "flow_capsules": {
+    "orders": {
+      "contract": "orders",
+      "path": "flows/orders.json"
+    },
+    "whats_new": {
+      "contract": "whats_new",
+      "path": "flows/whats_new.json"
+    }
+  },
+  "name": "ibbi",
+  "operation_contracts": {
+    "orders": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "title": {
+              "path": "$.text"
+            },
+            "url": {
+              "path": "$.url"
+            }
+          },
+          "source": "$"
+        },
+        "recipe_hash": "7ef81ed0521868338fe75609b66727d0dffd0d9c6dfebba5db94a6de8bbd32ad",
+        "type": "generated_recipe",
+        "variables": {
+          "page": {
+            "default": 1,
+            "source": "page"
+          }
+        }
+      },
+      "capabilities": [
+        "public_orders"
+      ],
+      "category": "monitoring",
+      "contract_hash": "19cea1457f278dd23f6a052a4a139604dee799d1f9f1cbed674a804107b95d9f",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "page": 1
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "page": {
+            "default": 1,
+            "description": "Archive page number; 1 is the newest.",
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "orders",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Latest IBBI orders, newest first.",
+            "items": {
+              "properties": {
+                "title": {
+                  "description": "Order title as listed.",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "Order document URL.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass page to walk older entries; each page lists 20.",
+        "supported": true
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784919703.5290413,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "List IBBI's latest disciplinary and adjudication orders with document links.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns listed links",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "19cea1457f278dd23f6a052a4a139604dee799d1f9f1cbed674a804107b95d9f",
+            "input_names": [
+              "page"
+            ],
+            "passed": true,
+            "recipe_hash": "7ef81ed0521868338fe75609b66727d0dffd0d9c6dfebba5db94a6de8bbd32ad",
+            "verified_at_unix": 1784919699.7500386
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns listed links",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for circulars or general updates; use whats_new.",
+      "when_to_use": "Use this when an agent needs recent IBBI orders against insolvency professionals or entities."
+    },
+    "whats_new": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "title": {
+              "path": "$.text"
+            },
+            "url": {
+              "path": "$.url"
+            }
+          },
+          "source": "$"
+        },
+        "recipe_hash": "47a9005ae7d1d56c1afe02e72c0db0d7e7a7c24600dbca10de55a0baf3837575",
+        "type": "generated_recipe",
+        "variables": {
+          "page": {
+            "default": 1,
+            "source": "page"
+          }
+        }
+      },
+      "capabilities": [
+        "public_whats_new"
+      ],
+      "category": "monitoring",
+      "contract_hash": "f68e359baf858496882b8a6c56687de0823de084f2d3e2ed508d6a86c72e9392",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "page": 1
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "page": {
+            "default": 1,
+            "description": "Archive page number; 1 is the newest.",
+            "maximum": 10000,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "whats_new",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Newest IBBI updates, newest first.",
+            "items": {
+              "properties": {
+                "title": {
+                  "description": "Update title as listed.",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "Document or page URL.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass page to walk older entries; each page lists 20.",
+        "supported": true
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784919703.5324354,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "List the newest circulars, orders, and notices from IBBI's What's New page with document links.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns listed links",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "f68e359baf858496882b8a6c56687de0823de084f2d3e2ed508d6a86c72e9392",
+            "input_names": [
+              "page"
+            ],
+            "passed": true,
+            "recipe_hash": "47a9005ae7d1d56c1afe02e72c0db0d7e7a7c24600dbca10de55a0baf3837575",
+            "verified_at_unix": 1784919703.5216978
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns listed links",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for disciplinary orders only; use orders.",
+      "when_to_use": "Use this when an agent needs the latest IBBI insolvency regulator updates."
+    }
+  },
+  "runtime": {
+    "auth_interaction": "not_yet_mapped",
+    "browserless_replay": true
+  },
+  "url_routes": [],
+  "version": "0.2.1"
+}

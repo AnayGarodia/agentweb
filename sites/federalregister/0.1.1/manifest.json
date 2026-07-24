@@ -1,0 +1,818 @@
+{
+  "aliases": [
+    "federalregister"
+  ],
+  "allowed_domains": [
+    "federalregister.gov",
+    "www.federalregister.gov"
+  ],
+  "auth": {
+    "interaction": "not_required",
+    "strategy": "none"
+  },
+  "authoring": {
+    "browserless_parity": true,
+    "catalog_complete": true,
+    "exhaustive": true,
+    "matrix_verified": true,
+    "tool_quality_verified": true
+  },
+  "base_url": "https://www.federalregister.gov",
+  "canonical_domain": "federalregister.gov",
+  "commands": {
+    "document": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "search",
+      "description": "Fetch one Federal Register document's full metadata by document number.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "document_number": "2024-28756"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "document_number": {
+            "description": "Federal Register document number, e.g. 2024-28756.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "document_number"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "abstract": {
+            "description": "Official abstract.",
+            "type": "string"
+          },
+          "action": {
+            "description": "Regulatory action line.",
+            "type": "string"
+          },
+          "citation": {
+            "description": "Federal Register citation.",
+            "type": "string"
+          },
+          "comment_url": {
+            "description": "Where to submit public comments, if open."
+          },
+          "comments_close_on": {
+            "description": "Comment period closing date."
+          },
+          "document_number": {
+            "description": "Federal Register document number.",
+            "type": "string"
+          },
+          "effective_on": {
+            "description": "Effective date if set.",
+            "type": "string"
+          },
+          "html_url": {
+            "description": "Document page on federalregister.gov.",
+            "type": "string"
+          },
+          "pdf_url": {
+            "description": "Official PDF link.",
+            "type": "string"
+          },
+          "publication_date": {
+            "description": "Publication date.",
+            "type": "string"
+          },
+          "raw_text_url": {
+            "description": "Plain-text version of the body.",
+            "type": "string"
+          },
+          "significant": {
+            "description": "Whether the rule is designated significant.",
+            "type": "boolean"
+          },
+          "signing_date": {
+            "description": "Signing date for presidential documents."
+          },
+          "title": {
+            "description": "Document title.",
+            "type": "string"
+          },
+          "type": {
+            "description": "Document type.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "abstract"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns one document; no pagination.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this operation to search; it requires an exact document_number.",
+      "when_to_use": "Use this operation after search to get a document's abstract, action, dates, comment deadline, and links."
+    },
+    "search": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "search",
+      "description": "Full-text search of Federal Register documents (US rules, proposed rules, notices, and presidential documents).",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "conditions_term": "artificial intelligence",
+            "per_page": 10
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "conditions_term": {
+            "description": "Full-text search term.",
+            "maxLength": 92,
+            "minLength": 1,
+            "type": "string"
+          },
+          "per_page": {
+            "default": 10,
+            "description": "Number of results per page (max 1000).",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "conditions_term"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Matching Federal Register documents, newest first.",
+            "items": {
+              "properties": {
+                "abstract": {
+                  "description": "Official abstract of the document."
+                },
+                "document_number": {
+                  "description": "Federal Register document number (use with the document operation).",
+                  "type": "string"
+                },
+                "excerpts": {
+                  "description": "Search-term excerpt from the body.",
+                  "type": "string"
+                },
+                "html_url": {
+                  "description": "Link to the document on federalregister.gov.",
+                  "type": "string"
+                },
+                "pdf_url": {
+                  "description": "Link to the official PDF.",
+                  "type": "string"
+                },
+                "public_inspection_pdf_url": {
+                  "description": "Public-inspection PDF if available.",
+                  "type": "string"
+                },
+                "publication_date": {
+                  "description": "Publication date (YYYY-MM-DD).",
+                  "type": "string"
+                },
+                "title": {
+                  "description": "Document title.",
+                  "type": "string"
+                },
+                "type": {
+                  "description": "Document type (Rule, Proposed Rule, Notice, Presidential Document).",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns one page of per_page results; deeper pages are not mapped.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this operation to fetch one known document's details; use document with its document_number instead.",
+      "when_to_use": "Use this operation to find US federal regulatory documents matching a term, newest first."
+    }
+  },
+  "cookie_domain": ".www.federalregister.gov",
+  "coverage": {
+    "constraints": [
+      "Site permissions, rate limits, and anti-automation rules still apply"
+    ],
+    "human_boundaries": [
+      "Agency-specific feeds, docket browsing, and regulations.gov comment submission are not mapped; search and single-document lookup cover the supported surface."
+    ],
+    "not_mapped": [],
+    "protocol_fallback": null,
+    "typed_fast_paths": [
+      "document",
+      "search"
+    ],
+    "website_parity": "Mapping mode can inspect the remaining website while direct request recipes are compiled. Browser commands are never counted as runtime parity."
+  },
+  "description": "US Federal Register: search and read federal rules, proposed rules, notices, and executive orders.",
+  "entrypoint": "adapter.py",
+  "evidence_capsules": {},
+  "flow_capsules": {
+    "document": {
+      "contract": "document",
+      "path": "flows/document.json"
+    },
+    "search": {
+      "contract": "search",
+      "path": "flows/search.json"
+    }
+  },
+  "name": "federalregister",
+  "operation_contracts": {
+    "document": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "fields": {
+            "abstract": {
+              "default": "",
+              "path": "$.abstract"
+            },
+            "action": {
+              "default": "",
+              "path": "$.action"
+            },
+            "citation": {
+              "default": "",
+              "path": "$.citation"
+            },
+            "comment_url": {
+              "default": "",
+              "path": "$.comment_url"
+            },
+            "comments_close_on": {
+              "default": "",
+              "path": "$.comments_close_on"
+            },
+            "document_number": {
+              "path": "$.document_number"
+            },
+            "effective_on": {
+              "default": "",
+              "path": "$.effective_on"
+            },
+            "html_url": {
+              "path": "$.regulation_id_number_info.1625-AA00.html_url"
+            },
+            "pdf_url": {
+              "default": "",
+              "path": "$.pdf_url"
+            },
+            "publication_date": {
+              "path": "$.publication_date"
+            },
+            "raw_text_url": {
+              "default": "",
+              "path": "$.raw_text_url"
+            },
+            "significant": {
+              "default": "",
+              "path": "$.significant"
+            },
+            "signing_date": {
+              "default": "",
+              "path": "$.signing_date"
+            },
+            "title": {
+              "path": "$.title"
+            },
+            "type": {
+              "path": "$.type"
+            }
+          },
+          "source": "$"
+        },
+        "recipe_hash": "372b296f07f6a088c5a82b724055f63f45f941895d9abadbb267606c9ab81e7c",
+        "type": "generated_recipe",
+        "variables": {
+          "document_number": "document_number"
+        }
+      },
+      "capabilities": [
+        "public_document"
+      ],
+      "category": "search",
+      "contract_hash": "d697607109ea49ff9b2959a212f67e03313ecff2b824b71d0553248023da71cb",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "document_number": "2024-28756"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "document_number": {
+            "description": "Federal Register document number, e.g. 2024-28756.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "document_number"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "document",
+      "output_schema": {
+        "properties": {
+          "abstract": {
+            "description": "Official abstract.",
+            "type": "string"
+          },
+          "action": {
+            "description": "Regulatory action line.",
+            "type": "string"
+          },
+          "citation": {
+            "description": "Federal Register citation.",
+            "type": "string"
+          },
+          "comment_url": {
+            "description": "Where to submit public comments, if open."
+          },
+          "comments_close_on": {
+            "description": "Comment period closing date."
+          },
+          "document_number": {
+            "description": "Federal Register document number.",
+            "type": "string"
+          },
+          "effective_on": {
+            "description": "Effective date if set.",
+            "type": "string"
+          },
+          "html_url": {
+            "description": "Document page on federalregister.gov.",
+            "type": "string"
+          },
+          "pdf_url": {
+            "description": "Official PDF link.",
+            "type": "string"
+          },
+          "publication_date": {
+            "description": "Publication date.",
+            "type": "string"
+          },
+          "raw_text_url": {
+            "description": "Plain-text version of the body.",
+            "type": "string"
+          },
+          "significant": {
+            "description": "Whether the rule is designated significant.",
+            "type": "boolean"
+          },
+          "signing_date": {
+            "description": "Signing date for presidential documents."
+          },
+          "title": {
+            "description": "Document title.",
+            "type": "string"
+          },
+          "type": {
+            "description": "Document type.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "abstract"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns one document; no pagination.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784920874.4310906,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Fetch one Federal Register document's full metadata by document number.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns abstract",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "d697607109ea49ff9b2959a212f67e03313ecff2b824b71d0553248023da71cb",
+            "input_names": [
+              "document_number"
+            ],
+            "passed": true,
+            "recipe_hash": "372b296f07f6a088c5a82b724055f63f45f941895d9abadbb267606c9ab81e7c",
+            "verified_at_unix": 1784920874.1797323
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns abstract",
+            "path": "$.data.abstract",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this operation to search; it requires an exact document_number.",
+      "when_to_use": "Use this operation after search to get a document's abstract, action, dates, comment deadline, and links."
+    },
+    "search": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "abstract": {
+              "default": "",
+              "path": "$.abstract"
+            },
+            "document_number": {
+              "path": "$.document_number"
+            },
+            "excerpts": {
+              "default": "",
+              "path": "$.excerpts"
+            },
+            "html_url": {
+              "path": "$.html_url"
+            },
+            "pdf_url": {
+              "default": "",
+              "path": "$.pdf_url"
+            },
+            "public_inspection_pdf_url": {
+              "default": "",
+              "path": "$.public_inspection_pdf_url"
+            },
+            "publication_date": {
+              "path": "$.publication_date"
+            },
+            "title": {
+              "path": "$.title"
+            },
+            "type": {
+              "path": "$.type"
+            }
+          },
+          "source": "$.results"
+        },
+        "recipe_hash": "aa902ac24a73dd8db683bb489f9e006e9c1a750ea5e65836bf494de87c16074a",
+        "type": "generated_recipe",
+        "variables": {
+          "conditions_term": "conditions_term",
+          "per_page": {
+            "default": 10,
+            "source": "per_page"
+          }
+        }
+      },
+      "capabilities": [
+        "public_search"
+      ],
+      "category": "search",
+      "contract_hash": "e24a0915fb3d79de347641375a912b1b830b528c782e09deb2f65e97e0a9f3c9",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "conditions_term": "artificial intelligence",
+            "per_page": 10
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "conditions_term": {
+            "description": "Full-text search term.",
+            "maxLength": 92,
+            "minLength": 1,
+            "type": "string"
+          },
+          "per_page": {
+            "default": 10,
+            "description": "Number of results per page (max 1000).",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "conditions_term"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "search",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Matching Federal Register documents, newest first.",
+            "items": {
+              "properties": {
+                "abstract": {
+                  "description": "Official abstract of the document."
+                },
+                "document_number": {
+                  "description": "Federal Register document number (use with the document operation).",
+                  "type": "string"
+                },
+                "excerpts": {
+                  "description": "Search-term excerpt from the body.",
+                  "type": "string"
+                },
+                "html_url": {
+                  "description": "Link to the document on federalregister.gov.",
+                  "type": "string"
+                },
+                "pdf_url": {
+                  "description": "Link to the official PDF.",
+                  "type": "string"
+                },
+                "public_inspection_pdf_url": {
+                  "description": "Public-inspection PDF if available.",
+                  "type": "string"
+                },
+                "publication_date": {
+                  "description": "Publication date (YYYY-MM-DD).",
+                  "type": "string"
+                },
+                "title": {
+                  "description": "Document title.",
+                  "type": "string"
+                },
+                "type": {
+                  "description": "Document type (Rule, Proposed Rule, Notice, Presidential Document).",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns one page of per_page results; deeper pages are not mapped.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784920874.439611,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Full-text search of Federal Register documents (US rules, proposed rules, notices, and presidential documents).",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns matching records",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "e24a0915fb3d79de347641375a912b1b830b528c782e09deb2f65e97e0a9f3c9",
+            "input_names": [
+              "conditions_term",
+              "per_page"
+            ],
+            "passed": true,
+            "recipe_hash": "aa902ac24a73dd8db683bb489f9e006e9c1a750ea5e65836bf494de87c16074a",
+            "verified_at_unix": 1784920874.4253256
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns matching records",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this operation to fetch one known document's details; use document with its document_number instead.",
+      "when_to_use": "Use this operation to find US federal regulatory documents matching a term, newest first."
+    }
+  },
+  "runtime": {
+    "auth_interaction": "not_yet_mapped",
+    "browserless_replay": true
+  },
+  "url_routes": [],
+  "version": "0.1.1"
+}

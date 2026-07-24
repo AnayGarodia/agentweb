@@ -1,0 +1,323 @@
+{
+  "aliases": [
+    "sebi"
+  ],
+  "allowed_domains": [
+    "gov.in",
+    "www.sebi.gov.in"
+  ],
+  "auth": {
+    "interaction": "not_required",
+    "strategy": "none"
+  },
+  "authoring": {
+    "browserless_parity": true,
+    "catalog_complete": true,
+    "exhaustive": true,
+    "matrix_verified": true,
+    "tool_quality_verified": true
+  },
+  "base_url": "https://www.sebi.gov.in",
+  "canonical_domain": "gov.in",
+  "commands": {
+    "rss_updates": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "monitoring",
+      "description": "List SEBI's latest press releases, circulars, and orders from its official RSS feed.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Newest SEBI updates, newest first.",
+            "items": {
+              "properties": {
+                "id": {
+                  "description": "Feed entry id when provided."
+                },
+                "links": {
+                  "description": "Links to the update, each with a url."
+                },
+                "published": {
+                  "description": "Publication timestamp as given by the feed."
+                },
+                "summary": {
+                  "description": "Short description when provided."
+                },
+                "title": {
+                  "description": "Update title."
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The RSS feed carries only SEBI's newest items.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this to search SEBI's historical archive; the feed only carries the newest items.",
+      "when_to_use": "Use this when an agent needs the newest SEBI regulatory updates."
+    }
+  },
+  "cookie_domain": ".www.sebi.gov.in",
+  "coverage": {
+    "constraints": [
+      "Site permissions, rate limits, and anti-automation rules still apply"
+    ],
+    "human_boundaries": [
+      "SEBI's search and historical archives are not mapped; this covers the live RSS feed."
+    ],
+    "not_mapped": [],
+    "protocol_fallback": null,
+    "typed_fast_paths": [
+      "rss_updates"
+    ],
+    "website_parity": "Mapping mode can inspect the remaining website while direct request recipes are compiled. Browser commands are never counted as runtime parity."
+  },
+  "description": "SEBI (Securities and Exchange Board of India): latest regulatory updates via RSS.",
+  "entrypoint": "adapter.py",
+  "evidence_capsules": {},
+  "flow_capsules": {
+    "rss_updates": {
+      "contract": "rss_updates",
+      "path": "flows/rss_updates.json"
+    }
+  },
+  "name": "sebi",
+  "operation_contracts": {
+    "rss_updates": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "id": {
+              "default": null,
+              "path": "$.id"
+            },
+            "links": {
+              "default": [],
+              "path": "$.links"
+            },
+            "published": {
+              "default": null,
+              "path": "$.published"
+            },
+            "summary": {
+              "default": null,
+              "path": "$.summary"
+            },
+            "title": {
+              "default": null,
+              "path": "$.title"
+            }
+          },
+          "source": "$.entries"
+        },
+        "recipe_hash": "76217db10f07468d10d47f78914bc42994e94cf21654b022db974bd82f2a8928",
+        "type": "generated_recipe",
+        "variables": {}
+      },
+      "capabilities": [
+        "public_rss_updates"
+      ],
+      "category": "monitoring",
+      "contract_hash": "beb407b5c797fa68afd08ab9184d6a12e9d1f389cb1ef3a6c108330babb44cb4",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "rss_updates",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Newest SEBI updates, newest first.",
+            "items": {
+              "properties": {
+                "id": {
+                  "description": "Feed entry id when provided."
+                },
+                "links": {
+                  "description": "Links to the update, each with a url."
+                },
+                "published": {
+                  "description": "Publication timestamp as given by the feed."
+                },
+                "summary": {
+                  "description": "Short description when provided."
+                },
+                "title": {
+                  "description": "Update title."
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The RSS feed carries only SEBI's newest items.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784880628.3557916,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "List SEBI's latest press releases, circulars, and orders from its official RSS feed.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns feed entries",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "beb407b5c797fa68afd08ab9184d6a12e9d1f389cb1ef3a6c108330babb44cb4",
+            "input_names": [],
+            "passed": true,
+            "recipe_hash": "76217db10f07468d10d47f78914bc42994e94cf21654b022db974bd82f2a8928",
+            "verified_at_unix": 1784880628.3491945
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns feed entries",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this to search SEBI's historical archive; the feed only carries the newest items.",
+      "when_to_use": "Use this when an agent needs the newest SEBI regulatory updates."
+    }
+  },
+  "runtime": {
+    "auth_interaction": "not_yet_mapped",
+    "browserless_replay": true
+  },
+  "url_routes": [],
+  "version": "0.1.1"
+}

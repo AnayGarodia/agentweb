@@ -1,0 +1,92 @@
+{
+  "browserless_parity": true,
+  "capabilities": {
+    "dated_archive": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "RBI's dated archive pages and search forms are not mapped; this covers the newest listings and feed.",
+      "roles": [
+        "public"
+      ],
+      "state": "blocked",
+      "surface": "public_api"
+    },
+    "public_press_releases": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_press_releases_by_year": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_press_releases_feed": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    }
+  },
+  "catalog_complete": true,
+  "excluded_operations": {},
+  "exhaustive": true,
+  "generated_at_unix": 1784930063.8850324,
+  "matrix": {
+    "locales": [
+      "en-US"
+    ],
+    "roles": [
+      "public"
+    ],
+    "surfaces": [
+      "public_api"
+    ]
+  },
+  "matrix_verified": true,
+  "operations": {
+    "press_releases": {
+      "capabilities": [
+        "public_press_releases"
+      ],
+      "contract_hash": "82c5e71cdd7263ac5b8fa33006f30a586774e3d4c34775820f26dd0eddef9c4f",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "press_releases_by_year": {
+      "capabilities": [
+        "public_press_releases_by_year"
+      ],
+      "contract_hash": "6c1d3ca56dea25c6a5936cfa5726d63a4f6ff1e28aa35caf34fed6d69f7f285b",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "press_releases_feed": {
+      "capabilities": [
+        "public_press_releases_feed"
+      ],
+      "contract_hash": "810cec34904809459b78a91331e3d9437e2f4a52005ea644836d0daf753f66e0",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    }
+  },
+  "project_hash": "6b0b0792fcae06edc61318731b075bb16db803bae98c741bd0bc69eaa522c08d",
+  "publication_mode": "reviewed",
+  "schema_version": 1,
+  "tool_quality_verified": true,
+  "uncovered_verified_capabilities": []
+}

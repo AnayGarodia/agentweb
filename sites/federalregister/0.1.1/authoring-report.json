@@ -1,0 +1,74 @@
+{
+  "browserless_parity": true,
+  "capabilities": {
+    "authenticated_services": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "Agency-specific feeds, docket browsing, and regulations.gov comment submission are not mapped; search and single-document lookup cover the supported surface.",
+      "roles": [
+        "account_holder"
+      ],
+      "state": "blocked",
+      "surface": "public_api"
+    },
+    "public_document": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_search": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    }
+  },
+  "catalog_complete": true,
+  "excluded_operations": {},
+  "exhaustive": true,
+  "generated_at_unix": 1784920874.450068,
+  "matrix": {
+    "locales": [
+      "en-US"
+    ],
+    "roles": [
+      "public"
+    ],
+    "surfaces": [
+      "public_api"
+    ]
+  },
+  "matrix_verified": true,
+  "operations": {
+    "document": {
+      "capabilities": [
+        "public_document"
+      ],
+      "contract_hash": "d697607109ea49ff9b2959a212f67e03313ecff2b824b71d0553248023da71cb",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "search": {
+      "capabilities": [
+        "public_search"
+      ],
+      "contract_hash": "e24a0915fb3d79de347641375a912b1b830b528c782e09deb2f65e97e0a9f3c9",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    }
+  },
+  "project_hash": "c2ebf04b613b844999ee17be036654fd85a8b6a84e902b128ef28abd1b144197",
+  "publication_mode": "reviewed",
+  "schema_version": 1,
+  "tool_quality_verified": true,
+  "uncovered_verified_capabilities": []
+}

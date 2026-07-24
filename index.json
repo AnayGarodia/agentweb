@@ -3,7 +3,7 @@
   "signature": {
     "algorithm": "ed25519",
     "key_id": "d3237069b559fa7b",
-    "value": "/8/bqj1XeZLl+O4n7isiLvy/xpGX4Z7oVdozep+S3ZPgXJiF/r5psI/P9aFnmJB2arWPk16BkGy+zEegbDdBCA=="
+    "value": "uqk4ZLPTfYqhoH74329NIiCkhSMv+c5dArWWzPAGMsQPxR9utUNLlU6rwVBp6kxO1Y7sOqwozqzC4D+xVj1UAQ=="
   },
   "sites": [
     {
@@ -48,10 +48,10 @@
         "flows/corporate_actions.json": "4d03b2229d6bb01857cec6375384ac2777ec211459cd1e41f3388e8188823f6b",
         "flows/dividends.json": "c35005f681addba93dc6ce9ee8fc06b9e5766eb3fb47d2ac9889040c76128a3b",
         "flows/quote.json": "eccd6280cd6fc7588482424c79a5fc625f381ea3623f790e3cc9f3df6759711e",
-        "manifest.json": "270e416bf941627f12c72608b2663bd6d8f31f08f65c965095d010459eeb112d"
+        "manifest.json": "368f23a250f36bc0f3cc2acf1d751314d3ab007535a78e0674a0b9a1ca34989f"
       },
       "name": "bse",
-      "version": "0.3.0"
+      "version": "0.3.1"
     },
     {
       "files": {
@@ -60,10 +60,10 @@
         "flows/market_chart.json": "3d4f54ff25f51b3f8c76762bbcbe3682f551c274ce3a350954aecda19f557ff9",
         "flows/markets.json": "bad467f91c7b42a8d01e32319becd6796d8dfce2c1ade35646a077a4c06b1850",
         "flows/search.json": "616023d00dda7f1dfe461bea719d13b4ce0f19398e90a8cdbe030f8fd8eb8138",
-        "manifest.json": "3ef382a0d1c40b4262a4368244406d52d9b463fe7b3c5d8d4f5d04bd9074f95f"
+        "manifest.json": "ee240aca3d59900f66d3f48c5a7e5d9ccd46d600a57326466b84733110cb3175"
       },
       "name": "coingecko",
-      "version": "0.2.0"
+      "version": "0.2.1"
     },
     {
       "files": {
@@ -72,10 +72,10 @@
         "flows/search_journals.json": "425e979320f33fc42fa11c06af19362d08ecc39d1ee113d6da89bd9f7af2d2c2",
         "flows/search_works.json": "fc534b9b2d5214ef283e05f40bcb0fc613d67b16fc9c86a62c087cdeba7aff42",
         "flows/work.json": "ddc896a6c2c811f5904dd9000ee8a5fa1f283aee28e6726f1524ca212afb85f2",
-        "manifest.json": "15c9a1790a7dec72ea9dc6868c3fb440ea4cdde9513bbb9839c1dea4bad96c8a"
+        "manifest.json": "84254909ecbafa5bf58a310e70d416105381a62e9f0aa700b4b2a7bb1f56e424"
       },
       "name": "crossref",
-      "version": "0.2.0"
+      "version": "0.2.1"
     },
     {
       "files": {
@@ -83,10 +83,10 @@
         "authoring-report.json": "4dfb75445bb69b314cf24753cd1872b82d865cef2e9e3f905adc6f37aeafc055",
         "flows/document.json": "6f07298bf54d2eae10ff3ebd196ca47ad6669205c0ee52e9f6a5991d7fdc5f80",
         "flows/search.json": "cebac66d9f1ab4a38584f42183f8039f50dbed280990baecd8845efdfef10841",
-        "manifest.json": "78d97faa6a1d1e7ac06d8fd6daad3b61a5515148afe382a516eeb603991f4960"
+        "manifest.json": "cded29c06711940ec9b09953425db32b7a118c3a9907724cf3188970d1cd43eb"
       },
       "name": "federalregister",
-      "version": "0.1.0"
+      "version": "0.1.1"
     },
     {
       "files": {
@@ -200,10 +200,10 @@
         "authoring-report.json": "b04b94f21525fbe335649762c6949c609809a8dca715bd7bfeba87901de8738e",
         "flows/orders.json": "5cc8c2d9d13d1917e4f6103a53a64d73429525ef737021cc5e7ccbef7ba91762",
         "flows/whats_new.json": "4c81d24b7ed73ba2de86c0790e5ef57397f5c62f41a93396095d63d772a62522",
-        "manifest.json": "726bdb2f1867e95b0431e12447a4dd48f68eaf934032116620df8734e0247f71"
+        "manifest.json": "0563efaef58ad6ce76b7e9c54288e9c4e0a07c08c54d5d49180c4244c348c024"
       },
       "name": "ibbi",
-      "version": "0.2.0"
+      "version": "0.2.1"
     },
     {
       "files": {
@@ -211,10 +211,10 @@
         "authoring-report.json": "806e4a3e8567ad3aaa88e67503e02c74a860b198a18f4ca74e13a0b732e83994",
         "flows/pincode.json": "39453f0a671f9368712a3fb4cb3a0a015a4c5792103463c6ec554a254eefef1b",
         "flows/post_office.json": "68c6b29b35e9029c5ac564c6531dce8997dc6f0d1a869321c655d42e14663ca0",
-        "manifest.json": "7f7aa58c79658b54bf378a2c8d398552451bd157f694ae3b85509da6c813a066"
+        "manifest.json": "9c6a6c588a99a531844972da7efd20a7b1b6be2d4939de8a5e6b838fe8a9be9b"
       },
       "name": "indiapost",
-      "version": "0.1.1"
+      "version": "0.1.2"
     },
     {
       "files": {
@@ -223,10 +223,10 @@
         "flows/compat.json": "a59651d556dde59879a82656ad5241b35cb7c548d5d747c753b670c9658394a9",
         "flows/page.json": "ff7a3e2edbd141366bd8923b65b3776b164fc690a5b0f71e2fe40a332d17631b",
         "flows/search.json": "94c1e7e6a602819e7391e99736a31ff68eb939eeb26bb7706b973c357c4904a0",
-        "manifest.json": "5c68223921c9dce657720694643fa12e8a817259609bd3c4816c5598fc0fc8b3"
+        "manifest.json": "f23b019d8099f1ef640a1cf3487997bb9de781334f76c3676b1427ca339fe077"
       },
       "name": "mdn",
-      "version": "0.2.0"
+      "version": "0.2.1"
     },
     {
       "files": {
@@ -234,10 +234,10 @@
         "authoring-report.json": "ccade38435b64546495c623ef01a7f08e36c78bc3147f8a34a0b527864969129",
         "flows/reverse.json": "5d6978cafa30e746f594a388b6b8953bfe3d42e8b94292f0e13b8023e0a48742",
         "flows/search.json": "2d58ba715df0e7ad7041393a6286b85b515ae83513a4d5150e47045d4550798a",
-        "manifest.json": "a3cd48c949881e831bd7a5455d8939b47f3fc4c5cac5df8bf611192852c5a333"
+        "manifest.json": "4ac2d29a1bc8d3225993b0733eda2ff3797458807cea4d9271283aa5fd215406"
       },
       "name": "nominatim",
-      "version": "0.1.0"
+      "version": "0.1.1"
     },
     {
       "files": {
@@ -273,10 +273,10 @@
         "flows/corporate_actions.json": "8dae1aed65cfe5e3b6df99e24cd24769b87d01f5e218ee6834d185ea82ea524c",
         "flows/indices.json": "d241d462212ecc5040fbd80ea373a48b08c9abb5f77f3391a2862ccae7cd82ef",
         "flows/shareholding.json": "b371659c9ef45c5ba75e1a63478a346138f82818d1d877a21cdb4fb30db4508e",
-        "manifest.json": "611aa6ada03a41c2e5ad38a0ed9b6f9d8192985368139a8101305ada7f48efa1"
+        "manifest.json": "4ad94641042c559e77badafaa8e58dbe52c4dbb725448e51453379967a98b1eb"
       },
       "name": "nse",
-      "version": "0.3.1"
+      "version": "0.3.2"
     },
     {
       "files": {
@@ -287,10 +287,10 @@
         "flows/meta.json": "24808c2ab009d6f5e752963b7f6e0f26de02b11cbeb5e21067bce05ad1409661",
         "flows/random.json": "5d300c5f81ac0d7092ddeb58ef255016a8cc0d2246b09cb771c1d71d616e09de",
         "flows/search.json": "0100b85cbe1f5d3184d363dab276f8ce5465a213b1f737849397b2d223a39839",
-        "manifest.json": "27df4ebc3e70bb9b42c08410a41ca638cac8c57b289857bbe666fb011483d1da"
+        "manifest.json": "04847fe1b5981da6d8542dd8f4e2293cf1761389bf2726b758be8ad338fde2d2"
       },
       "name": "openbrewerydb",
-      "version": "0.1.1"
+      "version": "0.1.2"
     },
     {
       "files": {
@@ -300,10 +300,10 @@
         "flows/isbn.json": "a93db503ce78ac18e9c53e24fc82adc96d9ec8c566228529845e49f5a2390f9d",
         "flows/search.json": "dc67e88049400f8da59b97c22a90142c8013016ccbdd2ffe93acd8a4bd494a1a",
         "flows/work_get.json": "9b69fb4287824e4776e0eb800e52eeb6a27507485342f8f6617d381576198e4a",
-        "manifest.json": "ab6c9fcff1229eb9b8665c08ab2c3e32210ed38092838f465169d08436ea232b"
+        "manifest.json": "d61331eaf04add9094f0f0e4d675cf70b7193a012efa25553940608dc2ef2958"
       },
       "name": "openlibrary",
-      "version": "0.2.1"
+      "version": "0.2.2"
     },
     {
       "files": {
@@ -313,10 +313,10 @@
         "flows/archive.json": "277b1403e6507924bb8b9a32e91da79d3472f6551dc6921e9395a9166a1738c8",
         "flows/forecast.json": "b0fb028a5a292563d1b9c73c7dce53b9d29c480e35a0d21151e297a39e659b00",
         "flows/geocode.json": "e4552d0b34e5be71fe6bcbf1364173e2b28c49663db6ee2410a61a3e36efa6a6",
-        "manifest.json": "dfb7410e44cab22b864a9cbbeb2aeff1af684c48097292c411dc21aaf819c736"
+        "manifest.json": "e9f2da2f289998d639199dd3c1e3ea2e538b055e50edd4e03ab8ccdcec9c6d4f"
       },
       "name": "openmeteo",
-      "version": "0.2.0"
+      "version": "0.2.1"
     },
     {
       "files": {
@@ -352,10 +352,10 @@
         "flows/press_releases.json": "35951a631f2bc33e1c78fbbd2fa56f9f2c122e7d8554b49b5ed6657229ec13c6",
         "flows/press_releases_by_year.json": "cff17f2ab1cd5dc74882a7a0d6c2e3054dd80c3a74e8339b2ccc604521ef4e84",
         "flows/press_releases_feed.json": "cc1cefbe24d77bcccae51de5ed80fc42c709de137fdf9bb3f889838cd91c8a06",
-        "manifest.json": "7eebbe81e85579310dc5d73143435ec385d23231b207f9da2434cae830afce51"
+        "manifest.json": "b1de21bc7d67be65244ad8a9028f3f83634f511f8ffe6640f93a6aa6f11a2434"
       },
       "name": "rbi",
-      "version": "0.3.0"
+      "version": "0.3.1"
     },
     {
       "files": {
@@ -365,20 +365,20 @@
         "flows/project.json": "540fc690c9039567ea28177f5334881c32916cd8001d767c24b6d7ea0bf0887a",
         "flows/search.json": "f7381e117a8f3b4f7155dd0cb77266e9a0bc3d8f2a25e4f330813576de18960b",
         "flows/versions.json": "f068b4917cbc1a4ca433b22cbebe830a031d8909b288f76f31f8e22415446cf8",
-        "manifest.json": "6230f94980713fba679d799860e1d74c37517e22d4d9cd0369a343caf99b5180"
+        "manifest.json": "dda3260941896f5d398159930b7ea4cee2020cc7bec21e89a109129acf4252df"
       },
       "name": "readthedocs",
-      "version": "0.2.0"
+      "version": "0.2.1"
     },
     {
       "files": {
         "adapter.py": "7ab7ab02949337c8afc41eafee364bd4a42d5052e22de963129f400e78715279",
         "authoring-report.json": "de2acbf88f66719bd6513be99ac1a0fe072a0289b7ed59bd35ee29feafc9bea6",
         "flows/rss_updates.json": "09107be82ce95786c8be108d8ca925f28f17a6833f59e6c58124990e4ee90503",
-        "manifest.json": "69d4581d05ba79f7014a715fce4d936081862d9c7ff1fae330fa5567e5e82b45"
+        "manifest.json": "90e684133a75b69cb1da46e1eb4dc8ab680bcc18d04b8e60e2d1f909a90171ef"
       },
       "name": "sebi",
-      "version": "0.1.0"
+      "version": "0.1.1"
     },
     {
       "files": {
@@ -388,10 +388,10 @@
         "flows/company_profile.json": "155e8b14c171284fd1e79ac03a37814ee8df348944bcbfe2fc3b76102f13c256",
         "flows/filings.json": "9ae2accfe30b1076af921f85a9f0fd11827618d367ec757ff2f336a3c20de682",
         "flows/full_text_search.json": "cd7221dc51e7f58361541c076dd0b86b87c74ee5c7628137b88f3c7f51b3de00",
-        "manifest.json": "a4fb20b8d7e6cbf5c0784502bc93660a5c9322272c707431bee08d7f4bbcabdb"
+        "manifest.json": "b6c52ed86ab7ce862fb7c20a61942410489053786e7ac121fd5b022c22ca93dc"
       },
       "name": "secedgar",
-      "version": "0.2.1"
+      "version": "0.2.2"
     },
     {
       "files": {
@@ -429,10 +429,10 @@
         "authoring-report.json": "a05bf1a3719cc4d0aa683a7e16b231dc18ddfebbe7b8bed83d25c4f6a006cba7",
         "flows/countries.json": "8311de299db8c9454c519199ca229334d016193a9e5e0f60d057f6b019f8a548",
         "flows/indicator.json": "2dac2b1f76bac717705e73842236cdbfe2cf1e63aa2a1a292513bbd482fc26f4",
-        "manifest.json": "cf41778be5f83a8e514d25eccfff358d0b285ff63f1b1e183a6b152ef21cf4e2"
+        "manifest.json": "5eb42f2acf98fe6a6b8240c29a0bfcbafae1393c082045108f173d7f1aa3f66c"
       },
       "name": "worldbank",
-      "version": "0.1.0"
+      "version": "0.1.1"
     }
   ]
 }

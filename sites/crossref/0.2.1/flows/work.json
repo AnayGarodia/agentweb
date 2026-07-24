@@ -1,0 +1,76 @@
+{
+  "captured_at_unix": 1784926041.1244712,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://api.crossref.org",
+      "before": "https://api.crossref.org"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "work",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "work",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "doi"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "work",
+        "path": "https://api.crossref.org/works/{doi}"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "crossref",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns the work DOI",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "6f00bb876824027f271eb0ee62e6ff13cfa569e7ee3d91344f73eb916a47c05a",
+    "evidence_version": 2,
+    "recipe_hash": "34bd3f48af7e31d9b5e3eca6324f69c30a0dfeaf82e3811408797210ee9f61af",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784926041.5847564
+  }
+}

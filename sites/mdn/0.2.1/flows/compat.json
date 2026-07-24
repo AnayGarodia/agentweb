@@ -1,0 +1,76 @@
+{
+  "captured_at_unix": 1784934319.7471383,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://developer.mozilla.org",
+      "before": "https://developer.mozilla.org"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "compat",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "compat",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "feature"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "compat",
+        "path": "https://bcd.developer.mozilla.org/bcd/api/v0/current/{feature}.json"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "mdn",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns the feature's MDN link",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "f41e7ece6a19a9ba65d1443b87ca04eeaa1fa6e7486baa070f266fe6c517919f",
+    "evidence_version": 2,
+    "recipe_hash": "dde8dbe7437ab8d65b05b1a052f323da94ee74895dc1aed8d90fb413229a86bd",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784934320.1642866
+  }
+}

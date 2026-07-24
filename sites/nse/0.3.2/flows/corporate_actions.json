@@ -1,0 +1,85 @@
+{
+  "captured_at_unix": 1784930595.667603,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://www.nseindia.com",
+      "before": "https://www.nseindia.com"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "corporate_actions",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "corporate_actions",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "index",
+      "symbol"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "headers": {
+          "Referer": "https://www.nseindia.com/"
+        },
+        "method": "GET",
+        "mutating": false,
+        "name": "corporate_actions",
+        "path": "https://www.nseindia.com/api/corporates-corporateActions",
+        "query": {
+          "index": "{index}",
+          "symbol": "{symbol}"
+        }
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "nse",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns corporate actions",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "9cc3f68997247f3d0efebad44340522ab7e3838b72848d47715c7aba81989287",
+    "evidence_version": 2,
+    "recipe_hash": "1eff5b36ba9a5e0840f9b8f0b0fa0fe6417d7e8b15e8fc642d3194fe97ea2e1c",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784930596.586602
+  }
+}

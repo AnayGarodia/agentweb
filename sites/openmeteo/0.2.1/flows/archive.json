@@ -1,0 +1,89 @@
+{
+  "captured_at_unix": 1784926168.8604507,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://open-meteo.com",
+      "before": "https://open-meteo.com"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "archive",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "archive",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "daily",
+      "end_date",
+      "latitude",
+      "longitude",
+      "start_date",
+      "timezone"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "archive",
+        "path": "https://archive-api.open-meteo.com/v1/archive",
+        "query": {
+          "daily": "{daily}",
+          "end_date": "{end_date}",
+          "latitude": "{latitude}",
+          "longitude": "{longitude}",
+          "start_date": "{start_date}",
+          "timezone": "{timezone}"
+        }
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "openmeteo",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns latitude",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "c7d64a7b67fbedb270d66a7fabb9b376e3a8a3d0979cfb047c153acda68d1af6",
+    "evidence_version": 2,
+    "recipe_hash": "3af09b05bddce5364ac0dac494a839c416658f9c5ffdbbcda26fd3ee5a0ed97d",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784926172.3922815
+  }
+}

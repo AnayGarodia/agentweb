@@ -1,0 +1,82 @@
+{
+  "browserless_parity": true,
+  "capabilities": {
+    "compat": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "website"
+    },
+    "page": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "website"
+    },
+    "search": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "website"
+    }
+  },
+  "catalog_complete": true,
+  "excluded_operations": {},
+  "exhaustive": true,
+  "generated_at_unix": 1784934320.282993,
+  "matrix": {
+    "locales": [
+      "en-US"
+    ],
+    "roles": [
+      "public"
+    ],
+    "surfaces": [
+      "website"
+    ]
+  },
+  "matrix_verified": true,
+  "operations": {
+    "compat": {
+      "capabilities": [
+        "compat"
+      ],
+      "contract_hash": "f41e7ece6a19a9ba65d1443b87ca04eeaa1fa6e7486baa070f266fe6c517919f",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "page": {
+      "capabilities": [
+        "page"
+      ],
+      "contract_hash": "fb19b46b759a8110f1137b46bad64c317686ac168f84c203db3591fc5fbdffc9",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "search": {
+      "capabilities": [
+        "search"
+      ],
+      "contract_hash": "2a7a090e6dd3f64e4fbf7e5e67771e9bc58fa39eb0e9329e7230c2d8f229a49b",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    }
+  },
+  "project_hash": "b642d5892426f8060b4909194ee7d745a2f5e97972edd6fae9b48c853be6cb74",
+  "publication_mode": "reviewed",
+  "schema_version": 1,
+  "tool_quality_verified": true,
+  "uncovered_verified_capabilities": []
+}

@@ -1,0 +1,84 @@
+{
+  "captured_at_unix": 1784930046.5297067,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://www.coingecko.com",
+      "before": "https://www.coingecko.com"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "markets",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "markets",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "page",
+      "per_page",
+      "vs_currency"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "mutating": false,
+        "name": "markets",
+        "path": "https://api.coingecko.com/api/v3/coins/markets",
+        "query": {
+          "page": "{page}",
+          "per_page": "{per_page}",
+          "vs_currency": "{vs_currency}"
+        }
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "coingecko",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns matching records",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "ce3cd8a9849ea44b07580da745d9db4090960cf27cd977f5e45c25cb7518a98f",
+    "evidence_version": 2,
+    "recipe_hash": "655a20490b8f579d5b2ee44c7e05f70d5183ee3f939d2d95190152fbbdd98898",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784930075.5193155
+  }
+}

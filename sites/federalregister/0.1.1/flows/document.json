@@ -1,0 +1,76 @@
+{
+  "captured_at_unix": 1784920873.7417588,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://www.federalregister.gov",
+      "before": "https://www.federalregister.gov"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "document",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "document",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "document_number"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "document",
+        "path": "https://www.federalregister.gov/api/v1/documents/{document_number}.json"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "federalregister",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns abstract",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "d697607109ea49ff9b2959a212f67e03313ecff2b824b71d0553248023da71cb",
+    "evidence_version": 2,
+    "recipe_hash": "372b296f07f6a088c5a82b724055f63f45f941895d9abadbb267606c9ab81e7c",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784920874.1797323
+  }
+}

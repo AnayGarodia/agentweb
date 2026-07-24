@@ -1,0 +1,121 @@
+{
+  "captured_at_unix": 1784930054.9027393,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://www.rbi.org.in",
+      "before": "https://www.rbi.org.in"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "archive_page",
+        "status": 200
+      },
+      {
+        "name": "year_listing",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "press_releases_by_year",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "yr"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "extract": {
+          "eventvalidation": {
+            "attribute": "value",
+            "selector": "#__EVENTVALIDATION",
+            "source": "html"
+          },
+          "viewstate": {
+            "attribute": "value",
+            "selector": "#__VIEWSTATE",
+            "source": "html"
+          },
+          "viewstategen": {
+            "attribute": "value",
+            "selector": "#__VIEWSTATEGENERATOR",
+            "source": "html"
+          }
+        },
+        "method": "GET",
+        "mutating": false,
+        "name": "archive_page",
+        "path": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx",
+        "query": {
+          "Mode": "03"
+        }
+      },
+      {
+        "classification": "read",
+        "form": {
+          "UsrFontCntr$btn": "",
+          "__EVENTVALIDATION": "{eventvalidation}",
+          "__VIEWSTATE": "{viewstate}",
+          "__VIEWSTATEGENERATOR": "{viewstategen}",
+          "hdnMonth": "0",
+          "hdnYear": "{yr}"
+        },
+        "method": "POST",
+        "mutating": false,
+        "name": "year_listing",
+        "path": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx",
+        "query": {
+          "Mode": "03"
+        },
+        "response_mode": "html_links",
+        "selector": "a.link2[href]"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "rbi",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns archive links",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "6c1d3ca56dea25c6a5936cfa5726d63a4f6ff1e28aa35caf34fed6d69f7f285b",
+    "evidence_version": 2,
+    "recipe_hash": "615da6c41efba4c9c1b8b205f86b425c52543019c76dbc804b2388d9d8a7e4ca",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784930062.849276
+  }
+}

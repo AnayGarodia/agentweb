@@ -1,0 +1,741 @@
+{
+  "aliases": [
+    "indiapost"
+  ],
+  "allowed_domains": [
+    "api.postalpincode.in",
+    "postalpincode.in",
+    "www.indiapost.gov.in"
+  ],
+  "auth": {
+    "interaction": "not_required",
+    "strategy": "none"
+  },
+  "authoring": {
+    "browserless_parity": true,
+    "catalog_complete": true,
+    "exhaustive": true,
+    "matrix_verified": true,
+    "tool_quality_verified": true
+  },
+  "base_url": "https://www.indiapost.gov.in",
+  "canonical_domain": "gov.in",
+  "commands": {
+    "pincode": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "search",
+      "description": "List all post offices serving a 6-digit Indian PIN code.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "pincode": "110001"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "pincode": {
+            "description": "6-digit Indian postal PIN code.",
+            "maxLength": 6,
+            "minLength": 6,
+            "type": "string"
+          }
+        },
+        "required": [
+          "pincode"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Post offices matching the lookup.",
+            "items": {
+              "properties": {
+                "branch_type": {
+                  "description": "Branch type (Head/Sub/Branch Post Office).",
+                  "type": "string"
+                },
+                "country": {
+                  "description": "Country.",
+                  "type": "string"
+                },
+                "delivery_status": {
+                  "description": "Whether the office delivers mail.",
+                  "type": "string"
+                },
+                "district": {
+                  "description": "District.",
+                  "type": "string"
+                },
+                "division": {
+                  "description": "Postal division.",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "Post office name.",
+                  "type": "string"
+                },
+                "pincode": {
+                  "description": "6-digit PIN code.",
+                  "type": "string"
+                },
+                "state": {
+                  "description": "State.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns every post office under the PIN code in one response; no pagination.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this operation to search by office name; use post_office instead. Parcel tracking is not mapped.",
+      "when_to_use": "Use this operation to resolve an Indian PIN code to its post offices, district, and state."
+    },
+    "post_office": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "search",
+      "description": "Find Indian post offices by branch name.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "office": "Saket"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "office": {
+            "description": "Post office branch name, e.g. Saket.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "office"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Post offices matching the lookup.",
+            "items": {
+              "properties": {
+                "branch_type": {
+                  "description": "Branch type (Head/Sub/Branch Post Office).",
+                  "type": "string"
+                },
+                "country": {
+                  "description": "Country.",
+                  "type": "string"
+                },
+                "delivery_status": {
+                  "description": "Whether the office delivers mail.",
+                  "type": "string"
+                },
+                "district": {
+                  "description": "District.",
+                  "type": "string"
+                },
+                "division": {
+                  "description": "Postal division.",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "Post office name.",
+                  "type": "string"
+                },
+                "pincode": {
+                  "description": "6-digit PIN code.",
+                  "type": "string"
+                },
+                "state": {
+                  "description": "State.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns every matching branch in one response; no pagination.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this operation with a PIN code; use pincode instead. Parcel tracking is not mapped.",
+      "when_to_use": "Use this operation to look up an Indian post office's PIN code, district, and state from its name."
+    }
+  },
+  "cookie_domain": ".www.indiapost.gov.in",
+  "coverage": {
+    "constraints": [
+      "Site permissions, rate limits, and anti-automation rules still apply"
+    ],
+    "human_boundaries": [
+      "India Post's parcel tracking and complaint portals require session tokens and CAPTCHAs; only the public PIN-code directory is mapped."
+    ],
+    "not_mapped": [],
+    "protocol_fallback": null,
+    "typed_fast_paths": [
+      "pincode",
+      "post_office"
+    ],
+    "website_parity": "Mapping mode can inspect the remaining website while direct request recipes are compiled. Browser commands are never counted as runtime parity."
+  },
+  "description": "India Post: PIN code lookup and post office search across India.",
+  "entrypoint": "adapter.py",
+  "evidence_capsules": {},
+  "flow_capsules": {
+    "pincode": {
+      "contract": "pincode",
+      "path": "flows/pincode.json"
+    },
+    "post_office": {
+      "contract": "post_office",
+      "path": "flows/post_office.json"
+    }
+  },
+  "name": "indiapost",
+  "operation_contracts": {
+    "pincode": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "branch_type": {
+              "path": "$.BranchType"
+            },
+            "country": {
+              "path": "$.Country"
+            },
+            "delivery_status": {
+              "default": "",
+              "path": "$.DeliveryStatus"
+            },
+            "district": {
+              "path": "$.District"
+            },
+            "division": {
+              "default": "",
+              "path": "$.Division"
+            },
+            "name": {
+              "path": "$.Name"
+            },
+            "pincode": {
+              "path": "$.Pincode"
+            },
+            "state": {
+              "path": "$.State"
+            }
+          },
+          "source": "$.0.PostOffice"
+        },
+        "recipe_hash": "0419c7feaa1a1e14c98a51c32781c311da6a5f6649ccab67261b369a5a748eb5",
+        "response_errors": [
+          {
+            "code": "not_found",
+            "equals": "Error",
+            "path": "$.0.Status"
+          }
+        ],
+        "type": "generated_recipe",
+        "variables": {
+          "pincode": "pincode"
+        }
+      },
+      "capabilities": [
+        "public_pincode"
+      ],
+      "category": "search",
+      "contract_hash": "c7d38b3ea3d450cfb21642036d16972ff1f6ae8e4d2a402ffc9e8c1b4ed9038f",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "pincode": "110001"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "pincode": {
+            "description": "6-digit Indian postal PIN code.",
+            "maxLength": 6,
+            "minLength": 6,
+            "type": "string"
+          }
+        },
+        "required": [
+          "pincode"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "pincode",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Post offices matching the lookup.",
+            "items": {
+              "properties": {
+                "branch_type": {
+                  "description": "Branch type (Head/Sub/Branch Post Office).",
+                  "type": "string"
+                },
+                "country": {
+                  "description": "Country.",
+                  "type": "string"
+                },
+                "delivery_status": {
+                  "description": "Whether the office delivers mail.",
+                  "type": "string"
+                },
+                "district": {
+                  "description": "District.",
+                  "type": "string"
+                },
+                "division": {
+                  "description": "Postal division.",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "Post office name.",
+                  "type": "string"
+                },
+                "pincode": {
+                  "description": "6-digit PIN code.",
+                  "type": "string"
+                },
+                "state": {
+                  "description": "State.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns every post office under the PIN code in one response; no pagination.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784929555.8250299,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "List all post offices serving a 6-digit Indian PIN code.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns post offices",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "c7d38b3ea3d450cfb21642036d16972ff1f6ae8e4d2a402ffc9e8c1b4ed9038f",
+            "input_names": [
+              "pincode"
+            ],
+            "passed": true,
+            "recipe_hash": "0419c7feaa1a1e14c98a51c32781c311da6a5f6649ccab67261b369a5a748eb5",
+            "verified_at_unix": 1784929555.3821356
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns post offices",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this operation to search by office name; use post_office instead. Parcel tracking is not mapped.",
+      "when_to_use": "Use this operation to resolve an Indian PIN code to its post offices, district, and state."
+    },
+    "post_office": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "branch_type": {
+              "path": "$.BranchType"
+            },
+            "country": {
+              "path": "$.Country"
+            },
+            "delivery_status": {
+              "default": "",
+              "path": "$.DeliveryStatus"
+            },
+            "district": {
+              "path": "$.District"
+            },
+            "division": {
+              "default": "",
+              "path": "$.Division"
+            },
+            "name": {
+              "path": "$.Name"
+            },
+            "pincode": {
+              "path": "$.Pincode"
+            },
+            "state": {
+              "path": "$.State"
+            }
+          },
+          "source": "$.0.PostOffice"
+        },
+        "recipe_hash": "b62925ee57325b5f885aff734826eff34a5841eb8b9c150f59b757996792bdea",
+        "response_errors": [
+          {
+            "code": "not_found",
+            "equals": "Error",
+            "path": "$.0.Status"
+          }
+        ],
+        "type": "generated_recipe",
+        "variables": {
+          "office": "office"
+        }
+      },
+      "capabilities": [
+        "public_post_office"
+      ],
+      "category": "search",
+      "contract_hash": "329d38a4a354b319e18d5e0d1a2aa6ffa89a2fe85cef9f7a1f91df73e19fbed5",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "office": "Saket"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "office": {
+            "description": "Post office branch name, e.g. Saket.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "office"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "post_office",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Post offices matching the lookup.",
+            "items": {
+              "properties": {
+                "branch_type": {
+                  "description": "Branch type (Head/Sub/Branch Post Office).",
+                  "type": "string"
+                },
+                "country": {
+                  "description": "Country.",
+                  "type": "string"
+                },
+                "delivery_status": {
+                  "description": "Whether the office delivers mail.",
+                  "type": "string"
+                },
+                "district": {
+                  "description": "District.",
+                  "type": "string"
+                },
+                "division": {
+                  "description": "Postal division.",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "Post office name.",
+                  "type": "string"
+                },
+                "pincode": {
+                  "description": "6-digit PIN code.",
+                  "type": "string"
+                },
+                "state": {
+                  "description": "State.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns every matching branch in one response; no pagination.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784929555.829375,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Find Indian post offices by branch name.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns post offices",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "329d38a4a354b319e18d5e0d1a2aa6ffa89a2fe85cef9f7a1f91df73e19fbed5",
+            "input_names": [
+              "office"
+            ],
+            "passed": true,
+            "recipe_hash": "b62925ee57325b5f885aff734826eff34a5841eb8b9c150f59b757996792bdea",
+            "verified_at_unix": 1784929555.8153777
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns post offices",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this operation with a PIN code; use pincode instead. Parcel tracking is not mapped.",
+      "when_to_use": "Use this operation to look up an Indian post office's PIN code, district, and state from its name."
+    }
+  },
+  "runtime": {
+    "auth_interaction": "not_yet_mapped",
+    "browserless_replay": true
+  },
+  "url_routes": [],
+  "version": "0.1.2"
+}

@@ -1,0 +1,110 @@
+{
+  "browserless_parity": true,
+  "capabilities": {
+    "historical_search": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "NSE's dated historical announcement search is not mapped; this covers the live feed.",
+      "roles": [
+        "public"
+      ],
+      "state": "blocked",
+      "surface": "public_api"
+    },
+    "indices": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_announcements": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_corporate_actions": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_shareholding": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    }
+  },
+  "catalog_complete": true,
+  "excluded_operations": {},
+  "exhaustive": true,
+  "generated_at_unix": 1784930597.0281074,
+  "matrix": {
+    "locales": [
+      "en-US"
+    ],
+    "roles": [
+      "public"
+    ],
+    "surfaces": [
+      "public_api"
+    ]
+  },
+  "matrix_verified": true,
+  "operations": {
+    "announcements": {
+      "capabilities": [
+        "public_announcements"
+      ],
+      "contract_hash": "6e922c2fb9d3ffb4b5f28fb4bd78125dace126c68fa7907f4a37b5b54e40a648",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "corporate_actions": {
+      "capabilities": [
+        "public_corporate_actions"
+      ],
+      "contract_hash": "9cc3f68997247f3d0efebad44340522ab7e3838b72848d47715c7aba81989287",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "indices": {
+      "capabilities": [
+        "indices"
+      ],
+      "contract_hash": "d526d35bd529fbeefbaa4237e5c1115dcd033924719a310ed65ce793fc67533b",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "shareholding": {
+      "capabilities": [
+        "public_shareholding"
+      ],
+      "contract_hash": "e0de16de928414ca3416c4aee16bc9bf05bfbd1b80d8051002d1522035b84950",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    }
+  },
+  "project_hash": "ec3027b8ea42d8a9a59acc064129f3feb4b8cbf11df55d8bd54f4824b363e2d5",
+  "publication_mode": "reviewed",
+  "schema_version": 1,
+  "tool_quality_verified": true,
+  "uncovered_verified_capabilities": []
+}

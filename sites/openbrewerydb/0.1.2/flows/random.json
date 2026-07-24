@@ -1,0 +1,74 @@
+{
+  "captured_at_unix": 1784925867.663439,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://api.openbrewerydb.org",
+      "before": "https://api.openbrewerydb.org"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "random",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "random",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "random",
+        "path": "https://api.openbrewerydb.org/v1/breweries/random"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "openbrewerydb",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns matching records",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "001c53649d1a8f6e2db78fd018e638262f4e9a32274be570f0f1d2f6e04ea1ad",
+    "evidence_version": 2,
+    "recipe_hash": "7519d3ed0dde2c56ef1cd193ec78ac65741be0c20f01716423b053f971f4fb28",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784925868.1171925
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "captured_at_unix": 1784925634.9083962,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://www.worldbank.org",
+      "before": "https://www.worldbank.org"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "countries",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "countries",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "per_page"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "countries",
+        "path": "https://api.worldbank.org/v2/country",
+        "query": {
+          "format": "json",
+          "per_page": "{per_page}"
+        }
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "worldbank",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns matching records",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "3e8ee63baf533b18846c868f7411d3d736d0de862440eda6cdfa9037b9894b13",
+    "evidence_version": 2,
+    "recipe_hash": "35c74bf19156976de351a15055679a9861ae241b37fc28914a1ae68537261ca4",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784925635.161655
+  }
+}

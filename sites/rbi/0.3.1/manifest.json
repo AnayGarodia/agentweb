@@ -1,0 +1,868 @@
+{
+  "aliases": [
+    "rbi"
+  ],
+  "allowed_domains": [
+    "org.in",
+    "rbi.org.in",
+    "www.rbi.org.in"
+  ],
+  "auth": {
+    "interaction": "not_required",
+    "strategy": "none"
+  },
+  "authoring": {
+    "browserless_parity": true,
+    "catalog_complete": true,
+    "exhaustive": true,
+    "matrix_verified": true,
+    "tool_quality_verified": true
+  },
+  "base_url": "https://www.rbi.org.in",
+  "canonical_domain": "org.in",
+  "commands": {
+    "press_releases": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "monitoring",
+      "description": "List today's RBI press releases from the press-release page with document links.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Current RBI press releases as listed.",
+            "items": {
+              "properties": {
+                "title": {
+                  "description": "Press release title.",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "Press release page URL.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "RBI lists the current day's releases; the dated archive is not mapped.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this for older releases; RBI's dated archive is not mapped.",
+      "when_to_use": "Use this when an agent needs RBI's current press-release listing with direct page links."
+    },
+    "press_releases_by_year": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "monitoring",
+      "description": "List RBI press releases for a given calendar year from the archive.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "yr": 2025
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque next_cursor from a previous call to continue the year listing.",
+            "maxLength": 64,
+            "type": "string"
+          },
+          "limit": {
+            "default": 100,
+            "description": "Maximum releases to return in one call (busy years hold up to 1,000 retrievable entries).",
+            "maximum": 500,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "yr": {
+            "default": 2025,
+            "description": "Calendar year of the archive page.",
+            "maximum": 2100,
+            "minimum": 1990,
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Press releases RBI published in the requested year, newest first.",
+            "items": {
+              "properties": {
+                "title": {
+                  "description": "Press release title as shown in RBI's archive.",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "Direct link to the press release page on rbi.org.in.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Local cursor pagination over the year listing; pass limit and the returned next_cursor. Busy years are capped at the 1,000 newest entries.",
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this for today's releases; use press_releases_feed.",
+      "when_to_use": "Use this for past RBI press releases from a specific year."
+    },
+    "press_releases_feed": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "monitoring",
+      "description": "List the Reserve Bank of India's newest press releases from its official RSS feed.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Newest RBI press releases, newest first.",
+            "items": {
+              "properties": {
+                "id": {
+                  "description": "Feed entry id when provided."
+                },
+                "links": {
+                  "description": "Links to the press release, each with a url."
+                },
+                "published": {
+                  "description": "Publication timestamp as given by the feed."
+                },
+                "summary": {
+                  "description": "Short description when provided."
+                },
+                "title": {
+                  "description": "Press release title."
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The RSS feed carries only RBI's newest press releases.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this to search RBI's historical archive; the feed carries only the newest items.",
+      "when_to_use": "Use this when an agent needs the latest RBI announcements with timestamps and summaries."
+    }
+  },
+  "cookie_domain": ".www.rbi.org.in",
+  "coverage": {
+    "constraints": [
+      "Site permissions, rate limits, and anti-automation rules still apply"
+    ],
+    "human_boundaries": [
+      "RBI's dated archive pages and search forms are not mapped; this covers the newest listings and feed."
+    ],
+    "not_mapped": [],
+    "protocol_fallback": null,
+    "typed_fast_paths": [
+      "press_releases",
+      "press_releases_by_year",
+      "press_releases_feed"
+    ],
+    "website_parity": "Mapping mode can inspect the remaining website while direct request recipes are compiled. Browser commands are never counted as runtime parity."
+  },
+  "description": "RBI (Reserve Bank of India): press releases by year with archive pagination and RSS updates.",
+  "entrypoint": "adapter.py",
+  "evidence_capsules": {},
+  "flow_capsules": {
+    "press_releases": {
+      "contract": "press_releases",
+      "path": "flows/press_releases.json"
+    },
+    "press_releases_by_year": {
+      "contract": "press_releases_by_year",
+      "path": "flows/press_releases_by_year.json"
+    },
+    "press_releases_feed": {
+      "contract": "press_releases_feed",
+      "path": "flows/press_releases_feed.json"
+    }
+  },
+  "name": "rbi",
+  "operation_contracts": {
+    "press_releases": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "title": {
+              "path": "$.text"
+            },
+            "url": {
+              "path": "$.url"
+            }
+          },
+          "source": "$"
+        },
+        "recipe_hash": "aad40356f255d31a1307d960fa0bdc46629b61ec3b141844af3c244aab641f37",
+        "type": "generated_recipe",
+        "variables": {}
+      },
+      "capabilities": [
+        "public_press_releases"
+      ],
+      "category": "monitoring",
+      "contract_hash": "82c5e71cdd7263ac5b8fa33006f30a586774e3d4c34775820f26dd0eddef9c4f",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "press_releases",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Current RBI press releases as listed.",
+            "items": {
+              "properties": {
+                "title": {
+                  "description": "Press release title.",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "Press release page URL.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "RBI lists the current day's releases; the dated archive is not mapped.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784930063.8588345,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "List today's RBI press releases from the press-release page with document links.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns listed links",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "82c5e71cdd7263ac5b8fa33006f30a586774e3d4c34775820f26dd0eddef9c4f",
+            "input_names": [],
+            "passed": true,
+            "recipe_hash": "aad40356f255d31a1307d960fa0bdc46629b61ec3b141844af3c244aab641f37",
+            "verified_at_unix": 1784930057.6596324
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns listed links",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for older releases; RBI's dated archive is not mapped.",
+      "when_to_use": "Use this when an agent needs RBI's current press-release listing with direct page links."
+    },
+    "press_releases_by_year": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "title": {
+              "path": "$.text"
+            },
+            "url": {
+              "path": "$.url"
+            }
+          },
+          "pagination": {
+            "cursor_input": "cursor",
+            "default_limit": 100,
+            "limit_input": "limit",
+            "max_limit": 500
+          },
+          "source": "$"
+        },
+        "recipe_hash": "615da6c41efba4c9c1b8b205f86b425c52543019c76dbc804b2388d9d8a7e4ca",
+        "type": "generated_recipe",
+        "variables": {
+          "yr": {
+            "default": 2025,
+            "source": "yr"
+          }
+        }
+      },
+      "capabilities": [
+        "public_press_releases_by_year"
+      ],
+      "category": "monitoring",
+      "contract_hash": "6c1d3ca56dea25c6a5936cfa5726d63a4f6ff1e28aa35caf34fed6d69f7f285b",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "yr": 2025
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque next_cursor from a previous call to continue the year listing.",
+            "maxLength": 64,
+            "type": "string"
+          },
+          "limit": {
+            "default": 100,
+            "description": "Maximum releases to return in one call (busy years hold up to 1,000 retrievable entries).",
+            "maximum": 500,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "yr": {
+            "default": 2025,
+            "description": "Calendar year of the archive page.",
+            "maximum": 2100,
+            "minimum": 1990,
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "press_releases_by_year",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Press releases RBI published in the requested year, newest first.",
+            "items": {
+              "properties": {
+                "title": {
+                  "description": "Press release title as shown in RBI's archive.",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "Direct link to the press release page on rbi.org.in.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Local cursor pagination over the year listing; pass limit and the returned next_cursor. Busy years are capped at the 1,000 newest entries.",
+        "supported": true
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784930063.865363,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "List RBI press releases for a given calendar year from the archive.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns archive links",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "6c1d3ca56dea25c6a5936cfa5726d63a4f6ff1e28aa35caf34fed6d69f7f285b",
+            "input_names": [
+              "limit",
+              "yr"
+            ],
+            "passed": true,
+            "recipe_hash": "615da6c41efba4c9c1b8b205f86b425c52543019c76dbc804b2388d9d8a7e4ca",
+            "verified_at_unix": 1784930062.849276
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns archive links",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for today's releases; use press_releases_feed.",
+      "when_to_use": "Use this for past RBI press releases from a specific year."
+    },
+    "press_releases_feed": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "id": {
+              "default": null,
+              "path": "$.id"
+            },
+            "links": {
+              "default": [],
+              "path": "$.links"
+            },
+            "published": {
+              "default": null,
+              "path": "$.published"
+            },
+            "summary": {
+              "default": null,
+              "path": "$.summary"
+            },
+            "title": {
+              "default": null,
+              "path": "$.title"
+            }
+          },
+          "source": "$.entries"
+        },
+        "recipe_hash": "b504c10dcbad221f561ff6e6fb313b0b6bc241a2c09cf3b7fb0ef9d4452dd324",
+        "type": "generated_recipe",
+        "variables": {}
+      },
+      "capabilities": [
+        "public_press_releases_feed"
+      ],
+      "category": "monitoring",
+      "contract_hash": "810cec34904809459b78a91331e3d9437e2f4a52005ea644836d0daf753f66e0",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "press_releases_feed",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Newest RBI press releases, newest first.",
+            "items": {
+              "properties": {
+                "id": {
+                  "description": "Feed entry id when provided."
+                },
+                "links": {
+                  "description": "Links to the press release, each with a url."
+                },
+                "published": {
+                  "description": "Publication timestamp as given by the feed."
+                },
+                "summary": {
+                  "description": "Short description when provided."
+                },
+                "title": {
+                  "description": "Press release title."
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The RSS feed carries only RBI's newest press releases.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784930063.8725128,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "List the Reserve Bank of India's newest press releases from its official RSS feed.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns feed entries",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "810cec34904809459b78a91331e3d9437e2f4a52005ea644836d0daf753f66e0",
+            "input_names": [],
+            "passed": true,
+            "recipe_hash": "b504c10dcbad221f561ff6e6fb313b0b6bc241a2c09cf3b7fb0ef9d4452dd324",
+            "verified_at_unix": 1784930063.8504715
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns feed entries",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this to search RBI's historical archive; the feed carries only the newest items.",
+      "when_to_use": "Use this when an agent needs the latest RBI announcements with timestamps and summaries."
+    }
+  },
+  "runtime": {
+    "auth_interaction": "not_yet_mapped",
+    "browserless_replay": true
+  },
+  "url_routes": [],
+  "version": "0.3.1"
+}

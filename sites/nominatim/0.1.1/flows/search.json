@@ -1,0 +1,85 @@
+{
+  "captured_at_unix": 1784920872.522776,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://nominatim.openstreetmap.org",
+      "before": "https://nominatim.openstreetmap.org"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "search",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "search",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "limit",
+      "q"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "headers": {
+          "User-Agent": "AgentWeb research (ag5250@columbia.edu)"
+        },
+        "method": "GET",
+        "name": "search",
+        "path": "https://nominatim.openstreetmap.org/search",
+        "query": {
+          "format": "jsonv2",
+          "limit": "{limit}",
+          "q": "{q}"
+        }
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "nominatim",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns matching records",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "539754f86a2c29b69aca3bdadea64eb29f58cce105e4940d37d47dd5c5a453d6",
+    "evidence_version": 2,
+    "recipe_hash": "4c20e46c4f4c330f4a622cf095da6c243c029d2d70d640372643bc232defc8a8",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784920873.2786803
+  }
+}

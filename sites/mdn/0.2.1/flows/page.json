@@ -1,0 +1,82 @@
+{
+  "captured_at_unix": 1784934319.7425947,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://developer.mozilla.org",
+      "before": "https://developer.mozilla.org"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "page",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "page",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "locale",
+      "slug"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "page",
+        "path": "https://developer.mozilla.org/{locale}/docs/{slug}/index.json"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "mdn",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns page sections",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "returns the page title",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "fb19b46b759a8110f1137b46bad64c317686ac168f84c203db3591fc5fbdffc9",
+    "evidence_version": 2,
+    "recipe_hash": "f2f6f498fef6ecde29259c136aed91e6cb492d0433a1e538b29cc9b2170d5acd",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784934320.21177
+  }
+}

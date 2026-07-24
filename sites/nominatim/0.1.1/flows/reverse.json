@@ -1,0 +1,85 @@
+{
+  "captured_at_unix": 1784920872.5273166,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://nominatim.openstreetmap.org",
+      "before": "https://nominatim.openstreetmap.org"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "reverse",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "reverse",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "lat",
+      "lon"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "headers": {
+          "User-Agent": "AgentWeb research (ag5250@columbia.edu)"
+        },
+        "method": "GET",
+        "name": "reverse",
+        "path": "https://nominatim.openstreetmap.org/reverse",
+        "query": {
+          "format": "jsonv2",
+          "lat": "{lat}",
+          "lon": "{lon}"
+        }
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "nominatim",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns place_id",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "d04d0c74777d5eb36e6f1e2532c49db3be9da0047a75bb326e2fdf884895a5ef",
+    "evidence_version": 2,
+    "recipe_hash": "527dde71286c584f0a2b48c4f3f6f032ff49d0782a53daf91aec0af4f6ebf5b8",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784920872.7490926
+  }
+}

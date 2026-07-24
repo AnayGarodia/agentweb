@@ -1,0 +1,886 @@
+{
+  "aliases": [
+    "nominatim"
+  ],
+  "allowed_domains": [
+    "nominatim.openstreetmap.org",
+    "openstreetmap.org"
+  ],
+  "auth": {
+    "interaction": "not_required",
+    "strategy": "none"
+  },
+  "authoring": {
+    "browserless_parity": true,
+    "catalog_complete": true,
+    "exhaustive": true,
+    "matrix_verified": true,
+    "tool_quality_verified": true
+  },
+  "base_url": "https://nominatim.openstreetmap.org",
+  "canonical_domain": "openstreetmap.org",
+  "commands": {
+    "reverse": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "search",
+      "description": "Reverse-geocode coordinates to the nearest OpenStreetMap address (Nominatim).",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "lat": "48.8583",
+            "lon": "2.2944"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "lat": {
+            "description": "Latitude in decimal degrees.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          },
+          "lon": {
+            "description": "Longitude in decimal degrees.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "addresstype": {
+            "description": "Address level of the match.",
+            "type": "string"
+          },
+          "category": {
+            "description": "OSM tag category.",
+            "type": "string"
+          },
+          "city": {
+            "description": "City or town.",
+            "type": "string"
+          },
+          "country": {
+            "description": "Country name.",
+            "type": "string"
+          },
+          "country_code": {
+            "description": "ISO country code.",
+            "type": "string"
+          },
+          "display_name": {
+            "description": "Full human-readable address string.",
+            "type": "string"
+          },
+          "lat": {
+            "description": "Latitude of the matched place.",
+            "type": "string"
+          },
+          "lon": {
+            "description": "Longitude of the matched place.",
+            "type": "string"
+          },
+          "name": {
+            "description": "Local name of the place.",
+            "type": "string"
+          },
+          "osm_id": {
+            "description": "OSM element id.",
+            "type": "integer"
+          },
+          "osm_type": {
+            "description": "OSM element type.",
+            "type": "string"
+          },
+          "place_id": {
+            "description": "Nominatim internal place id.",
+            "type": "integer"
+          },
+          "postcode": {
+            "description": "Postal code.",
+            "type": "string"
+          },
+          "road": {
+            "description": "Street name.",
+            "type": "string"
+          },
+          "state": {
+            "description": "State or region.",
+            "type": "string"
+          },
+          "suburb": {
+            "description": "Suburb or neighbourhood.",
+            "type": "string"
+          },
+          "type": {
+            "description": "OSM tag value.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "place_id"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns the single nearest address; no pagination.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this operation for free-text place search (use search) or for bulk lookups, which Nominatim's usage policy forbids.",
+      "when_to_use": "Use this operation to find the address and place details at a latitude/longitude."
+    },
+    "search": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "search",
+      "description": "Search OpenStreetMap for places and addresses by free-text query (Nominatim).",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 5,
+            "q": "Taj Mahal"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "default": 5,
+            "description": "Maximum number of matches to return.",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "q": {
+            "description": "Free-text place or address query.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Places matching the query, ranked by importance.",
+            "items": {
+              "properties": {
+                "addresstype": {
+                  "description": "Address level of the match.",
+                  "type": "string"
+                },
+                "category": {
+                  "description": "OSM tag category.",
+                  "type": "string"
+                },
+                "display_name": {
+                  "description": "Full human-readable address string.",
+                  "type": "string"
+                },
+                "importance": {
+                  "description": "Relative ranking score for the match.",
+                  "type": "number"
+                },
+                "lat": {
+                  "description": "Latitude as a decimal string.",
+                  "type": "string"
+                },
+                "lon": {
+                  "description": "Longitude as a decimal string.",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "Local name of the place.",
+                  "type": "string"
+                },
+                "osm_id": {
+                  "description": "OSM element id.",
+                  "type": "integer"
+                },
+                "osm_type": {
+                  "description": "OSM element type (node/way/relation).",
+                  "type": "string"
+                },
+                "place_id": {
+                  "description": "Nominatim internal place id.",
+                  "type": "integer"
+                },
+                "type": {
+                  "description": "OSM tag value.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns up to limit matches in one response; no pagination.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this operation for coordinates-to-address lookups (use reverse) or for bulk geocoding, which Nominatim's usage policy forbids.",
+      "when_to_use": "Use this operation to find coordinates and OSM details for a named place, landmark, or address."
+    }
+  },
+  "cookie_domain": ".nominatim.openstreetmap.org",
+  "coverage": {
+    "constraints": [
+      "Site permissions, rate limits, and anti-automation rules still apply"
+    ],
+    "human_boundaries": [
+      "Nominatim's usage policy caps clients at one request per second and forbids bulk geocoding; heavy or systematic scraping is out of scope."
+    ],
+    "not_mapped": [],
+    "protocol_fallback": null,
+    "typed_fast_paths": [
+      "reverse",
+      "search"
+    ],
+    "website_parity": "Mapping mode can inspect the remaining website while direct request recipes are compiled. Browser commands are never counted as runtime parity."
+  },
+  "description": "OpenStreetMap Nominatim geocoding: address search to coordinates and reverse geocoding.",
+  "entrypoint": "adapter.py",
+  "evidence_capsules": {},
+  "flow_capsules": {
+    "reverse": {
+      "contract": "reverse",
+      "path": "flows/reverse.json"
+    },
+    "search": {
+      "contract": "search",
+      "path": "flows/search.json"
+    }
+  },
+  "name": "nominatim",
+  "operation_contracts": {
+    "reverse": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "fields": {
+            "addresstype": {
+              "default": "",
+              "path": "$.addresstype"
+            },
+            "category": {
+              "path": "$.category"
+            },
+            "city": {
+              "default": "",
+              "path": "$.address.city"
+            },
+            "country": {
+              "default": "",
+              "path": "$.address.country"
+            },
+            "country_code": {
+              "default": "",
+              "path": "$.address.country_code"
+            },
+            "display_name": {
+              "path": "$.display_name"
+            },
+            "lat": {
+              "path": "$.lat"
+            },
+            "lon": {
+              "path": "$.lon"
+            },
+            "name": {
+              "default": "",
+              "path": "$.name"
+            },
+            "osm_id": {
+              "path": "$.osm_id"
+            },
+            "osm_type": {
+              "path": "$.osm_type"
+            },
+            "place_id": {
+              "path": "$.place_id"
+            },
+            "postcode": {
+              "default": "",
+              "path": "$.address.postcode"
+            },
+            "road": {
+              "default": "",
+              "path": "$.address.road"
+            },
+            "state": {
+              "default": "",
+              "path": "$.address.state"
+            },
+            "suburb": {
+              "default": "",
+              "path": "$.address.suburb"
+            },
+            "type": {
+              "path": "$.type"
+            }
+          },
+          "source": "$"
+        },
+        "recipe_hash": "527dde71286c584f0a2b48c4f3f6f032ff49d0782a53daf91aec0af4f6ebf5b8",
+        "type": "generated_recipe",
+        "variables": {
+          "lat": "lat",
+          "lon": "lon"
+        }
+      },
+      "capabilities": [
+        "public_reverse"
+      ],
+      "category": "search",
+      "contract_hash": "d04d0c74777d5eb36e6f1e2532c49db3be9da0047a75bb326e2fdf884895a5ef",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "lat": "48.8583",
+            "lon": "2.2944"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "lat": {
+            "description": "Latitude in decimal degrees.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          },
+          "lon": {
+            "description": "Longitude in decimal degrees.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "reverse",
+      "output_schema": {
+        "properties": {
+          "addresstype": {
+            "description": "Address level of the match.",
+            "type": "string"
+          },
+          "category": {
+            "description": "OSM tag category.",
+            "type": "string"
+          },
+          "city": {
+            "description": "City or town.",
+            "type": "string"
+          },
+          "country": {
+            "description": "Country name.",
+            "type": "string"
+          },
+          "country_code": {
+            "description": "ISO country code.",
+            "type": "string"
+          },
+          "display_name": {
+            "description": "Full human-readable address string.",
+            "type": "string"
+          },
+          "lat": {
+            "description": "Latitude of the matched place.",
+            "type": "string"
+          },
+          "lon": {
+            "description": "Longitude of the matched place.",
+            "type": "string"
+          },
+          "name": {
+            "description": "Local name of the place.",
+            "type": "string"
+          },
+          "osm_id": {
+            "description": "OSM element id.",
+            "type": "integer"
+          },
+          "osm_type": {
+            "description": "OSM element type.",
+            "type": "string"
+          },
+          "place_id": {
+            "description": "Nominatim internal place id.",
+            "type": "integer"
+          },
+          "postcode": {
+            "description": "Postal code.",
+            "type": "string"
+          },
+          "road": {
+            "description": "Street name.",
+            "type": "string"
+          },
+          "state": {
+            "description": "State or region.",
+            "type": "string"
+          },
+          "suburb": {
+            "description": "Suburb or neighbourhood.",
+            "type": "string"
+          },
+          "type": {
+            "description": "OSM tag value.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "place_id"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns the single nearest address; no pagination.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784920873.2856376,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Reverse-geocode coordinates to the nearest OpenStreetMap address (Nominatim).",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns place_id",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "d04d0c74777d5eb36e6f1e2532c49db3be9da0047a75bb326e2fdf884895a5ef",
+            "input_names": [
+              "lat",
+              "lon"
+            ],
+            "passed": true,
+            "recipe_hash": "527dde71286c584f0a2b48c4f3f6f032ff49d0782a53daf91aec0af4f6ebf5b8",
+            "verified_at_unix": 1784920872.7490926
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns place_id",
+            "path": "$.data.place_id",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this operation for free-text place search (use search) or for bulk lookups, which Nominatim's usage policy forbids.",
+      "when_to_use": "Use this operation to find the address and place details at a latitude/longitude."
+    },
+    "search": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "addresstype": {
+              "default": "",
+              "path": "$.addresstype"
+            },
+            "category": {
+              "path": "$.category"
+            },
+            "display_name": {
+              "path": "$.display_name"
+            },
+            "importance": {
+              "default": "",
+              "path": "$.importance"
+            },
+            "lat": {
+              "path": "$.lat"
+            },
+            "lon": {
+              "path": "$.lon"
+            },
+            "name": {
+              "default": "",
+              "path": "$.name"
+            },
+            "osm_id": {
+              "path": "$.osm_id"
+            },
+            "osm_type": {
+              "path": "$.osm_type"
+            },
+            "place_id": {
+              "path": "$.place_id"
+            },
+            "type": {
+              "path": "$.type"
+            }
+          },
+          "source": "$"
+        },
+        "recipe_hash": "4c20e46c4f4c330f4a622cf095da6c243c029d2d70d640372643bc232defc8a8",
+        "type": "generated_recipe",
+        "variables": {
+          "limit": {
+            "default": 5,
+            "source": "limit"
+          },
+          "q": "q"
+        }
+      },
+      "capabilities": [
+        "public_search"
+      ],
+      "category": "search",
+      "contract_hash": "539754f86a2c29b69aca3bdadea64eb29f58cce105e4940d37d47dd5c5a453d6",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 5,
+            "q": "Taj Mahal"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "default": 5,
+            "description": "Maximum number of matches to return.",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "q": {
+            "description": "Free-text place or address query.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "search",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Places matching the query, ranked by importance.",
+            "items": {
+              "properties": {
+                "addresstype": {
+                  "description": "Address level of the match.",
+                  "type": "string"
+                },
+                "category": {
+                  "description": "OSM tag category.",
+                  "type": "string"
+                },
+                "display_name": {
+                  "description": "Full human-readable address string.",
+                  "type": "string"
+                },
+                "importance": {
+                  "description": "Relative ranking score for the match.",
+                  "type": "number"
+                },
+                "lat": {
+                  "description": "Latitude as a decimal string.",
+                  "type": "string"
+                },
+                "lon": {
+                  "description": "Longitude as a decimal string.",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "Local name of the place.",
+                  "type": "string"
+                },
+                "osm_id": {
+                  "description": "OSM element id.",
+                  "type": "integer"
+                },
+                "osm_type": {
+                  "description": "OSM element type (node/way/relation).",
+                  "type": "string"
+                },
+                "place_id": {
+                  "description": "Nominatim internal place id.",
+                  "type": "integer"
+                },
+                "type": {
+                  "description": "OSM tag value.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns up to limit matches in one response; no pagination.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784920873.2926927,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Search OpenStreetMap for places and addresses by free-text query (Nominatim).",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns matching records",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "539754f86a2c29b69aca3bdadea64eb29f58cce105e4940d37d47dd5c5a453d6",
+            "input_names": [
+              "limit",
+              "q"
+            ],
+            "passed": true,
+            "recipe_hash": "4c20e46c4f4c330f4a622cf095da6c243c029d2d70d640372643bc232defc8a8",
+            "verified_at_unix": 1784920873.2786803
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns matching records",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this operation for coordinates-to-address lookups (use reverse) or for bulk geocoding, which Nominatim's usage policy forbids.",
+      "when_to_use": "Use this operation to find coordinates and OSM details for a named place, landmark, or address."
+    }
+  },
+  "runtime": {
+    "auth_interaction": "not_yet_mapped",
+    "browserless_replay": true
+  },
+  "url_routes": [],
+  "version": "0.1.1"
+}
