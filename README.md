@@ -232,6 +232,32 @@ reported as `browser_capture_verified` to keep it distinct from browserless
 `capture_verified`. This path is explicit-only (ordinary typed operations never
 launch a browser), requires a prior `agentweb connect SITE`, and is **read-only**.
 
+#### Continuous oracle drift (`verify-oracles`)
+
+One capture is a receipt; a *directory* of captures replayed on a schedule is a
+standing guarantee. `verify-oracles` discovers every `*.oracle.json` under a
+directory and replays each, so a site that quietly changes its response shape is
+caught automatically instead of at the next manual check:
+
+```bash
+agentweb verify-oracles --dir oracles --strict   # exits non-zero on any drift
+```
+
+- **Keyless, browserless, non-mutating** oracles are replayed against the live
+  site and reported `capture_verified` or `drift`.
+- **Mutating** oracles (which record a read-back) and **browser-assisted**
+  oracles are account-tied, so they are `skipped` by default; pass
+  `--via-browser` to also replay the browser ones inside their authenticated
+  Chrome.
+- A transient network/site error is reported as `inconclusive` and does **not**
+  fail the run; only genuine drift or an unreadable oracle fails `--strict`.
+- `--offline` validates each oracle's structure without making any request.
+
+The committed [`oracles/`](oracles/) directory holds keyless public-read oracles
+(npm, arXiv, Wikipedia) that the scheduled **Oracle drift** workflow replays
+weekly. A passing oracle proves the captured response shape and assertions still
+match; it does not prove every mutation or site action works.
+
 ### Why Spotify uses the desktop app
 
 This is a Spotify-specific path built into its AgentWeb adapter. For simple

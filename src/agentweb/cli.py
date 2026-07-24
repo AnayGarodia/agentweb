@@ -25,7 +25,16 @@ from .connector import (
 from .dashboard import serve_dashboard
 from .logs import configure_logging, logger
 from .mcp import serve
-from .oracle import build_response_oracle, verify_response_oracle
+from .oracle import (
+    CAPTURE_VERIFIED,
+    INCONCLUSIVE,
+    SKIPPED,
+    build_response_oracle,
+    classify_oracle_replay,
+    discover_oracles,
+    oracle_age_days,
+    verify_response_oracle,
+)
 from .registry import (
     audit_registry,
     build_index,
@@ -527,6 +536,35 @@ def build_parser() -> argparse.ArgumentParser:
             "Implied automatically when the oracle was captured with --via-browser."
         ),
     )
+    verify_oracles = subparsers.add_parser(
+        "verify-oracles",
+        help="Replay every *.oracle.json in a directory and report drift (for CI)",
+    )
+    verify_oracles.add_argument(
+        "--dir",
+        type=Path,
+        default=Path("~/agentweb-oracles"),
+        help="Directory of *.oracle.json files to replay (searched recursively)",
+    )
+    verify_oracles.add_argument(
+        "--offline",
+        action="store_true",
+        help="Validate each oracle's structure only; make no requests",
+    )
+    verify_oracles.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit non-zero on any drift or unreadable oracle (for CI/schedules)",
+    )
+    verify_oracles.add_argument(
+        "--via-browser",
+        dest="via_browser",
+        action="store_true",
+        help=(
+            "Also replay browser-assisted oracles inside their authenticated "
+            "Chrome (skipped by default; needs a prior `agentweb connect SITE`)"
+        ),
+    )
     return parser
 
 
@@ -562,6 +600,7 @@ def main(argv: list[str] | None = None) -> int:
         "verify",
         "capture-oracle",
         "verify-capture",
+        "verify-oracles",
     }
     parser = build_parser()
     try:
@@ -925,6 +964,114 @@ def main(argv: list[str] | None = None) -> int:
                         ),
                     }
             if args.strict and not result.get("passed"):
+                emit(result, not args.compact)
+                return 1
+        elif args.command == "verify-oracles":
+            directory = args.dir.expanduser()
+            if not directory.is_dir():
+                raise AgentWebError(
+                    f"Oracle directory not found: {directory}",
+                    code="oracle_dir_missing",
+                )
+            records: list[dict[str, Any]] = []
+            for path in discover_oracles(directory):
+                name = path.relative_to(directory).as_posix()
+                try:
+                    oracle = json.loads(path.read_text())
+                except (OSError, json.JSONDecodeError) as exc:
+                    records.append(
+                        {
+                            "oracle": name,
+                            "passed": False,
+                            "status": "unreadable",
+                            "error": str(exc),
+                        }
+                    )
+                    continue
+                record = {
+                    "oracle": name,
+                    "site": oracle.get("site"),
+                    "operation": oracle.get("operation"),
+                    "age_days": oracle_age_days(oracle),
+                }
+                structural = verify_response_oracle(oracle)
+                if not structural["passed"] or args.offline:
+                    records.append({**record, **structural})
+                    continue
+                mode = classify_oracle_replay(oracle, via_browser=args.via_browser)
+                if mode == "mutating":
+                    records.append(
+                        {
+                            **record,
+                            "passed": True,
+                            "status": SKIPPED,
+                            "reason": "mutating oracle records a read-back; "
+                            "not auto-replayed",
+                        }
+                    )
+                    continue
+                if mode == "browser_required":
+                    records.append(
+                        {
+                            **record,
+                            "passed": True,
+                            "status": SKIPPED,
+                            "reason": "browser-assisted oracle needs "
+                            "--via-browser (authenticated Chrome)",
+                        }
+                    )
+                    continue
+                try:
+                    if mode == "browser":
+                        from .browser_readback import browser_execute
+
+                        envelope = browser_execute(
+                            runtime,
+                            oracle["site"],
+                            oracle["operation"],
+                            oracle.get("input") or {},
+                        )
+                    else:
+                        envelope = runtime.execute(
+                            oracle["site"],
+                            oracle["operation"],
+                            oracle.get("input") or {},
+                        )
+                except AgentWebError as exc:
+                    # A transient network/site error is advisory, not drift, so
+                    # it never fails a scheduled run on its own.
+                    records.append(
+                        {
+                            **record,
+                            "passed": True,
+                            "status": INCONCLUSIVE,
+                            "error": str(exc),
+                        }
+                    )
+                    continue
+                replay = verify_response_oracle(oracle, envelope)
+                if mode == "browser" and replay.get("passed"):
+                    replay = {**replay, "evidence": "browser_capture_verified"}
+                records.append({**record, **replay})
+            drift = [r for r in records if r.get("status") == "drift"]
+            unreadable = [r for r in records if r.get("status") == "unreadable"]
+            errored = [r for r in records if r.get("errors")]
+            result = {
+                "directory": str(directory),
+                "checked": len(records),
+                "verified": sum(
+                    1 for r in records if r.get("status") == CAPTURE_VERIFIED
+                ),
+                "skipped": sum(1 for r in records if r.get("status") == SKIPPED),
+                "inconclusive": sum(
+                    1 for r in records if r.get("status") == INCONCLUSIVE
+                ),
+                "drift": drift,
+                "checked_at_unix": int(time.time()),
+                "healthy": not drift and not unreadable and not errored,
+                "records": records,
+            }
+            if args.strict and not result["healthy"]:
                 emit(result, not args.compact)
                 return 1
         elif args.command == "mcp-config":

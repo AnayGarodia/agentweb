@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import re
 import time
+from pathlib import Path
 from typing import Any
 
 from .capture import payload_shape, redact_value
@@ -34,8 +35,43 @@ ORACLE_SCHEMA_VERSION = 1
 CAPTURE_VERIFIED = "capture_verified"
 DRIFT = "drift"
 STRUCTURAL_ONLY = "structural_only"
+# Aggregate statuses used by a whole-directory oracle run.
+SKIPPED = "skipped"
+INCONCLUSIVE = "inconclusive"
+ORACLE_SUFFIX = ".oracle.json"
 
 _INDEX_TOKEN = re.compile(r"([^\[\].]+)|\[(\d+)\]")
+
+
+def discover_oracles(directory: Path) -> list[Path]:
+    """Return sorted ``*.oracle.json`` files under ``directory`` (recursive)."""
+    return sorted(p for p in directory.rglob("*" + ORACLE_SUFFIX) if p.is_file())
+
+
+def oracle_age_days(oracle: dict[str, Any], *, now: int | None = None) -> int | None:
+    """Whole days since the oracle was captured, or ``None`` if unknown."""
+    captured = oracle.get("captured_at_unix")
+    if not isinstance(captured, (int, float)):
+        return None
+    now_unix = int(time.time()) if now is None else now
+    return max(0, int((now_unix - int(captured)) // 86400))
+
+
+def classify_oracle_replay(oracle: dict[str, Any], *, via_browser: bool) -> str:
+    """Decide how a stored oracle should be replayed in a directory run.
+
+    * ``mutating`` — records a read-back, never auto-replayed (would need a
+      signed-in session, so it is skipped in a keyless run).
+    * ``browser_required`` — captured browser-assisted but the run did not opt
+      into a browser, so it is skipped.
+    * ``browser`` — replay inside the authenticated Chrome via CDP.
+    * ``browserless`` — replay over ordinary HTTP.
+    """
+    if oracle.get("mutating"):
+        return "mutating"
+    if oracle.get("execution") == "browser_assisted":
+        return "browser" if via_browser else "browser_required"
+    return "browserless"
 
 
 def resolve_json_path(payload: Any, path: str) -> tuple[bool, Any]:

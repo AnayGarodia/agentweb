@@ -1,0 +1,40 @@
+name: Oracle drift
+
+# Committed response oracles (oracles/*.oracle.json) each pin the redacted shape
+# of one real successful read. This scheduled job replays every keyless oracle
+# against the live site and fails if the response shape or a named assertion has
+# drifted, turning those one-off captures into a standing regression guarantee.
+#
+# It only replays keyless, non-mutating, browserless oracles: mutating and
+# browser-assisted oracles are account-tied and skipped here. A transient
+# site/network error is reported as `inconclusive` and does not fail the run;
+# genuine drift does.
+
+on:
+  schedule:
+    - cron: "45 6 * * 1" # Mondays 06:45 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  oracle-drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install -e '.[dev]'
+      - name: Replay committed oracles against live sites
+        run: agentweb verify-oracles --dir oracles | tee oracle-drift-report.json
+      - name: Upload oracle-drift report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: oracle-drift-report
+          path: oracle-drift-report.json
+      - name: Fail on oracle drift
+        run: agentweb verify-oracles --dir oracles --strict

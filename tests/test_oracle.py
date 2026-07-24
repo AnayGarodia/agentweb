@@ -9,6 +9,9 @@ import pytest
 from agentweb.cli import main as cli_main
 from agentweb.oracle import (
     build_response_oracle,
+    classify_oracle_replay,
+    discover_oracles,
+    oracle_age_days,
     resolve_json_path,
     verify_response_oracle,
 )
@@ -219,3 +222,121 @@ def test_capture_oracle_cli_refuses_mutating_without_confirm(
     )
     err = json.loads(capsys.readouterr().err)
     assert err["error"] == "oracle_capture_mutating"
+
+
+def _write_oracle(directory: Path, name: str, **overrides: Any) -> Path:
+    oracle = build_response_oracle(
+        "npm",
+        "get_version",
+        {"package": "react", "version": "18.2.0"},
+        _envelope({"name": "react", "version": "18.2.0"}),
+        assert_paths=["$.data.name"],
+    )
+    oracle.update(overrides)
+    directory.mkdir(parents=True, exist_ok=True)
+    path = directory / name
+    path.write_text(json.dumps(oracle))
+    return path
+
+
+def test_classify_oracle_replay_modes() -> None:
+    assert classify_oracle_replay({}, via_browser=False) == "browserless"
+    assert classify_oracle_replay({"mutating": True}, via_browser=True) == "mutating"
+    browser = {"execution": "browser_assisted"}
+    assert classify_oracle_replay(browser, via_browser=False) == "browser_required"
+    assert classify_oracle_replay(browser, via_browser=True) == "browser"
+
+
+def test_oracle_age_days_handles_missing_timestamp() -> None:
+    assert oracle_age_days({}) is None
+    assert oracle_age_days({"captured_at_unix": 0}, now=86400) == 1
+
+
+def test_discover_oracles_recursive(tmp_path: Path) -> None:
+    _write_oracle(tmp_path, "a.oracle.json")
+    _write_oracle(tmp_path / "sub", "b.oracle.json")
+    (tmp_path / "not-an-oracle.json").write_text("{}")
+    found = discover_oracles(tmp_path)
+    assert [p.name for p in found] == ["a.oracle.json", "b.oracle.json"]
+
+
+def test_verify_oracles_directory_capture_verified(
+    tmp_path: Path, capsys, monkeypatch
+) -> None:
+    _write_oracle(tmp_path, "npm.oracle.json")
+    _fake_runtime(
+        monkeypatch,
+        {"npm.get_version": _envelope({"name": "react", "version": "18.2.0"})},
+        writes=set(),
+    )
+    assert cli_main(["verify-oracles", "--dir", str(tmp_path), "--strict"]) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result["healthy"] is True
+    assert result["verified"] == 1
+    assert result["records"][0]["status"] == "capture_verified"
+
+
+def test_verify_oracles_strict_exit_on_drift(
+    tmp_path: Path, capsys, monkeypatch
+) -> None:
+    _write_oracle(tmp_path, "npm.oracle.json")
+    _fake_runtime(
+        monkeypatch,
+        {"npm.get_version": _envelope({"version": "18.2.0"})},  # name dropped
+        writes=set(),
+    )
+    assert cli_main(["verify-oracles", "--dir", str(tmp_path), "--strict"]) == 1
+    result = json.loads(capsys.readouterr().out)
+    assert result["healthy"] is False
+    assert result["drift"] and result["drift"][0]["status"] == "drift"
+
+
+def test_verify_oracles_offline_makes_no_requests(
+    tmp_path: Path, capsys, monkeypatch
+) -> None:
+    _write_oracle(tmp_path, "npm.oracle.json")
+
+    def boom(self: Runtime, *args: Any, **kwargs: Any) -> dict[str, Any]:
+        raise AssertionError("offline mode must not execute")
+
+    monkeypatch.setattr(Runtime, "execute", boom)
+    assert cli_main(["verify-oracles", "--dir", str(tmp_path), "--offline"]) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result["records"][0]["status"] == "structural_only"
+
+
+def test_verify_oracles_skips_mutating_and_browser(
+    tmp_path: Path, capsys, monkeypatch
+) -> None:
+    _write_oracle(tmp_path, "mut.oracle.json", mutating=True)
+    _write_oracle(tmp_path, "browser.oracle.json", execution="browser_assisted")
+
+    def boom(self: Runtime, *args: Any, **kwargs: Any) -> dict[str, Any]:
+        raise AssertionError("skipped oracles must not execute")
+
+    monkeypatch.setattr(Runtime, "execute", boom)
+    assert cli_main(["verify-oracles", "--dir", str(tmp_path), "--strict"]) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result["skipped"] == 2
+    assert {r["status"] for r in result["records"]} == {"skipped"}
+
+
+def test_verify_oracles_inconclusive_on_transient_error(
+    tmp_path: Path, capsys, monkeypatch
+) -> None:
+    _write_oracle(tmp_path, "npm.oracle.json")
+
+    def flaky(self: Runtime, *args: Any, **kwargs: Any) -> dict[str, Any]:
+        raise AgentWebError("network unreachable")
+
+    monkeypatch.setattr(Runtime, "execute", flaky)
+    # A transient error is advisory: inconclusive, still healthy, exit 0.
+    assert cli_main(["verify-oracles", "--dir", str(tmp_path), "--strict"]) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result["inconclusive"] == 1
+    assert result["healthy"] is True
+
+
+def test_verify_oracles_missing_directory_errors(tmp_path: Path, capsys) -> None:
+    assert cli_main(["verify-oracles", "--dir", str(tmp_path / "nope")]) == 2
+    assert json.loads(capsys.readouterr().err)["error"] == "oracle_dir_missing"

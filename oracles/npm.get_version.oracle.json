@@ -1,0 +1,126 @@
+{
+  "captured_at_unix": 1784853477,
+  "input": {
+    "package": "react",
+    "version": "18.2.0"
+  },
+  "kind": "agentweb_response_oracle",
+  "mutating": false,
+  "observed": {
+    "assertions": [
+      {
+        "name": "$.data.name",
+        "path": "$.data.name",
+        "type": "str"
+      },
+      {
+        "name": "$.data.version",
+        "path": "$.data.version",
+        "type": "str"
+      }
+    ],
+    "data_shape": [
+      {
+        "path": "name",
+        "type": "str"
+      },
+      {
+        "path": "version",
+        "type": "str"
+      },
+      {
+        "path": "description",
+        "type": "str"
+      },
+      {
+        "path": "license",
+        "type": "str"
+      },
+      {
+        "path": "maintainers.0.name",
+        "type": "str"
+      },
+      {
+        "path": "keywords.0",
+        "type": "str"
+      },
+      {
+        "path": "homepage",
+        "type": "str"
+      },
+      {
+        "path": "repository",
+        "type": "str"
+      },
+      {
+        "path": "bugs",
+        "type": "str"
+      },
+      {
+        "path": "engines.node",
+        "type": "str"
+      },
+      {
+        "path": "exports...default",
+        "type": "str"
+      },
+      {
+        "path": "exports...react-server",
+        "type": "str"
+      },
+      {
+        "path": "exports../jsx-runtime",
+        "type": "str"
+      },
+      {
+        "path": "exports../package.json",
+        "type": "str"
+      },
+      {
+        "path": "exports../jsx-dev-runtime",
+        "type": "str"
+      },
+      {
+        "path": "main",
+        "type": "str"
+      },
+      {
+        "path": "dependencies.runtime.loose-envify",
+        "type": "str"
+      },
+      {
+        "path": "dist.tarball",
+        "type": "str"
+      },
+      {
+        "path": "dist.shasum",
+        "type": "str"
+      },
+      {
+        "path": "dist.integrity",
+        "type": "str"
+      },
+      {
+        "path": "dist.fileCount",
+        "type": "int"
+      },
+      {
+        "path": "dist.unpackedSize",
+        "type": "int"
+      },
+      {
+        "path": "dist.signatures.0.sig",
+        "type": "str"
+      },
+      {
+        "path": "dist.signatures.0.keyid",
+        "type": "str"
+      }
+    ],
+    "ok": true,
+    "operation": "get_version"
+  },
+  "operation": "get_version",
+  "schema_version": 1,
+  "site": "npm"
+}

@@ -1,0 +1,81 @@
+{
+  "captured_at_unix": 1784853549,
+  "input": {
+    "title": "Alan Turing"
+  },
+  "kind": "agentweb_response_oracle",
+  "mutating": false,
+  "observed": {
+    "assertions": [
+      {
+        "name": "$.data.page.title",
+        "path": "$.data.page.title",
+        "type": "str"
+      },
+      {
+        "name": "$.data.page.page_id",
+        "path": "$.data.page.page_id",
+        "type": "int"
+      }
+    ],
+    "data_shape": [
+      {
+        "path": "operation",
+        "type": "str"
+      },
+      {
+        "path": "page.page_id",
+        "type": "int"
+      },
+      {
+        "path": "page.title",
+        "type": "str"
+      },
+      {
+        "path": "page.description",
+        "type": "str"
+      },
+      {
+        "path": "page.extract",
+        "type": "str"
+      },
+      {
+        "path": "page.extract_truncated",
+        "type": "bool"
+      },
+      {
+        "path": "page.url",
+        "type": "str"
+      },
+      {
+        "path": "page.canonical_url",
+        "type": "str"
+      },
+      {
+        "path": "page.thumbnail_url",
+        "type": "str"
+      },
+      {
+        "path": "page.language",
+        "type": "str"
+      },
+      {
+        "path": "meta.elapsed_ms",
+        "type": "float"
+      },
+      {
+        "path": "meta.from_cache",
+        "type": "bool"
+      },
+      {
+        "path": "meta.url",
+        "type": "str"
+      }
+    ],
+    "ok": true,
+    "operation": "page"
+  },
+  "operation": "page",
+  "schema_version": 1,
+  "site": "wikipedia"
+}
