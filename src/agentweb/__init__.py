@@ -1,3 +1,3 @@
 """AgentWeb turns websites into structured commands for coding agents."""
 
-__version__ = "0.25.0"
+__version__ = "0.26.0"
