@@ -1,0 +1,55 @@
+{
+  "captured_at_unix": 1784750613.7489522,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {
+      "bytes": 1631371,
+      "format": "opaque",
+      "sha256": "0118faaf4ea7c8ef909d8e98f7efeaa359870c58e52284dd6445dcab20945060",
+      "truncated": true
+    },
+    "page_transition": {
+      "after": "https://info.arxiv.org/about/index.html",
+      "before": "https://info.arxiv.org/help/bulk_data/index.html"
+    },
+    "steps": [
+      {
+        "mime_type": "text/html",
+        "name": "request_1",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "list_site_resources",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "request_1",
+        "path": "https://info.arxiv.org/",
+        "response_mode": "html_links",
+        "selector": "a[href]"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "arxiv",
+  "verification": {
+    "contract_hash": "471bbd609089f244a7182f59c249e6b0d6b9299884be9389f826aa898b7fc1c9",
+    "recipe_hash": "de603af22b1fbf74f5d373bd7c0b42ec64aba588adac8f9d1b733d71ae76ea54",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784750628.798313
+  }
+}

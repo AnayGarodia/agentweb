@@ -878,14 +878,40 @@ class Registry:
         if parsed.scheme not in {"http", "https"}:
             candidate = Path(str(source)).expanduser()
             normalized = candidate.as_posix().rstrip("/")
-            if not candidate.exists() and normalized.endswith(
+            bundle = bundled_registry()
+            try:
+                already_bundle = candidate.resolve() == bundle.resolve()
+            except OSError:
+                already_bundle = False
+            basename = normalized.rsplit("/", 1)[-1]
+            # Older releases persisted the physical package path. Tool upgrades
+            # replace that directory, and the AgentWeb rename also moved it.
+            is_builtin_pointer = normalized.endswith(
                 ("/sitepack/builtin_registry", "/agentweb/builtin_registry")
+            )
+            # A persisted source that points at *another* Python environment's
+            # packaged builtin_registry (a stray pipx/venv/site-packages install
+            # that ran once) must never win over the bundle shipping with the
+            # code running now. Trusting such a stale sibling was the QA
+            # "fresh install registers 6 of 12" bug: a broken external
+            # environment overrode the verified bundle. A packaged registry
+            # always follows its own package, so resolve it to this bundle --
+            # whether it still exists or not.
+            packaged_pointer = basename == "builtin_registry" and any(
+                marker in normalized
+                for marker in (
+                    "/site-packages/",
+                    "/dist-packages/",
+                    "/pipx/",
+                    "/.venv/",
+                    "/venv/",
+                )
+            )
+            missing_builtin = basename == "builtin_registry" and not candidate.exists()
+            if not already_bundle and (
+                is_builtin_pointer or packaged_pointer or missing_builtin
             ):
-                # Older releases persisted the physical package path. Tool
-                # upgrades replace that directory, and the AgentWeb rename also
-                # moved it. Both represent the built-in registry, not a custom
-                # user source, so safely resolve them to this release's bundle.
-                return str(bundled_registry())
+                return str(bundle)
         return str(source)
 
     def configured_public_key(self) -> str | None:

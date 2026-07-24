@@ -61,6 +61,70 @@ def parse_json(value: str) -> dict[str, Any]:
     return parsed
 
 
+class BooleanFlagAction(argparse.Action):
+    """A boolean flag that also accepts an explicit value.
+
+    Supports ``--flag`` (True), ``--flag true|false|1|0|yes|no|on|off``, and the
+    auto-generated ``--no-flag`` (False). ``argparse.BooleanOptionalAction`` was
+    used before but it silently treats ``--flag false`` as ``--flag`` plus a
+    stray token, which is the bug behind a Spotify playlist created with
+    ``--public false`` still coming out public.
+    """
+
+    _TRUE = frozenset({"1", "true", "t", "yes", "y", "on"})
+    _FALSE = frozenset({"0", "false", "f", "no", "n", "off"})
+
+    def __init__(
+        self,
+        option_strings: list[str],
+        dest: str,
+        default: Any = None,
+        required: bool = False,
+        help: str | None = None,
+    ) -> None:
+        opts = list(option_strings)
+        for opt in list(opts):
+            if opt.startswith("--") and not opt.startswith("--no-"):
+                negated = "--no-" + opt[2:]
+                if negated not in opts:
+                    opts.append(negated)
+        self._negated = frozenset(o for o in opts if o.startswith("--no-"))
+        super().__init__(
+            option_strings=opts,
+            dest=dest,
+            nargs="?",
+            default=default,
+            required=required,
+            help=help,
+            metavar="[true|false]",
+        )
+
+    def __call__(
+        self,
+        parser: argparse.ArgumentParser,
+        namespace: argparse.Namespace,
+        values: Any,
+        option_string: str | None = None,
+    ) -> None:
+        if option_string in self._negated:
+            if values is not None:
+                raise argparse.ArgumentError(self, f"{option_string} takes no value")
+            setattr(namespace, self.dest, False)
+            return
+        if values is None:
+            setattr(namespace, self.dest, True)
+            return
+        token = str(values).strip().lower()
+        if token in self._TRUE:
+            setattr(namespace, self.dest, True)
+        elif token in self._FALSE:
+            setattr(namespace, self.dest, False)
+        else:
+            raise argparse.ArgumentError(
+                self, f"expected a boolean (true/false), got {values!r}"
+            )
+
+
 def parse_json_or_file(value: str, *, expected: type, label: str) -> Any:
     """Accept inline JSON for agent callers while retaining file-based CLI input."""
     raw = value
@@ -155,7 +219,7 @@ def dynamic_site_call(
         prop_type = prop.get("type", "string")
         options = {"help": prop.get("description")}
         if prop_type == "boolean":
-            options["action"] = argparse.BooleanOptionalAction
+            options["action"] = BooleanFlagAction
             options["default"] = prop.get("default") if "default" in prop else None
         elif prop_type == "integer":
             options["type"] = int

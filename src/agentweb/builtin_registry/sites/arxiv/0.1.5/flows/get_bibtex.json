@@ -1,0 +1,55 @@
+{
+  "captured_at_unix": 1784750268.641124,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {
+      "bytes": 383,
+      "format": "opaque",
+      "sha256": "aca1dacd15160b302a6ef776d3331357a4f2c93b5a93a8ead1e4a5c28ed40fc1",
+      "truncated": false
+    },
+    "page_transition": {
+      "after": "https://arxiv.org/bibtex/1706.03762",
+      "before": "https://arxiv.org/pdf/1706.03762"
+    },
+    "steps": [
+      {
+        "mime_type": "text/plain",
+        "name": "1706_03762",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "get_bibtex",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "id"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "1706_03762",
+        "path": "https://arxiv.org/bibtex/{id}"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "arxiv",
+  "verification": {
+    "contract_hash": "2f47b03b084049d10f113379816cd8baca60be07707d54546d3a085a68bf31c2",
+    "recipe_hash": "9825c8ae0013a8089fd48c5296053fd4cf8ce61af4720f9309cb651e9d1db2fc",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784750544.7237499
+  }
+}

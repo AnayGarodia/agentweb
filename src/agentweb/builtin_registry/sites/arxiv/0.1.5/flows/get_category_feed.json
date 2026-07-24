@@ -1,0 +1,56 @@
+{
+  "captured_at_unix": 1784750271.140633,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {
+      "bytes": 705932,
+      "format": "opaque",
+      "sha256": "0bc5dd2b7e00703611a72f0445a3455a2b1eea26f83e70794dc5d49993477112",
+      "truncated": false
+    },
+    "page_transition": {
+      "after": "https://rss.arxiv.org/rss/cs.AI",
+      "before": "https://arxiv.org/format/1706.03762"
+    },
+    "steps": [
+      {
+        "mime_type": "text/plain",
+        "name": "cs_ai",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "get_category_feed",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "category"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "cs_ai",
+        "path": "https://rss.arxiv.org/rss/{category}",
+        "response_mode": "xml_feed"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "arxiv",
+  "verification": {
+    "contract_hash": "d9ed3389e971e3efe9ed258b32387fc560efe02faf73fb93c5c8c62c474b2edc",
+    "recipe_hash": "66de0f430c27e42dc76e9784b8e07d86908c497254e3359f28168aa683eba357",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784754230.81582
+  }
+}
