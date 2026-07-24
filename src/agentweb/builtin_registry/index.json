@@ -133,10 +133,10 @@
     {
       "files": {
         "adapter.py": "ed8d553414bcdc64ac1a914ee37b023aea74e96849db4baa4fce1b94b793a9a9",
-        "manifest.json": "e3a6aa074037cb0b35f282bd9db3650e8cae12a456543d6acaf5d6cf10eadd95"
+        "manifest.json": "b10982df1ad561053dba95c86a863b8085b447b1f3f4493a5cca345cb18ec07c"
       },
       "name": "linkedin",
-      "version": "0.2.2"
+      "version": "0.2.3"
     },
     {
       "files": {

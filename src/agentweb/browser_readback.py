@@ -35,6 +35,8 @@ from .connector import (
     available_port,
     chrome_executable,
     open_debugger_client,
+    seed_profile_from_default_browser,
+    use_default_browser_enabled,
 )
 from .runtime import Runtime
 from .sdk import AgentWebError, HttpSession, Response
@@ -327,24 +329,46 @@ def browser_execute(
         if candidate_dir.exists() and any(candidate_dir.iterdir()):
             profile_key = candidate
             break
-    if profile_key is None:
-        raise AgentWebError(
-            f"No saved browser session for {resolved}. Run "
-            f"`agentweb connect {site}` first.",
-            code="browser_session_missing",
-        )
 
-    web = WebRuntime(
-        runtime.paths,
-        site=profile_key,
-        profile=runtime.profile,
-        base_url=base_url,
-        cookie_domain=manifest.get("cookie_domain"),
-        allowed_domains=manifest.get("allowed_domains"),
-    )
-    profile_dir: Path = web.chrome_profile
-    # A browser must not hold the profile while we attach to it.
-    web.stop()
+    # No saved session yet. Rather than forcing an explicit `agentweb connect`,
+    # seed a fresh per-site profile from the user's everyday Chrome (the same
+    # default-browser reuse `connect` performs) so a member who is already
+    # signed in on this machine just gets a browser tab that opens
+    # authenticated. Only the target site's cookies are ever kept.
+    seeded = False
+    if profile_key is None:
+        profile_key = resolved
+        web = WebRuntime(
+            runtime.paths,
+            site=profile_key,
+            profile=runtime.profile,
+            base_url=base_url,
+            cookie_domain=manifest.get("cookie_domain"),
+            allowed_domains=manifest.get("allowed_domains"),
+        )
+        profile_dir: Path = web.chrome_profile
+        web.stop()
+        if use_default_browser_enabled():
+            result = seed_profile_from_default_browser(profile_dir)
+            seeded = bool(result.get("seeded"))
+        if not seeded:
+            raise AgentWebError(
+                f"No saved browser session for {resolved} and no default Chrome "
+                f"profile to reuse. Run `agentweb connect {site}` to sign in once.",
+                code="browser_session_missing",
+            )
+    else:
+        web = WebRuntime(
+            runtime.paths,
+            site=profile_key,
+            profile=runtime.profile,
+            base_url=base_url,
+            cookie_domain=manifest.get("cookie_domain"),
+            allowed_domains=manifest.get("allowed_domains"),
+        )
+        profile_dir = web.chrome_profile
+        # A browser must not hold the profile while we attach to it.
+        web.stop()
     stale = profile_dir / "DevToolsActivePort"
     if stale.exists():
         try:

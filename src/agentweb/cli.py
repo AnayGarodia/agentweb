@@ -219,6 +219,15 @@ def dynamic_site_call(
                     )
                 converted.append(value)
             parsed[name] = converted
+    # A few adapters (LinkedIn's member Voyager API behind PerimeterX) cannot be
+    # replayed browserlessly: a plain request carrying the login cookie but not
+    # the browser-established anti-bot context is bounced into a redirect/429
+    # loop. Such operations declare `transport: "browser"` and run inside the
+    # user's authenticated Chrome instead.
+    if str(command.get("transport") or "").lower() == "browser":
+        from .browser_readback import browser_execute
+
+        return browser_execute(runtime, site, action, parsed)
     if resolved:
         return runtime.execute(site, action, parsed)
     return runtime.call(f"{site}.{action}", parsed)
