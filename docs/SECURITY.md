@@ -39,6 +39,30 @@ last valid bundle.
 The signing private key must never appear in this repository, CI logs, release
 artifacts, or user installations.
 
+## Browser transport (declared per-operation exception)
+
+Ordinary typed operations execute as direct HTTPS requests and never launch a
+browser. A small number of operations are the exception: some sites (LinkedIn's
+member API behind PerimeterX) reject a keyless browserless replay that carries
+the login cookie but not the browser-established anti-bot context, bouncing it
+into a redirect/429 loop. Those operations declare `"transport": "browser"` in
+their manifest command entry and run the *same typed request* inside the user's
+authenticated Chrome over CDP (`fetch(..., {credentials:"include"})` on the
+site's own origin).
+
+This is not browser automation of the DOM and not anti-bot evasion — no token
+forging, fingerprint spoofing, or challenge bypass. The request simply rides a
+genuine signed-in browser. Safety properties preserved:
+
+- opt-in and declared per operation; never a silent, global behavior;
+- the host allowlist still applies to the in-page request URL;
+- only the target site's cookies are ever imported into its isolated profile;
+- when no saved session exists, the per-site profile is seeded from the user's
+  default browser (same mechanism as `agentweb connect`), and an honest,
+  actionable error is raised when no default profile is available;
+- preview (`--dry-run`) stays browserless;
+- mutating browser-routed operations still require explicit confirmation.
+
 ## Write confirmation
 
 AgentWeb requires explicit confirmation for operations declared as mutating and
