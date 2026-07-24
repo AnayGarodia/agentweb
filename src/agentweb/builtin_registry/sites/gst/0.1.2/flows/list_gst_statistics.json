@@ -1,0 +1,56 @@
+{
+  "captured_at_unix": 1784711626.67043,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {
+      "bytes": 8940,
+      "fields": [],
+      "format": "html",
+      "truncated": false
+    },
+    "page_transition": {
+      "after": "https://www.gst.gov.in/download/gststatistics",
+      "before": "https://www.gst.gov.in/quicklinks/downloads-utilities"
+    },
+    "steps": [
+      {
+        "mime_type": "text/html",
+        "name": "gststatistics",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "list_gst_statistics",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "context_selector": "tr",
+        "method": "GET",
+        "name": "gststatistics",
+        "path": "/download/gststatistics",
+        "response_mode": "html_links",
+        "selector": "a[data-download=true]"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "gst",
+  "verification": {
+    "contract_hash": "3c541db4d6f4c678997f8144e60013938af9f6b87524573d2c122a93db8b0d82",
+    "recipe_hash": "1b94c06bd9d718ca84b127ac848d872c3f5fb3665d15063b4c0d02bc97030aa3",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784713090.248387
+  }
+}

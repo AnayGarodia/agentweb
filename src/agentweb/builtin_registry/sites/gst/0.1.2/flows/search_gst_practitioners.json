@@ -1,0 +1,67 @@
+{
+  "captured_at_unix": 1784712091.260683,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": null,
+    "page_transition": {
+      "after": "https://services.gst.gov.in/services/locategstp",
+      "before": "https://services.gst.gov.in/services/locategstp"
+    },
+    "steps": [
+      {
+        "mime_type": "application/json",
+        "name": "gstp",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "search_gst_practitioners",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "dstcd",
+      "pincd",
+      "searchtype",
+      "stcd",
+      "trpnam"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "headers": {
+          "Accept": "application/json, text/plain, */*",
+          "Content-Type": "application/json;charset=UTF-8",
+          "Referer": "https://services.gst.gov.in/services/locategstp"
+        },
+        "json": {
+          "dstCd": "{dstcd}",
+          "pinCd": "{pincd}",
+          "searchType": "{searchtype}",
+          "stCd": "{stcd}",
+          "trpNam": "{trpnam}"
+        },
+        "method": "POST",
+        "mutating": false,
+        "name": "gstp",
+        "path": "https://services.gst.gov.in/services/api/search/gstp"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "gst",
+  "verification": {
+    "contract_hash": "8b355fbb678c778d27d08c6b7454739aa8daf81fa9823cc7f21a808b13605c79",
+    "recipe_hash": "7e1bc5ec6b0b0be7ad3679a17fcca49c961b47e577a84f12b7d662867b26463e",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784713103.8661509
+  }
+}

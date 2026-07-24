@@ -1,0 +1,1065 @@
+{
+  "browserless_parity": true,
+  "capabilities": {
+    "account_and_authentication": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Login, account recovery, tokens, OAuth grants, passkeys, CAPTCHA, and consent require the user's identity and human authorization.",
+      "roles": [
+        "account_user",
+        "repository_owner",
+        "organization_admin"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_or_unsupported"
+    },
+    "bucket_mutations": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Storage Bucket creation, upload, settings, and deletion require authenticated state and controlled test fixtures.",
+      "roles": [
+        "account_user",
+        "repository_owner",
+        "organization_admin"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_or_unsupported"
+    },
+    "community_mutations": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Likes, follows, comments, discussions, and pull-request changes affect public social state and require authenticated confirmation; scripted likes are prohibited.",
+      "roles": [
+        "account_user",
+        "repository_owner",
+        "organization_admin"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_or_unsupported"
+    },
+    "dynamic_space_execution": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Calling an arbitrary third-party Space can have unknown side effects, inputs, costs, or policies, so only its API contract is exposed in the reviewed matrix.",
+      "roles": [
+        "account_user",
+        "repository_owner",
+        "organization_admin"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_or_unsupported"
+    },
+    "organization_administration": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Members, roles, service accounts, resource groups, network security, audit logs, SCIM, and billing require privileged organization accounts.",
+      "roles": [
+        "account_user",
+        "repository_owner",
+        "organization_admin"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_or_unsupported"
+    },
+    "paid_compute": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Jobs, scheduled jobs, Inference Endpoints, providers, and other billable compute require explicit financial and execution authorization.",
+      "roles": [
+        "account_user",
+        "repository_owner",
+        "organization_admin"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_or_unsupported"
+    },
+    "private_and_gated_access": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Private repositories and gated file downloads require a separately authorized account; AgentWeb never bypasses access controls.",
+      "roles": [
+        "account_user",
+        "repository_owner",
+        "organization_admin"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_or_unsupported"
+    },
+    "public_agent_harnesses_list": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "discovery"
+    },
+    "public_collection_get": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "community"
+    },
+    "public_collections_list": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "community"
+    },
+    "public_daily_papers_list": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "research"
+    },
+    "public_dataset_croissant_get": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "dataset_viewer"
+    },
+    "public_dataset_facets": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "discovery"
+    },
+    "public_dataset_get": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "repository"
+    },
+    "public_dataset_info_get": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "dataset_viewer"
+    },
+    "public_dataset_leaderboard_get": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "repository"
+    },
+    "public_dataset_parquet_list": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "dataset_viewer"
+    },
+    "public_dataset_preview_rows": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "dataset_viewer"
+    },
+    "public_dataset_rows_filter": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "dataset_viewer"
+    },
+    "public_dataset_rows_get": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "dataset_viewer"
+    },
+    "public_dataset_rows_search": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "dataset_viewer"
+    },
+    "public_dataset_size_get": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "dataset_viewer"
+    },
+    "public_dataset_splits_list": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "dataset_viewer"
+    },
+    "public_dataset_statistics_get": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "dataset_viewer"
+    },
+    "public_dataset_viewer_status": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "dataset_viewer"
+    },
+    "public_datasets_list": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "discovery"
+    },
+    "public_discussion_get": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "community"
+    },
+    "public_discussions_list": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "community"
+    },
+    "public_docs_list": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "research"
+    },
+    "public_docs_search": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "research"
+    },
+    "public_hub_search": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "discovery"
+    },
+    "public_hub_trending": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "discovery"
+    },
+    "public_kernel_get": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "compute"
+    },
+    "public_kernels_list": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "compute"
+    },
+    "public_model_facets": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "discovery"
+    },
+    "public_model_get": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "repository"
+    },
+    "public_model_security_get": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "repository"
+    },
+    "public_models_list": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "discovery"
+    },
+    "public_organization_get": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "community"
+    },
+    "public_paper_get": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "research"
+    },
+    "public_paper_read": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "research"
+    },
+    "public_papers_search": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "research"
+    },
+    "public_profile_connections_list": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "community"
+    },
+    "public_repo_commits_list": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "repository"
+    },
+    "public_repo_compare": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "repository"
+    },
+    "public_repo_file_metadata": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "repository"
+    },
+    "public_repo_folder_size": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "repository"
+    },
+    "public_repo_paths_get": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "repository"
+    },
+    "public_repo_refs_list": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "repository"
+    },
+    "public_repo_text_file_read": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "repository"
+    },
+    "public_repo_tree_list": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "repository"
+    },
+    "public_space_api_describe": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "compute"
+    },
+    "public_space_get": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "repository"
+    },
+    "public_space_options_get": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "compute"
+    },
+    "public_space_runtime_get": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "repository"
+    },
+    "public_spaces_list": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "discovery"
+    },
+    "public_spaces_semantic_search": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "discovery"
+    },
+    "public_tasks_list": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "discovery"
+    },
+    "public_user_get": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "community"
+    },
+    "public_user_likes_list": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "community"
+    },
+    "repository_mutations": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Creating, deleting, moving, uploading, committing, tagging, branching, and changing repository settings require authenticated ownership and controlled fixtures.",
+      "roles": [
+        "account_user",
+        "repository_owner",
+        "organization_admin"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_or_unsupported"
+    },
+    "space_administration": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Space duplication, hardware, storage, secrets, variables, restart, logs, and metrics require account access and may incur charges.",
+      "roles": [
+        "account_user",
+        "repository_owner",
+        "organization_admin"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_or_unsupported"
+    },
+    "unsupported_editorial_surfaces": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "The public Blog and social Posts surfaces do not expose supported exhaustive read APIs and remain visible outside this declared matrix.",
+      "roles": [
+        "account_user",
+        "repository_owner",
+        "organization_admin"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_or_unsupported"
+    }
+  },
+  "catalog_complete": true,
+  "excluded_operations": {
+    "account_and_authentication": "Login, account recovery, tokens, OAuth grants, passkeys, CAPTCHA, and consent require the user's identity and human authorization.",
+    "bucket_mutations": "Storage Bucket creation, upload, settings, and deletion require authenticated state and controlled test fixtures.",
+    "community_mutations": "Likes, follows, comments, discussions, and pull-request changes affect public social state and require authenticated confirmation; scripted likes are prohibited.",
+    "dynamic_space_execution": "Calling an arbitrary third-party Space can have unknown side effects, inputs, costs, or policies, so only its API contract is exposed in the reviewed matrix.",
+    "organization_administration": "Members, roles, service accounts, resource groups, network security, audit logs, SCIM, and billing require privileged organization accounts.",
+    "paid_compute": "Jobs, scheduled jobs, Inference Endpoints, providers, and other billable compute require explicit financial and execution authorization.",
+    "private_and_gated_access": "Private repositories and gated file downloads require a separately authorized account; AgentWeb never bypasses access controls.",
+    "repository_mutations": "Creating, deleting, moving, uploading, committing, tagging, branching, and changing repository settings require authenticated ownership and controlled fixtures.",
+    "space_administration": "Space duplication, hardware, storage, secrets, variables, restart, logs, and metrics require account access and may incur charges.",
+    "unsupported_editorial_surfaces": "The public Blog and social Posts surfaces do not expose supported exhaustive read APIs and remain visible outside this declared matrix."
+  },
+  "exhaustive": true,
+  "generated_at_unix": 1784767808,
+  "matrix": {
+    "locales": [
+      "en-US"
+    ],
+    "roles": [
+      "public"
+    ],
+    "surfaces": [
+      "community",
+      "compute",
+      "dataset_viewer",
+      "discovery",
+      "repository",
+      "research"
+    ]
+  },
+  "matrix_verified": true,
+  "operations": {
+    "agent_harnesses_list": {
+      "capabilities": [
+        "public_agent_harnesses_list"
+      ],
+      "contract_hash": "0c580406548aacf088f99a9a8ee92c654a5d95b47f2d35973e7af1c278590502",
+      "verification_status": "passed"
+    },
+    "collection_get": {
+      "capabilities": [
+        "public_collection_get"
+      ],
+      "contract_hash": "fdb34928544b1bdf29ba6b73e7c0a22c354d7c9054353989318243ef46250e1c",
+      "verification_status": "passed"
+    },
+    "collections_list": {
+      "capabilities": [
+        "public_collections_list"
+      ],
+      "contract_hash": "ca7971f5c04a93806fca3c7e6c8844e1893795666129a4a6d791e4bd7304336b",
+      "verification_status": "passed"
+    },
+    "daily_papers_list": {
+      "capabilities": [
+        "public_daily_papers_list"
+      ],
+      "contract_hash": "f99ed3621d96c9f117d2380db4f5996f129d3e4d299ab28dc1091716eee3e30d",
+      "verification_status": "passed"
+    },
+    "dataset_croissant_get": {
+      "capabilities": [
+        "public_dataset_croissant_get"
+      ],
+      "contract_hash": "f660730b88a5f45b629986c3217ee0ff057dfdc04db8dd296331f2fa78e1b38d",
+      "verification_status": "passed"
+    },
+    "dataset_facets": {
+      "capabilities": [
+        "public_dataset_facets"
+      ],
+      "contract_hash": "76254867e7609721b4c0f791d2249d1abccf78f42426abedfcf1fd260bac0db9",
+      "verification_status": "passed"
+    },
+    "dataset_get": {
+      "capabilities": [
+        "public_dataset_get"
+      ],
+      "contract_hash": "368f94eea5515dcbd9aa7bee8c74a77fb8a9fe1ef996c30b842adc4a9a1d95d3",
+      "verification_status": "passed"
+    },
+    "dataset_info_get": {
+      "capabilities": [
+        "public_dataset_info_get"
+      ],
+      "contract_hash": "6fe81925e4057e4ddfdd4fcc1bc8ca311a52b31e3879ed6dd6f5810853496b76",
+      "verification_status": "passed"
+    },
+    "dataset_leaderboard_get": {
+      "capabilities": [
+        "public_dataset_leaderboard_get"
+      ],
+      "contract_hash": "137cb27aed7a0ed4f5efb987ad0159811dd264b87bf3bf8bab7d031669aa089a",
+      "verification_status": "passed"
+    },
+    "dataset_parquet_list": {
+      "capabilities": [
+        "public_dataset_parquet_list"
+      ],
+      "contract_hash": "ac4ad1ddf55c2341dd020b77a80d9839a031dc17e8cd093059873cf099faf5ff",
+      "verification_status": "passed"
+    },
+    "dataset_preview_rows": {
+      "capabilities": [
+        "public_dataset_preview_rows"
+      ],
+      "contract_hash": "73ef2358e7e95e0558efb10a6c5387550d05cbe6ac0fc7a484dd19e0db52d53a",
+      "verification_status": "passed"
+    },
+    "dataset_rows_filter": {
+      "capabilities": [
+        "public_dataset_rows_filter"
+      ],
+      "contract_hash": "965fff55f12ddf6348b00aea2821588117cc19cdab9bddb2cfb1eb847d022d48",
+      "verification_status": "passed"
+    },
+    "dataset_rows_get": {
+      "capabilities": [
+        "public_dataset_rows_get"
+      ],
+      "contract_hash": "da75bcdf589c10d68219b2daf2ccc7d91076065ae1151155ba78e6c08113093b",
+      "verification_status": "passed"
+    },
+    "dataset_rows_search": {
+      "capabilities": [
+        "public_dataset_rows_search"
+      ],
+      "contract_hash": "d39417a9bf325ca04abe8ef23c3a6884a7a31ab746d34cbf0a57ed67a0ddbff0",
+      "verification_status": "passed"
+    },
+    "dataset_size_get": {
+      "capabilities": [
+        "public_dataset_size_get"
+      ],
+      "contract_hash": "9dfa67de3340f97e7e02f61620dc00b5bd5ac9a22923b6c17a76dd4a024278dd",
+      "verification_status": "passed"
+    },
+    "dataset_splits_list": {
+      "capabilities": [
+        "public_dataset_splits_list"
+      ],
+      "contract_hash": "31634a2b8081faf5d638d967e8e953f25b3c157d185a9e95f92c345ab15a3722",
+      "verification_status": "passed"
+    },
+    "dataset_statistics_get": {
+      "capabilities": [
+        "public_dataset_statistics_get"
+      ],
+      "contract_hash": "6b7484481bae16cf93e5ebc2a9aa922a6997e86ea812b32fffeb8d28d84232d0",
+      "verification_status": "passed"
+    },
+    "dataset_viewer_status": {
+      "capabilities": [
+        "public_dataset_viewer_status"
+      ],
+      "contract_hash": "1a1d4d10f601f545c81b79af129a66b9f2fe1cab28a1e926c948c0c0335a1144",
+      "verification_status": "passed"
+    },
+    "datasets_list": {
+      "capabilities": [
+        "public_datasets_list"
+      ],
+      "contract_hash": "095ea7d60901c6ac8fe341fdea8a12a000b7b2812293dca7c7b2598d2329f0de",
+      "verification_status": "passed"
+    },
+    "discussion_get": {
+      "capabilities": [
+        "public_discussion_get"
+      ],
+      "contract_hash": "016ce95a5f5670306ce60a5795e722f4550d6ed6d40813e5e1021be5893b56f6",
+      "verification_status": "passed"
+    },
+    "discussions_list": {
+      "capabilities": [
+        "public_discussions_list"
+      ],
+      "contract_hash": "24036013f58bfc25b97a6989d4998b8c60bc5f2864a373026d01c5a14b3dd681",
+      "verification_status": "passed"
+    },
+    "docs_list": {
+      "capabilities": [
+        "public_docs_list"
+      ],
+      "contract_hash": "c62014a78d931fca0fa8b16ce911bff12b82dbdbf0c938bfa8095d22f777aa93",
+      "verification_status": "passed"
+    },
+    "docs_search": {
+      "capabilities": [
+        "public_docs_search"
+      ],
+      "contract_hash": "6ac32053dcadb5ed85ba717e04491b17f5afec7a06053311b1613d2a36057f9a",
+      "verification_status": "passed"
+    },
+    "hub_search": {
+      "capabilities": [
+        "public_hub_search"
+      ],
+      "contract_hash": "dfb0109ed3e770e04923b744b203e66a91ddeac8337c6d70d39ebec64f04b09a",
+      "verification_status": "passed"
+    },
+    "hub_trending": {
+      "capabilities": [
+        "public_hub_trending"
+      ],
+      "contract_hash": "2eb87560654238329f17c1958b60af02009d8cdc914366eb5fec7e8498f07e78",
+      "verification_status": "passed"
+    },
+    "kernel_get": {
+      "capabilities": [
+        "public_kernel_get"
+      ],
+      "contract_hash": "564f3c7deb46bde4d2986421001d35c4a8c6de3d488a12fb842d191f0f5aceaf",
+      "verification_status": "passed"
+    },
+    "kernels_list": {
+      "capabilities": [
+        "public_kernels_list"
+      ],
+      "contract_hash": "bc7462618f4581658d428a7376a2ccf9dd7058f9ea2782623fbd920119aeb568",
+      "verification_status": "passed"
+    },
+    "model_facets": {
+      "capabilities": [
+        "public_model_facets"
+      ],
+      "contract_hash": "75d2b1a7eda02227e74d0377c48ee503e41d22cf134914a11f7ba59635c0610a",
+      "verification_status": "passed"
+    },
+    "model_get": {
+      "capabilities": [
+        "public_model_get"
+      ],
+      "contract_hash": "202187b5fd9a554bc709c113a9c6cdb9dd8389caf48dc948efd75a33111c5e71",
+      "verification_status": "passed"
+    },
+    "model_security_get": {
+      "capabilities": [
+        "public_model_security_get"
+      ],
+      "contract_hash": "30c57692dc59953e4a71ff09a6cfdba990409a2044156afebb78d7e31e3575c8",
+      "verification_status": "passed"
+    },
+    "models_list": {
+      "capabilities": [
+        "public_models_list"
+      ],
+      "contract_hash": "80791416adcb527e22943b49c90a4818f7be92864744e68b5bb412f0cfe3a736",
+      "verification_status": "passed"
+    },
+    "organization_get": {
+      "capabilities": [
+        "public_organization_get"
+      ],
+      "contract_hash": "642f75cab4c4ea07e842f08b96a209c83c21047ae0b9f827176fe2526d542f80",
+      "verification_status": "passed"
+    },
+    "paper_get": {
+      "capabilities": [
+        "public_paper_get"
+      ],
+      "contract_hash": "a8d769759329b0d3a295772db4bf3ddd3ed203bd75684760625ededc2b9564fd",
+      "verification_status": "passed"
+    },
+    "paper_read": {
+      "capabilities": [
+        "public_paper_read"
+      ],
+      "contract_hash": "74f11f6c5cce44d9fea26953671c36762f25cd6d95a001f45bea04f9cf8bb849",
+      "verification_status": "passed"
+    },
+    "papers_search": {
+      "capabilities": [
+        "public_papers_search"
+      ],
+      "contract_hash": "909d7d4c83e0eceed7d75a93ddaf74a9031d28464fad6ee83dd842fc34cc67e4",
+      "verification_status": "passed"
+    },
+    "profile_connections_list": {
+      "capabilities": [
+        "public_profile_connections_list"
+      ],
+      "contract_hash": "8f8ea70bdc4520c8883b616eb188901ff57f1261b121a77ee6443041aed63abc",
+      "verification_status": "passed"
+    },
+    "repo_commits_list": {
+      "capabilities": [
+        "public_repo_commits_list"
+      ],
+      "contract_hash": "bbfcac2f16f9fd68e802e323a1189274128f395968a183a75e604e896711136b",
+      "verification_status": "passed"
+    },
+    "repo_compare": {
+      "capabilities": [
+        "public_repo_compare"
+      ],
+      "contract_hash": "5da9f4941de40be6943083cd0eebd935d0bc14496aa1e51bb7ebfec57e6b5a92",
+      "verification_status": "passed"
+    },
+    "repo_file_metadata": {
+      "capabilities": [
+        "public_repo_file_metadata"
+      ],
+      "contract_hash": "013fd07931817e1980dfe3e4ce20fc10157dc8d82c4f2019a8d0cc105facbfcb",
+      "verification_status": "passed"
+    },
+    "repo_folder_size": {
+      "capabilities": [
+        "public_repo_folder_size"
+      ],
+      "contract_hash": "0649e7e01e3fa5454b1943ecd6a1ba7fa0e99f17553f49d5c9251bd88f53486a",
+      "verification_status": "passed"
+    },
+    "repo_paths_get": {
+      "capabilities": [
+        "public_repo_paths_get"
+      ],
+      "contract_hash": "0981b3742be6afc3bc0d6b21e65e0e84e5b228ec74a021263468649f2d3c248b",
+      "verification_status": "passed"
+    },
+    "repo_refs_list": {
+      "capabilities": [
+        "public_repo_refs_list"
+      ],
+      "contract_hash": "4c1529523d40dfb77417f78a17ee4a9e3036db8c4aac118b929a6b1bd04bcb47",
+      "verification_status": "passed"
+    },
+    "repo_text_file_read": {
+      "capabilities": [
+        "public_repo_text_file_read"
+      ],
+      "contract_hash": "beb9682c0c04bad271825cd0658de48f8e5c09257fe72cb1ca2a2af27f7a0784",
+      "verification_status": "passed"
+    },
+    "repo_tree_list": {
+      "capabilities": [
+        "public_repo_tree_list"
+      ],
+      "contract_hash": "e3f7e5cb23b5631f47902eaa253b3f16226d9f9abd17ece2e576b1f808c0f2a2",
+      "verification_status": "passed"
+    },
+    "space_api_describe": {
+      "capabilities": [
+        "public_space_api_describe"
+      ],
+      "contract_hash": "655b123b508ca7e2ea3e02ab87bc137625c64429929c8f2b55ed2899d31abc55",
+      "verification_status": "passed"
+    },
+    "space_get": {
+      "capabilities": [
+        "public_space_get"
+      ],
+      "contract_hash": "d0dca64595128fdd7590ac4491fb86032b902c1bfdeb3fc0b2ce2183984c3a27",
+      "verification_status": "passed"
+    },
+    "space_options_get": {
+      "capabilities": [
+        "public_space_options_get"
+      ],
+      "contract_hash": "91a453845b9ab7aa861b407b1a4e45066e7c7ca7ed2e7b45418307801d99fc06",
+      "verification_status": "passed"
+    },
+    "space_runtime_get": {
+      "capabilities": [
+        "public_space_runtime_get"
+      ],
+      "contract_hash": "2d7dd0fab103e9231429939502b61ca2c802073f9d1182f7d1c751d7205dfb01",
+      "verification_status": "passed"
+    },
+    "spaces_list": {
+      "capabilities": [
+        "public_spaces_list"
+      ],
+      "contract_hash": "f9323ed464df28009dfb9443a20df9e96154064579896c3f2132eafc470dffe6",
+      "verification_status": "passed"
+    },
+    "spaces_semantic_search": {
+      "capabilities": [
+        "public_spaces_semantic_search"
+      ],
+      "contract_hash": "a8d489cd4a34a31c5d402768a80e2bae40ebeb55f367053d33e82d355a86c868",
+      "verification_status": "passed"
+    },
+    "tasks_list": {
+      "capabilities": [
+        "public_tasks_list"
+      ],
+      "contract_hash": "d3ed1474a453c4e931f3ca19a26f47e2b391db4cbec6bdc257cb2fe158a6f9b7",
+      "verification_status": "passed"
+    },
+    "user_get": {
+      "capabilities": [
+        "public_user_get"
+      ],
+      "contract_hash": "f23e5886c7d239add7ee75fe48a4e14c45d21c958509cef7dd7a4a40ddfa1f74",
+      "verification_status": "passed"
+    },
+    "user_likes_list": {
+      "capabilities": [
+        "public_user_likes_list"
+      ],
+      "contract_hash": "165fd125ed88bc528095fedde40d04ee5538b09188c5eb890bc19a1ce1c4c4e5",
+      "verification_status": "passed"
+    }
+  },
+  "project_hash": "520c6f257c6369bd53de211419463040852ab1240f7320f31994bb1b3e8f4968",
+  "publication_mode": "reviewed",
+  "schema_version": 1,
+  "tool_quality_verified": true,
+  "uncovered_verified_capabilities": []
+}

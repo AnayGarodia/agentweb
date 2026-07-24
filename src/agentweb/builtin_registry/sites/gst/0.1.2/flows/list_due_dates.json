@@ -1,0 +1,57 @@
+{
+  "captured_at_unix": 1784711748.707884,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {
+      "bytes": 8940,
+      "fields": [],
+      "format": "html",
+      "truncated": false
+    },
+    "page_transition": {
+      "after": "https://www.gst.gov.in/",
+      "before": "https://www.gst.gov.in/download/gststatistics"
+    },
+    "steps": [
+      {
+        "mime_type": "application/json",
+        "name": "impdts",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "list_due_dates",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "headers": {
+          "Accept": "application/json, text/plain, */*",
+          "Referer": "https://www.gst.gov.in/"
+        },
+        "method": "GET",
+        "name": "impdts",
+        "path": "/fomessage/impdts"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "gst",
+  "verification": {
+    "contract_hash": "eb65bb7661d295f2dfd64244fe1759702407aadb50f8a952b25be750b07b8278",
+    "recipe_hash": "78f76a18fed61648a7cef336eed4ffb532daead857add15eb0faff476ee1db56",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784713086.966302
+  }
+}

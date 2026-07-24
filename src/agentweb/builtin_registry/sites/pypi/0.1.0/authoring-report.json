@@ -1,0 +1,495 @@
+{
+  "browserless_parity": true,
+  "capabilities": {
+    "account_signup_login": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Account creation, login, passkeys, and two-factor challenges require the user's credentials and human authorization.",
+      "roles": [
+        "account_user",
+        "project_owner",
+        "organization_owner"
+      ],
+      "state": "human_only",
+      "surface": "authenticated_account"
+    },
+    "browse_new_packages": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "browse_project_feed": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "browse_projects": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "browse_recent_updates": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "browse_release_history": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "browse_versions": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "delete_project": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Deleting a project is destructive and requires project ownership plus explicit human confirmation.",
+      "roles": [
+        "account_user",
+        "project_owner",
+        "organization_owner"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_account"
+    },
+    "discover_projects": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "download_distribution": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "manage_account_settings": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Changing account email, profile, or password requires the authenticated account holder.",
+      "roles": [
+        "account_user",
+        "project_owner",
+        "organization_owner"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_account"
+    },
+    "manage_api_tokens": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Creating or revoking API tokens exposes publishing credentials and requires authenticated human authorization.",
+      "roles": [
+        "account_user",
+        "project_owner",
+        "organization_owner"
+      ],
+      "state": "human_only",
+      "surface": "authenticated_account"
+    },
+    "manage_organizations": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Organization members, teams, roles, and billing require organization-owner access unavailable to the public matrix.",
+      "roles": [
+        "account_user",
+        "project_owner",
+        "organization_owner"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_account"
+    },
+    "manage_project_roles": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Adding or removing project owners and maintainers grants publication authority and requires privileged account access.",
+      "roles": [
+        "account_user",
+        "project_owner",
+        "organization_owner"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_account"
+    },
+    "manage_two_factor": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Configuring TOTP or WebAuthn two-factor devices requires the account holder and cannot be automated.",
+      "roles": [
+        "account_user",
+        "project_owner",
+        "organization_owner"
+      ],
+      "state": "human_only",
+      "surface": "authenticated_account"
+    },
+    "publish_distribution": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Uploading a distribution changes the public Python supply chain and requires an authenticated API token plus narrowly scoped human confirmation.",
+      "roles": [
+        "account_user",
+        "project_owner",
+        "organization_owner"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_account"
+    },
+    "read_core_metadata": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "read_dependencies": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "read_documentation": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "read_owners": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "read_policies": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "read_project_metadata": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "read_project_urls": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "read_provenance": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "read_release_files": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "read_release_metadata": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "read_stats": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "read_vulnerabilities": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "web_search": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "PyPI's full-text web search is protected by a browser challenge; programmatic discovery uses list_all_projects and the JSON metadata API.",
+      "roles": [
+        "account_user",
+        "project_owner",
+        "organization_owner"
+      ],
+      "state": "human_only",
+      "surface": "authenticated_account"
+    },
+    "yank_or_delete_release": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Yanking or deleting a release changes what users install and requires project ownership plus explicit confirmation.",
+      "roles": [
+        "account_user",
+        "project_owner",
+        "organization_owner"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_account"
+    }
+  },
+  "capability_coverage": {
+    "coverage_ratio": 0.5,
+    "discovered_route_count": 24,
+    "excluded_count": 12,
+    "exhaustive": true,
+    "mapped_count": 12,
+    "open_count": 0,
+    "remaining": [],
+    "schema_version": 1
+  },
+  "catalog_complete": true,
+  "excluded_operations": {},
+  "exhaustive": true,
+  "generated_at_unix": 1784834400.0,
+  "matrix": {
+    "locales": [
+      "en-US"
+    ],
+    "roles": [
+      "public"
+    ],
+    "surfaces": [
+      "public_api",
+      "simple_index",
+      "distributions",
+      "integrity",
+      "feeds",
+      "documentation",
+      "service_health"
+    ]
+  },
+  "matrix_verified": true,
+  "operations": {
+    "download_distribution": {
+      "capabilities": [
+        "download_distribution"
+      ],
+      "contract_hash": "5ced1e85606638aede007de735b72377a5e14eb49a14b140afdf47a4852ac46a",
+      "verification_status": "passed"
+    },
+    "get_core_metadata": {
+      "capabilities": [
+        "read_core_metadata"
+      ],
+      "contract_hash": "c5f06a29353408ecd686c417454d6eee49610ed02cad01750a76bc965546740f",
+      "verification_status": "passed"
+    },
+    "get_description": {
+      "capabilities": [
+        "read_documentation"
+      ],
+      "contract_hash": "056e7886968efd7418e4f9e24378529e219e61d685eb900ab6961fe66bd0a7a5",
+      "verification_status": "passed"
+    },
+    "get_ownership": {
+      "capabilities": [
+        "read_owners"
+      ],
+      "contract_hash": "30df0f190d995a46bf1f92548a62132efb6ae200003c2eff6d4b6f1cc3b7ff55",
+      "verification_status": "passed"
+    },
+    "get_project": {
+      "capabilities": [
+        "read_project_metadata",
+        "read_project_urls",
+        "read_owners"
+      ],
+      "contract_hash": "03aa5cffa53079ed82b4614f8d0646a16bf31f138e36f9faa08e8ef493679a18",
+      "verification_status": "passed"
+    },
+    "get_project_release_feed": {
+      "capabilities": [
+        "browse_project_feed"
+      ],
+      "contract_hash": "e6fc0a68767787f9c1d9cb8aa74d80fe1ea3d886cd444343720b0cb67bdedf4f",
+      "verification_status": "passed"
+    },
+    "get_provenance": {
+      "capabilities": [
+        "read_provenance"
+      ],
+      "contract_hash": "b54bb65e6d96e52d1d095da28d565f19325ed40d3754f39559cacf1446e17755",
+      "verification_status": "passed"
+    },
+    "get_release": {
+      "capabilities": [
+        "read_release_metadata",
+        "read_release_files"
+      ],
+      "contract_hash": "e28e8d4a349a6d34bdbc5c2969a451b3c914a0e237dfdbac688a26bff0aaeb47",
+      "verification_status": "passed"
+    },
+    "get_stats": {
+      "capabilities": [
+        "read_stats"
+      ],
+      "contract_hash": "b9f87e0891196cc0323452ce44938049fe0f721654fea8875945b009bb42bb93",
+      "verification_status": "passed"
+    },
+    "get_vulnerabilities": {
+      "capabilities": [
+        "read_vulnerabilities"
+      ],
+      "contract_hash": "8452c93964e00dc4b545a5b657157a7c4d7c8e3339c67750f9ecb90bc3b33bda",
+      "verification_status": "passed"
+    },
+    "list_all_projects": {
+      "capabilities": [
+        "browse_projects",
+        "discover_projects"
+      ],
+      "contract_hash": "5c51c630cf515de37d30506162c26da816944a611068833b8252a14373878566",
+      "verification_status": "passed"
+    },
+    "list_dependencies": {
+      "capabilities": [
+        "read_dependencies"
+      ],
+      "contract_hash": "30751a2f7a97c432736179db909f803bc90a2fd79a5f4b08cbc27e19746b3540",
+      "verification_status": "passed"
+    },
+    "list_files": {
+      "capabilities": [
+        "read_release_files"
+      ],
+      "contract_hash": "acedf87bf445e195673d91a2b57e07df25032be706b7056e02365557b62da2f1",
+      "verification_status": "passed"
+    },
+    "list_recent_packages": {
+      "capabilities": [
+        "browse_new_packages"
+      ],
+      "contract_hash": "2a55ee07a30c55f73032e01f53b5cda5d0ee52cd0e90067d9d2dea0d18238dc9",
+      "verification_status": "passed"
+    },
+    "list_recent_updates": {
+      "capabilities": [
+        "browse_recent_updates"
+      ],
+      "contract_hash": "a3debfc5bd8753dba2cff9e086873ce03061a191d4ecb1f370d9de589ea0f0b4",
+      "verification_status": "passed"
+    },
+    "list_releases": {
+      "capabilities": [
+        "browse_release_history"
+      ],
+      "contract_hash": "6db50742f6e8b4f2f09808cb9723fd8453d1b33d63bb8e22fba0ae62972662d4",
+      "verification_status": "passed"
+    },
+    "list_versions": {
+      "capabilities": [
+        "browse_versions"
+      ],
+      "contract_hash": "014ed148ac26aaf7be14c914ef714d7ab90a152989909fc03fc8d723dbaae9db",
+      "verification_status": "passed"
+    },
+    "read_site_resource": {
+      "capabilities": [
+        "read_documentation",
+        "read_policies"
+      ],
+      "contract_hash": "e8e9b765a78e2e883b7f4e759e34d71948927c73d1aef51e1bf00d58874f61aa",
+      "verification_status": "passed"
+    }
+  },
+  "project_hash": "6ad3ecfd46da131f2b74ccfc54b2b78f585019b64860c58299dd66f736920a4d",
+  "publication_mode": "reviewed",
+  "schema_version": 1,
+  "tool_quality_verified": true,
+  "uncovered_verified_capabilities": []
+}

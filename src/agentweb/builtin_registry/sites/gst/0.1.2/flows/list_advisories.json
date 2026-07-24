@@ -1,0 +1,95 @@
+{
+  "captured_at_unix": 1784709544.952877,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {
+      "bytes": 39967,
+      "fields": [
+        {
+          "path": "data.0.id",
+          "sensitive": false,
+          "type": "int"
+        },
+        {
+          "path": "data.0.content",
+          "sensitive": false,
+          "type": "str"
+        },
+        {
+          "path": "data.0.title",
+          "sensitive": false,
+          "type": "str"
+        },
+        {
+          "path": "data.0.date",
+          "sensitive": false,
+          "type": "str"
+        },
+        {
+          "path": "data.0.IsExternal",
+          "sensitive": false,
+          "type": "str"
+        },
+        {
+          "path": "data.0.linkURl",
+          "sensitive": false,
+          "type": "str"
+        },
+        {
+          "path": "data.0.module",
+          "sensitive": false,
+          "type": "str"
+        }
+      ],
+      "format": "json",
+      "truncated": false
+    },
+    "page_transition": {
+      "after": "https://services.gst.gov.in/services/advisory/advisoryandreleases",
+      "before": "https://services.gst.gov.in/services/advisory/advisoryandreleases"
+    },
+    "steps": [
+      {
+        "mime_type": "application/json",
+        "name": "2026",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "list_advisories",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "year"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "headers": {
+          "Accept": "application/json, text/plain, */*",
+          "Referer": "https://services.gst.gov.in/services/advisory/advisoryandreleases"
+        },
+        "method": "GET",
+        "name": "2026",
+        "path": "https://services.gst.gov.in/master/advisories/updated/{year}"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "gst",
+  "verification": {
+    "contract_hash": "37a6eccdd6c0c07746482c41bac80b2100fedd9914889a250812aaf0273c0d57",
+    "recipe_hash": "ecf7a9a2ce37d69ecdf05551cd25611f6080a6680d6c74ea1ed0d396ba0ca1bd",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784754262.12533
+  }
+}

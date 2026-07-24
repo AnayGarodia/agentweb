@@ -159,44 +159,39 @@ are JSON, so agents do not need site-specific parsing code.
 
 ## What is included today?
 
-This open-core installer bundles **three fully open reference adapters**, and
-`agentweb setup` (run for you by the one-line installer) registers exactly those
-three on first run:
+This installer bundles **twelve adapters**, and `agentweb setup` (run for you by
+the one-line installer) registers all of them on first run. Public operations work
+immediately; the login-required sites request a browser sign-in only when you use
+an operation that needs it (`agentweb connect DOMAIN`).
 
-| Reference adapter | Domain | Examples |
+| Adapter | Domain | Examples |
 | --- | --- | --- |
 | npm | `npmjs.com` | Search packages, versions, downloads, dependencies, provenance, and files |
 | arXiv | `arxiv.org` | Search papers, metadata, authors, categories, BibTeX, PDFs, and source |
 | Wikipedia | `wikipedia.org` | Search, pages, links, categories, revisions, images, and pageviews |
+| PyPI | `pypi.org` | Search projects and inspect releases, files, dependencies, metadata, stats, and vulnerabilities |
+| GitHub | `github.com` | Repositories, files, commits, branches, releases, issues, pull requests, users, and authenticated API requests |
+| Hacker News | `news.ycombinator.com` | Read and search stories, comments, users, and activity; submit, edit, vote, flag, and favorite when signed in |
+| Hugging Face | `huggingface.co` | Explore models, datasets, Spaces, repositories, files, papers, documentation, collections, and discussions |
+| GST | `gst.gov.in` | Search HSN/SAC data and browse practitioners, advisories, due dates, holidays, laws, statistics, and tools |
+| Amazon | `amazon.com` | Search and compare products, inspect reviews and deals, manage a cart and addresses, read orders, and complete a confirmed checkout |
+| LinkedIn | `linkedin.com` | Search public jobs, inspect jobs and companies, keep a normal website login, and call approved official API endpoints |
+| Spotify | `open.spotify.com` | Search and play music, control the desktop player, and manage playback, devices, queues, libraries, and playlists after login |
+| Stack Overflow | `stackoverflow.com` | Search and read questions, answers, comments, users, and tags; ask, answer, comment, and vote when signed in |
 
 Run `agentweb sites` to see exactly what is installed and `agentweb capabilities
 DOMAIN` for a site's operation list and any declared gaps.
 
-AgentWeb's larger maintained website catalog (the 11 sites below) is **distributed
-separately** and is not bundled in this open-core installer; installing it points
-`agentweb` at that signed registry. This repository is the open core: the
-command-line tool, runtime, login/session system, adapter format, signed updater,
-tests, and the three reference adapters above. The automatic system used to map and
-repair the official catalog is not in this repository.
+This repository is the open core: the command-line tool, runtime, login/session
+system, adapter format, signed updater, tests, and the adapters above. The
+automatic system used to map and repair the catalog is **not** in this repository.
 
-### The larger maintained catalog (distributed separately)
+> **Note on terms of service.** Some sites (notably Amazon and LinkedIn) restrict
+> automated access in their terms of service. You are responsible for using these
+> adapters in a way that complies with each site's terms and applicable law.
 
-| Website | Domain | What an agent can do |
-| --- | --- | --- |
-| Amazon | `amazon.com` | Search and compare products, inspect reviews and deals, manage a cart and addresses, read orders, and complete a confirmed checkout |
-| arXiv | `arxiv.org` | Search papers, inspect metadata and categories, get BibTeX, and download PDFs or source |
-| GitHub | `github.com` | Work with repositories, files, commits, branches, releases, issues, pull requests, users, and authenticated API requests |
-| GST | `gst.gov.in` | Search HSN/SAC data and browse practitioners, advisories, due dates, holidays, laws, statistics, and tools |
-| Hacker News | `news.ycombinator.com` | Read and search stories, comments, users, and activity; submit, edit, vote, flag, and favorite when signed in |
-| Hugging Face | `huggingface.co` | Explore models, datasets, Spaces, repositories, files, papers, documentation, collections, and community discussions |
-| LinkedIn | `linkedin.com` | Search public jobs, inspect jobs and companies, keep a normal website login, and call approved official API endpoints |
-| npm | `npmjs.com` | Search packages and inspect versions, dependencies, downloads, provenance, maintainers, tarballs, and package files |
-| Spotify | `open.spotify.com` | Search and play music, control the desktop player, and manage playback, devices, queues, libraries, and playlists after login |
-| Stack Overflow | `stackoverflow.com` | Search and read questions, answers, comments, users, and tags; ask, answer, comment, and vote when signed in |
-| Wikipedia | `wikipedia.org` | Search and read pages, links, categories, revisions, languages, images, nearby pages, and pageviews; edit or upload when signed in |
-
-Once that catalog is configured, `agentweb sync` pulls the latest signed adapters
-and `agentweb sites` shows what is currently installed.
+`agentweb sync` pulls the latest signed adapters and `agentweb sites` shows what is
+currently installed.
 
 ## How it works
 

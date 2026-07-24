@@ -1,0 +1,42 @@
+{
+  "observed": {
+    "cases": [
+      "success",
+      "live_direct_success"
+    ],
+    "paths": [
+      "https://pypi.org/rss/packages.xml"
+    ],
+    "source": "reviewed PyPI public capability mapping with live direct replay"
+  },
+  "operation": "list_recent_packages",
+  "recipe": {
+    "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+    "operation": "list_recent_packages",
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "evidence_1",
+        "path": "https://pypi.org/rss/packages.xml"
+      }
+    ],
+    "type": "reviewed_python_binding"
+  },
+  "schema_version": 1,
+  "verification": {
+    "assertions": [
+      {
+        "name": "newest-package feed returns bounded items",
+        "passed": true,
+        "path": "$.data.packages"
+      }
+    ],
+    "contract_hash": "2a55ee07a30c55f73032e01f53b5cda5d0ee52cd0e90067d9d2dea0d18238dc9",
+    "recipe_hash": "2157bed1037d9c23d94dcb16a07a077f0bbbeec94f7e8c33995c21607067ec69",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784834400.0
+  }
+}

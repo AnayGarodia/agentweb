@@ -1,0 +1,53 @@
+{
+  "captured_at_unix": 1784709199.976114,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": null,
+    "page_transition": {
+      "after": "https://services.gst.gov.in/services/searchhsnsac",
+      "before": "https://services.gst.gov.in/services/searchhsnsac"
+    },
+    "steps": [
+      {
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "name": "hsn_sac_xlsx",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "download_hsn_sac_directory",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "filename": "HSN_SAC.xlsx",
+        "headers": {
+          "Referer": "https://services.gst.gov.in/"
+        },
+        "method": "GET",
+        "name": "hsn_sac_xlsx",
+        "path": "https://tutorial.gst.gov.in/downloads/HSN_SAC.xlsx",
+        "response_mode": "download"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "gst",
+  "verification": {
+    "contract_hash": "a12aa2365c917d2000b30660da52d603567fdb7462897635f5956525f2840514",
+    "recipe_hash": "3a85d5da475c27dedc6faa11d48ee48aa84d15f0f833d80261bbd7de2f14b93d",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784713079.763554
+  }
+}

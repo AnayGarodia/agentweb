@@ -1,0 +1,42 @@
+{
+  "observed": {
+    "cases": [
+      "success",
+      "live_direct_success"
+    ],
+    "paths": [
+      "https://pypi.org/pypi/{project}/json"
+    ],
+    "source": "reviewed PyPI public capability mapping with live direct replay"
+  },
+  "operation": "list_releases",
+  "recipe": {
+    "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+    "operation": "list_releases",
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "evidence_1",
+        "path": "https://pypi.org/pypi/{project}/json"
+      }
+    ],
+    "type": "reviewed_python_binding"
+  },
+  "schema_version": 1,
+  "verification": {
+    "assertions": [
+      {
+        "name": "release history returns bounded normalized versions",
+        "passed": true,
+        "path": "$.data.releases"
+      }
+    ],
+    "contract_hash": "6db50742f6e8b4f2f09808cb9723fd8453d1b33d63bb8e22fba0ae62972662d4",
+    "recipe_hash": "7a9e83cc319e8c01dc79a9f1a468d3a09e5acb3e23f7ebd22e717883b069c730",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784834400.0
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "captured_at_unix": 1784711132.487699,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {
+      "bytes": 8940,
+      "fields": [],
+      "format": "html",
+      "truncated": false
+    },
+    "page_transition": {
+      "after": "https://services.gst.gov.in/services/gstlaw/gstlawlist",
+      "before": "https://services.gst.gov.in/services/gstlaw/gstlawlist"
+    },
+    "steps": [
+      {
+        "mime_type": "text/html",
+        "name": "gstlawlist",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "list_gst_law_sources",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "gstlawlist",
+        "path": "https://services.gst.gov.in/services/gstlaw/gstlawlist",
+        "response_mode": "html_links",
+        "selector": ".st-vat a[data-popup=true]"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "gst",
+  "verification": {
+    "contract_hash": "bc1e665e9ec4daa002943d9597fef68d0f3526ddee3ba4b45215d04d297f04ed",
+    "recipe_hash": "326834de3af2c488fc9f275c4cae8cc885a8f239598aaf2a42652fe54d5ba3c2",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784713088.5582788
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "captured_at_unix": 1784709913.908201,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {
+      "bytes": 15151,
+      "fields": [
+        {
+          "path": "finalHolidayList.0.date",
+          "sensitive": false,
+          "type": "str"
+        },
+        {
+          "path": "finalHolidayList.0.createdBy.0",
+          "sensitive": false,
+          "type": "str"
+        },
+        {
+          "path": "finalHolidayList.0.stateCodes.0",
+          "sensitive": false,
+          "type": "str"
+        },
+        {
+          "path": "finalHolidayList.0.descrptn.0",
+          "sensitive": false,
+          "type": "str"
+        },
+        {
+          "path": "finalHolidayList.0.day",
+          "sensitive": false,
+          "type": "str"
+        }
+      ],
+      "format": "json",
+      "truncated": false
+    },
+    "page_transition": {
+      "after": "https://services.gst.gov.in/services/holiday",
+      "before": "https://services.gst.gov.in/services/holiday"
+    },
+    "steps": [
+      {
+        "mime_type": "application/json",
+        "name": "holidaylist",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "list_holidays",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "sccodes",
+      "year"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "headers": {
+          "Accept": "application/json, text/plain, */*",
+          "Referer": "https://services.gst.gov.in/services/holiday"
+        },
+        "method": "GET",
+        "name": "holidaylist",
+        "path": "https://services.gst.gov.in/services/holidayList",
+        "query": {
+          "scCodes": "{sccodes}",
+          "year": "{year}"
+        }
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "gst",
+  "verification": {
+    "contract_hash": "2400cc50a237ed62cd7913e1611c6b7ab8cb405f863ca00d678e6d114552e663",
+    "recipe_hash": "e5d7eeb7e2ca8fe0c59c5a4313f1f2ee80228fb99a92ec929384e417ba13ac3d",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784754234.808987
+  }
+}

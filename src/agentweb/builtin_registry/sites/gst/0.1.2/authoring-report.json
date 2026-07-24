@@ -1,0 +1,975 @@
+{
+  "browserless_parity": false,
+  "capabilities": {
+    "act_itc02_pending": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "returns"
+    },
+    "apply_deferred_payment": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "authorized_signatory"
+      ],
+      "state": "blocked",
+      "surface": "payments"
+    },
+    "apply_refund": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "authorized_signatory"
+      ],
+      "state": "blocked",
+      "surface": "refunds"
+    },
+    "cancel_registration": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "registration"
+    },
+    "communicate_taxpayer": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "account"
+    },
+    "create_payment_challan": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": "A valid GSTIN or authorized Other ID from a dedicated mapping account is required to reach and verify challan creation without using a third party identity.",
+      "roles": [
+        "public"
+      ],
+      "state": "blocked",
+      "surface": "public_portal"
+    },
+    "declare_specified_premises": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "registration"
+    },
+    "download_certificates": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "account"
+    },
+    "download_gst_statistics": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_portal"
+    },
+    "download_hsn_sac_directory": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_portal"
+    },
+    "download_offline_tools": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_portal"
+    },
+    "extend_registration": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "registration"
+    },
+    "file_appeal": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "authorized_signatory"
+      ],
+      "state": "blocked",
+      "surface": "litigation"
+    },
+    "file_final_return": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "authorized_signatory"
+      ],
+      "state": "blocked",
+      "surface": "returns"
+    },
+    "file_payment_grievance": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": "A genuine failed-payment CPIN and authorized taxpayer fixture are required to verify PMT-07 preparation and submission safely.",
+      "roles": [
+        "public"
+      ],
+      "state": "blocked",
+      "surface": "public_portal"
+    },
+    "file_return": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "authorized_signatory"
+      ],
+      "state": "blocked",
+      "surface": "returns"
+    },
+    "furnish_lut": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "authorized_signatory"
+      ],
+      "state": "blocked",
+      "surface": "account"
+    },
+    "generate_unregistered_user_id": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": "GST requires a visual CAPTCHA and then email/mobile OTP verification before generating a temporary unregistered-applicant ID; AgentWeb must pause for the applicant.",
+      "roles": [
+        "public"
+      ],
+      "state": "human_only",
+      "surface": "public_portal"
+    },
+    "geocode_business_address": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "registration"
+    },
+    "list_gst_states": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_portal"
+    },
+    "locate_gst_practitioner": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_portal"
+    },
+    "login_taxpayer": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": "The GST portal requires the taxpayer to enter private credentials in its login form. AgentWeb must open a visible private session for the user, persist only the resulting session, and never capture or publish the password.",
+      "roles": [
+        "public"
+      ],
+      "state": "human_only",
+      "surface": "public_portal"
+    },
+    "logout": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "account"
+    },
+    "make_voluntary_payment": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "authorized_signatory"
+      ],
+      "state": "blocked",
+      "surface": "payments"
+    },
+    "manage_gst_practitioner": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "account"
+    },
+    "manage_gta_declaration": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "authorized_signatory"
+      ],
+      "state": "blocked",
+      "surface": "account"
+    },
+    "manage_itc_forms": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "returns"
+    },
+    "manage_profile": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "account"
+    },
+    "manage_registration_core": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "registration"
+    },
+    "manage_registration_noncore": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "registration"
+    },
+    "manage_saved_challans": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "payments"
+    },
+    "opt_composition_levy": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "registration"
+    },
+    "pay_outstanding_demand": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "payments"
+    },
+    "prepare_return": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "returns"
+    },
+    "public_home": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": "The home page is navigation, not an independent machine action; its actionable advisories, due dates, downloads, search, law, and help surfaces are cataloged separately.",
+      "roles": [
+        "public"
+      ],
+      "state": "not_applicable",
+      "surface": "public_portal"
+    },
+    "recover_password": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": "GST requires an OTP sent through the account recovery channel before new credentials can be set; AgentWeb must pause for the user to enter it.",
+      "roles": [
+        "public"
+      ],
+      "state": "human_only",
+      "surface": "public_portal"
+    },
+    "recover_username": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": "GST requires an OTP sent to the registered contact before revealing a username; AgentWeb must pause for the account holder.",
+      "roles": [
+        "public"
+      ],
+      "state": "human_only",
+      "surface": "public_portal"
+    },
+    "refund_preapplication": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "refunds"
+    },
+    "register_digital_signature": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "authorized_signatory"
+      ],
+      "state": "blocked",
+      "surface": "account"
+    },
+    "report_refund_not_received": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "refunds"
+    },
+    "respond_notice": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "authorized_signatory"
+      ],
+      "state": "blocked",
+      "surface": "account"
+    },
+    "resume_registration": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": "GST requires a visual CAPTCHA before a TRN application can be resumed, followed by account-bound verification; AgentWeb must show the challenge and pause for the user.",
+      "roles": [
+        "public"
+      ],
+      "state": "human_only",
+      "surface": "public_portal"
+    },
+    "revoke_cancelled_registration": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "registration"
+    },
+    "search_advance_ruling": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": "GST requires a visual CAPTCHA before exposing advance-ruling search filters and results; AgentWeb must show the challenge and resume after the user completes it.",
+      "roles": [
+        "public"
+      ],
+      "state": "human_only",
+      "surface": "public_portal"
+    },
+    "search_bill_of_entry": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "returns"
+    },
+    "search_composition_taxpayer": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": "The live composition opt-in/opt-out search requires a six-character image CAPTCHA after its search mode is selected. AgentWeb must pause for visible user completion and must not automate the challenge.",
+      "roles": [
+        "public"
+      ],
+      "state": "human_only",
+      "surface": "public_portal"
+    },
+    "search_hsn_goods_by_description": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_portal"
+    },
+    "search_hsn_sac": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_portal"
+    },
+    "search_sac_services_by_description": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_portal"
+    },
+    "search_taxpayer_gstin": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": "The live public GSTIN/UIN lookup renders a required six-digit image CAPTCHA after a valid identifier is entered. AgentWeb must pause for the user to complete it visibly and must not automate or bypass it.",
+      "roles": [
+        "public"
+      ],
+      "state": "human_only",
+      "surface": "public_portal"
+    },
+    "search_taxpayer_pan": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": "The live public PAN lookup requires a six-character image CAPTCHA after a syntactically valid PAN is entered. AgentWeb must pause for visible user completion and must not automate the challenge.",
+      "roles": [
+        "public"
+      ],
+      "state": "human_only",
+      "surface": "public_portal"
+    },
+    "search_temporary_id": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": "The public temporary-ID/mobile search displays a required six-character image CAPTCHA before submission. AgentWeb must pause for visible user completion and must not automate the challenge.",
+      "roles": [
+        "public"
+      ],
+      "state": "human_only",
+      "surface": "public_portal"
+    },
+    "start_new_registration": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": "GST sends separate OTPs to the applicant email address and mobile number before registration can continue; AgentWeb can fill the form but must pause for the applicant.",
+      "roles": [
+        "public"
+      ],
+      "state": "human_only",
+      "surface": "public_portal"
+    },
+    "submit_feedback": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "account"
+    },
+    "submit_stock_intimation": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "registration"
+    },
+    "track_icegate_invoice_status": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "refunds"
+    },
+    "track_payment_status": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": "An authorized CPIN or payment reference with known state is required to verify that the public tracker returns the correct payment meaning.",
+      "roles": [
+        "public"
+      ],
+      "state": "blocked",
+      "surface": "public_portal"
+    },
+    "track_refund_application": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": "A valid refund ARN with known case history from an authorized mapping account is required; only the no-record error path has been verified.",
+      "roles": [
+        "public"
+      ],
+      "state": "blocked",
+      "surface": "public_portal"
+    },
+    "track_registration_application": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": "The live public ARN/SRN/FRN status lookup requires a six-character image CAPTCHA after an identifier is entered. AgentWeb must pause for visible user completion and must not automate the challenge.",
+      "roles": [
+        "public"
+      ],
+      "state": "human_only",
+      "surface": "public_portal"
+    },
+    "track_return_status": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "returns"
+    },
+    "use_einvoice_system": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "einvoice"
+    },
+    "use_ewaybill_system": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "ewaybill"
+    },
+    "verify_reference_number": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": "The live RFN document verification flow requires a six-digit image CAPTCHA after a syntactically valid RFN is entered. AgentWeb must pause for visible user completion and must not automate the challenge.",
+      "roles": [
+        "public"
+      ],
+      "state": "human_only",
+      "surface": "public_portal"
+    },
+    "view_advisories": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_portal"
+    },
+    "view_applications_submissions": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "account"
+    },
+    "view_cash_ledger": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "ledgers"
+    },
+    "view_cause_list": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": "Twenty-five safe live searches across five states and five authority types over a three-year range returned no hearings, so a known hearing fixture is required for semantic success evidence.",
+      "roles": [
+        "public"
+      ],
+      "state": "blocked",
+      "surface": "public_portal"
+    },
+    "view_challan_history": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": "An authorized GSTIN or CPIN with known challan history is required to verify the returned records without probing another taxpayer account.",
+      "roles": [
+        "public"
+      ],
+      "state": "blocked",
+      "surface": "public_portal"
+    },
+    "view_drc03_register": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "account"
+    },
+    "view_due_dates": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_portal"
+    },
+    "view_ecommerce_supplies": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "returns"
+    },
+    "view_eid_turnover": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "account"
+    },
+    "view_filed_returns": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "returns"
+    },
+    "view_gst_law": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_portal"
+    },
+    "view_help_guides": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_portal"
+    },
+    "view_holiday_list": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_portal"
+    },
+    "view_installment_calendar": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "payments"
+    },
+    "view_liability_register": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "ledgers"
+    },
+    "view_negative_liability": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "ledgers"
+    },
+    "view_notices_orders": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "account"
+    },
+    "view_pmt03a": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "payments"
+    },
+    "view_refund_applications": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "refunds"
+    },
+    "view_returns_dashboard": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "returns"
+    },
+    "view_saved_applications": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "account"
+    },
+    "view_submitted_luts": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "account"
+    },
+    "withdraw_composition_levy": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "No mapping account with the required GST role is currently available.",
+      "roles": [
+        "taxpayer"
+      ],
+      "state": "blocked",
+      "surface": "registration"
+    }
+  },
+  "catalog_complete": false,
+  "excluded_operations": {
+    "track_refund_application": "Operation has not completed semantic review"
+  },
+  "exhaustive": false,
+  "generated_at_unix": 1784754269.119083,
+  "matrix": {
+    "locales": [
+      "en-IN"
+    ],
+    "roles": [
+      "public"
+    ],
+    "surfaces": [
+      "public_portal"
+    ]
+  },
+  "matrix_verified": true,
+  "operations": {
+    "download_hsn_sac_directory": {
+      "capabilities": [
+        "download_hsn_sac_directory"
+      ],
+      "contract_hash": "a12aa2365c917d2000b30660da52d603567fdb7462897635f5956525f2840514",
+      "verification_status": "passed"
+    },
+    "list_advisories": {
+      "capabilities": [
+        "view_advisories"
+      ],
+      "contract_hash": "37a6eccdd6c0c07746482c41bac80b2100fedd9914889a250812aaf0273c0d57",
+      "verification_status": "passed"
+    },
+    "list_due_dates": {
+      "capabilities": [
+        "view_due_dates"
+      ],
+      "contract_hash": "eb65bb7661d295f2dfd64244fe1759702407aadb50f8a952b25be750b07b8278",
+      "verification_status": "passed"
+    },
+    "list_gst_law_sources": {
+      "capabilities": [
+        "view_gst_law"
+      ],
+      "contract_hash": "bc1e665e9ec4daa002943d9597fef68d0f3526ddee3ba4b45215d04d297f04ed",
+      "verification_status": "passed"
+    },
+    "list_gst_statistics": {
+      "capabilities": [
+        "download_gst_statistics"
+      ],
+      "contract_hash": "3c541db4d6f4c678997f8144e60013938af9f6b87524573d2c122a93db8b0d82",
+      "verification_status": "passed"
+    },
+    "list_help_resources": {
+      "capabilities": [
+        "view_help_guides"
+      ],
+      "contract_hash": "95a6f150b8a9278af8fdb6a8d15f4b5e9be7fa160680af217da32367ffb826aa",
+      "verification_status": "passed"
+    },
+    "list_holidays": {
+      "capabilities": [
+        "view_holiday_list"
+      ],
+      "contract_hash": "2400cc50a237ed62cd7913e1611c6b7ab8cb405f863ca00d678e6d114552e663",
+      "verification_status": "passed"
+    },
+    "list_offline_tools": {
+      "capabilities": [
+        "download_offline_tools"
+      ],
+      "contract_hash": "dad8808fd0286d04ec5410210282d8ee0500ddef99bb0bb0d1e033a1c1622cdc",
+      "verification_status": "passed"
+    },
+    "list_states": {
+      "capabilities": [
+        "list_gst_states"
+      ],
+      "contract_hash": "5a625d67b06764bc0c64b58ad93ff7e44631b06284e20349f513da706a4fdf60",
+      "verification_status": "passed"
+    },
+    "search_gst_practitioners": {
+      "capabilities": [
+        "locate_gst_practitioner"
+      ],
+      "contract_hash": "8b355fbb678c778d27d08c6b7454739aa8daf81fa9823cc7f21a808b13605c79",
+      "verification_status": "passed"
+    },
+    "search_hsn_sac": {
+      "capabilities": [
+        "search_hsn_sac"
+      ],
+      "contract_hash": "d23a9b7be397bf003fb3e8ae140ccb78bbfbd8683441d0da061eca25e2e72cfd",
+      "verification_status": "passed"
+    },
+    "search_hsn_sac_by_description": {
+      "capabilities": [
+        "search_hsn_goods_by_description",
+        "search_sac_services_by_description"
+      ],
+      "contract_hash": "5bf402f15812765b58384baba06536b4d5f8802d5679dd640b0a32d4ad1ad87f",
+      "verification_status": "passed"
+    }
+  },
+  "project_hash": "f9afa139caa0594c8f76b952a99b6f5d60cec38f43766e4a1cea40038ecfeb6e",
+  "publication_mode": "experimental_incomplete",
+  "schema_version": 1,
+  "tool_quality_verified": true,
+  "uncovered_verified_capabilities": []
+}

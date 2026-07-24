@@ -1,0 +1,42 @@
+{
+  "observed": {
+    "cases": [
+      "success",
+      "live_direct_success"
+    ],
+    "paths": [
+      "{url}"
+    ],
+    "source": "reviewed PyPI public capability mapping with live direct replay"
+  },
+  "operation": "read_site_resource",
+  "recipe": {
+    "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+    "operation": "read_site_resource",
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "evidence_1",
+        "path": "{url}"
+      }
+    ],
+    "type": "reviewed_python_binding"
+  },
+  "schema_version": 1,
+  "verification": {
+    "assertions": [
+      {
+        "name": "site resource read returns bounded visible text",
+        "passed": true,
+        "path": "$.data.text"
+      }
+    ],
+    "contract_hash": "e8e9b765a78e2e883b7f4e759e34d71948927c73d1aef51e1bf00d58874f61aa",
+    "recipe_hash": "e8b699491d1c7c44b85826926c2dc99fc8b757ae6034235d439fba9177978e99",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784834400.0
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "observed": {
+    "cases": [
+      "success",
+      "live_direct_success"
+    ],
+    "paths": [
+      "https://pypi.org/pypi/{project}/{version}/json",
+      "{file_url}"
+    ],
+    "source": "reviewed PyPI public capability mapping with live direct replay"
+  },
+  "operation": "download_distribution",
+  "recipe": {
+    "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+    "operation": "download_distribution",
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "evidence_1",
+        "path": "https://pypi.org/pypi/{project}/{version}/json"
+      },
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "evidence_2",
+        "path": "{file_url}"
+      }
+    ],
+    "type": "reviewed_python_binding"
+  },
+  "schema_version": 1,
+  "verification": {
+    "assertions": [
+      {
+        "name": "distribution download returns a local file receipt",
+        "passed": true,
+        "path": "$.data"
+      }
+    ],
+    "contract_hash": "5ced1e85606638aede007de735b72377a5e14eb49a14b140afdf47a4852ac46a",
+    "recipe_hash": "82d3b22282b45284604c079302159ba5a0e350fcfd3b7d1754f9680a7a9b38f0",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784834400.0
+  }
+}
