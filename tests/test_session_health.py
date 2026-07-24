@@ -116,6 +116,24 @@ def test_authentication_error_enriched_with_reconnect_and_expiry(
     assert "refresh the session" in payload["user_action"]
 
 
+def test_adapter_declared_next_action_wins_over_reconnect_hint(
+    tmp_path: Path,
+) -> None:
+    runtime = SimpleNamespace(paths=StatePaths(tmp_path), profile="default")
+
+    exc = AuthenticationRequired(
+        "This write requires an API token", next_action="github.configure_token"
+    )
+    Runtime._enrich_authentication_error(runtime, exc, "github")
+
+    payload = exc.as_dict()
+    # The adapter already named the fix; adding a second, different suggestion
+    # would give agents conflicting guidance.
+    assert "user_action" not in payload
+    assert payload["next_action"] == "github.configure_token"
+    assert payload["details"]["reconnect_command"][-2:] == ["connect", "github"]
+
+
 def test_authentication_error_without_stored_session(tmp_path: Path) -> None:
     runtime = SimpleNamespace(paths=StatePaths(tmp_path), profile="default")
 

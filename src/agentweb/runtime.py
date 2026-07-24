@@ -1176,7 +1176,7 @@ class Runtime:
         if isinstance(expires_at, (int, float)) and 0 < expires_at <= time.time():
             exc.details.setdefault("session_expired", True)
             exc.details.setdefault("session_expired_at_unix", int(expires_at))
-        if not exc.user_action:
+        if not exc.user_action and not exc.next_action:
             exc.user_action = (
                 f"Run `agentweb connect {site}` and sign in to refresh the session"
                 if exc.details.get("session_expired")
