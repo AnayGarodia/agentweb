@@ -3,7 +3,7 @@
   "signature": {
     "algorithm": "ed25519",
     "key_id": "d3237069b559fa7b",
-    "value": "FGMryIDwPh67eSPZo57aiTRgyryTN013FjltNFY1inpXneemcVo4yKcy91ok4gElqz63roAAxQ1NpNRr7PMUDQ=="
+    "value": "xvkpODJ13eASl6xAUiMkLZss7P8QZvQ0y+OugmzbUY2lJySpwh8eV6TC0hCvWVRkDxrPBaNGfC272w+gmQiwAw=="
   },
   "sites": [
     {
@@ -73,6 +73,17 @@
         "manifest.json": "86a78fe573e22b452595aefe43ada2c753985a48d3cfcc67b7ec06201a77c480"
       },
       "name": "crossref",
+      "version": "0.1.0"
+    },
+    {
+      "files": {
+        "adapter.py": "af039bd5e1343252c120c3fd791771674deb0153f1adb9c19c95a0e03c8389c8",
+        "authoring-report.json": "4dfb75445bb69b314cf24753cd1872b82d865cef2e9e3f905adc6f37aeafc055",
+        "flows/document.json": "6f07298bf54d2eae10ff3ebd196ca47ad6669205c0ee52e9f6a5991d7fdc5f80",
+        "flows/search.json": "cebac66d9f1ab4a38584f42183f8039f50dbed280990baecd8845efdfef10841",
+        "manifest.json": "78d97faa6a1d1e7ac06d8fd6daad3b61a5515148afe382a516eeb603991f4960"
+      },
+      "name": "federalregister",
       "version": "0.1.0"
     },
     {
@@ -194,6 +205,28 @@
     },
     {
       "files": {
+        "adapter.py": "27519048a4d73f2d45e7b1880d4dc3492fb8b6de8142211ebbf318b7169eaecd",
+        "authoring-report.json": "78c91014a16f4d46cbc12547d0170067a74560e5d6d5ae0343f6ce3f111ec0c0",
+        "flows/pincode.json": "baf148f584707f088295bd14099c57dd6d0cfc89bbe6fc23ca55655c52dcaa68",
+        "flows/post_office.json": "a33833e9e87400c62c4beb96c9f44a0574450d4a04f29168c72c21f06dadd37f",
+        "manifest.json": "1d1dd1eb031db29129faa39bfbcce0d45ccf77f07b7c8f6e171996d2160de3ad"
+      },
+      "name": "indiapost",
+      "version": "0.1.0"
+    },
+    {
+      "files": {
+        "adapter.py": "66ea19a0e0ae5b70af25d870dda94671a5bbc6b70043d273284c2811fb86999e",
+        "authoring-report.json": "ccade38435b64546495c623ef01a7f08e36c78bc3147f8a34a0b527864969129",
+        "flows/reverse.json": "5d6978cafa30e746f594a388b6b8953bfe3d42e8b94292f0e13b8023e0a48742",
+        "flows/search.json": "2d58ba715df0e7ad7041393a6286b85b515ae83513a4d5150e47045d4550798a",
+        "manifest.json": "a3cd48c949881e831bd7a5455d8939b47f3fc4c5cac5df8bf611192852c5a333"
+      },
+      "name": "nominatim",
+      "version": "0.1.0"
+    },
+    {
+      "files": {
         "adapter.py": "ea65537051b6e32367f213a3837d72838532099e1c0b4b42532083bb1a629e03",
         "authoring-report.json": "ee3929c8bd588a5f7ab0b6504d340d265b35085ca9c3653c0652f11907b79f9e",
         "flows/audit_versions.json": "75c3819f3bcc8961e369acad3c2260862bc2a2b6c0d0afddd08075f0a5457123",
@@ -240,6 +273,17 @@
         "manifest.json": "fda955916672f297ff8c9e69ac26409c72a31c3625f909d5b365f0afe90eedd7"
       },
       "name": "openlibrary",
+      "version": "0.1.0"
+    },
+    {
+      "files": {
+        "adapter.py": "b2e7a43aa31292d8052357826ddaeff61c974b881263cde8ae84373cb0eefb95",
+        "authoring-report.json": "4dcd585e0841ae53ec028d7772d782c69f3c7939a21c173f5e3def514becb882",
+        "flows/forecast.json": "b0fb028a5a292563d1b9c73c7dce53b9d29c480e35a0d21151e297a39e659b00",
+        "flows/geocode.json": "e4552d0b34e5be71fe6bcbf1364173e2b28c49663db6ee2410a61a3e36efa6a6",
+        "manifest.json": "9c6f2552fa46a80899399172fc3a79bbb7d8a98018b5f3c77961b323c85f48f4"
+      },
+      "name": "openmeteo",
       "version": "0.1.0"
     },
     {
