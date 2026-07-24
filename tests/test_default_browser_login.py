@@ -21,11 +21,11 @@ from agentweb.connector import (
 
 def test_use_default_browser_enabled_precedence(monkeypatch) -> None:
     monkeypatch.delenv("AGENTWEB_USE_DEFAULT_BROWSER", raising=False)
-    # Enabled by default now.
-    assert use_default_browser_enabled(None) is True
+    # Disabled by default: login uses the managed Chrome window.
+    assert use_default_browser_enabled(None) is False
     assert use_default_browser_enabled(True) is True
     assert use_default_browser_enabled(False) is False
-    # The environment can force it off, or explicitly on.
+    # The environment can opt in, and off stays off.
     monkeypatch.setenv("AGENTWEB_USE_DEFAULT_BROWSER", "0")
     assert use_default_browser_enabled(None) is False
     monkeypatch.setenv("AGENTWEB_USE_DEFAULT_BROWSER", "1")

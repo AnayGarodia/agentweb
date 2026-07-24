@@ -423,8 +423,9 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help=(
             "Reuse your everyday Chrome profile's sign-in state so the login "
-            "window opens already authenticated (default; only this site's "
-            "cookies are saved)."
+            "window opens already authenticated (also "
+            "AGENTWEB_USE_DEFAULT_BROWSER=1; only this site's cookies are "
+            "saved)."
         ),
     )
     connect_default.add_argument(
@@ -432,8 +433,8 @@ def build_parser() -> argparse.ArgumentParser:
         dest="use_default_browser",
         action="store_false",
         help=(
-            "Force a blank, isolated login window instead of reusing your "
-            "default browser (also AGENTWEB_USE_DEFAULT_BROWSER=0)."
+            "Use a blank, isolated managed-Chrome login window (default) "
+            "instead of reusing your default browser."
         ),
     )
 
