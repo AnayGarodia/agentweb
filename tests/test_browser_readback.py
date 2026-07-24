@@ -171,8 +171,11 @@ def test_sync_from_browser_imports_only_allowlisted_cookies(tmp_path: Path) -> N
 def test_browser_execute_requires_saved_session(
     tmp_path: Path, monkeypatch
 ) -> None:
-    # A resolvable site with a base_url but no captured browser profile must fail
-    # with browser_session_missing (and never launch Chrome).
+    # A resolvable site with a base_url but no captured browser profile and no
+    # default browser to seed from must fail with browser_session_missing (and
+    # never launch Chrome).
+    import agentweb.browser_readback as br
+
     class _Resolved:
         site = "linkedin"
 
@@ -185,10 +188,70 @@ def test_browser_execute_requires_saved_session(
             "allowed_domains": ["linkedin.com"],
         },
     )
+    monkeypatch.setattr(
+        br,
+        "seed_profile_from_default_browser",
+        lambda profile_dir: {"seeded": False, "reason": "no_default_browser_profile"},
+    )
     runtime = Runtime(StatePaths(tmp_path))
     with pytest.raises(AgentWebError) as excinfo:
         browser_execute(runtime, "linkedin.com", "account_status", {})
     assert excinfo.value.code == "browser_session_missing"
+
+
+def test_browser_execute_isolated_does_not_seed(
+    tmp_path: Path, monkeypatch
+) -> None:
+    # With default-browser reuse opted out, no seeding is attempted at all.
+    import agentweb.browser_readback as br
+
+    class _Resolved:
+        site = "linkedin"
+
+    def _fail_seed(profile_dir):  # pragma: no cover - must not be called
+        raise AssertionError("seeding must not run when default reuse is disabled")
+
+    monkeypatch.setattr(Runtime, "resolve", lambda self, target: _Resolved())
+    monkeypatch.setattr(
+        Runtime,
+        "describe",
+        lambda self, site: {
+            "base_url": "https://www.linkedin.com",
+            "allowed_domains": ["linkedin.com"],
+        },
+    )
+    monkeypatch.setenv("AGENTWEB_USE_DEFAULT_BROWSER", "0")
+    monkeypatch.setattr(br, "seed_profile_from_default_browser", _fail_seed)
+    runtime = Runtime(StatePaths(tmp_path))
+    with pytest.raises(AgentWebError) as excinfo:
+        browser_execute(runtime, "linkedin.com", "account_status", {})
+    assert excinfo.value.code == "browser_session_missing"
+
+
+def test_browser_transport_op_routes_through_browser(
+    tmp_path: Path, monkeypatch
+) -> None:
+    # A bundled op declaring transport: "browser" (LinkedIn member ops) is
+    # dispatched through browser_execute, never the browserless execute path.
+    import agentweb.browser_readback as br
+    import agentweb.cli as cli
+
+    seen: dict[str, Any] = {}
+
+    def fake_browser_execute(runtime, site, operation, arguments):
+        seen["site"] = site
+        seen["operation"] = operation
+        return {"ok": True, "operation": f"{site}.{operation}", "data": {}}
+
+    def fail_execute(self, *a, **k):  # pragma: no cover - must not be called
+        raise AssertionError("browser-transport op must not use browserless execute")
+
+    monkeypatch.setenv("AGENTWEB_HOME", str(tmp_path))
+    monkeypatch.setattr(br, "browser_execute", fake_browser_execute)
+    monkeypatch.setattr(Runtime, "execute", fail_execute)
+    assert cli.main(["linkedin.com", "account_status"]) == 0
+    assert seen["site"] in {"linkedin", "linkedin.com"}
+    assert seen["operation"] == "account_status"
 
 
 def test_session_override_defaults_none_and_binds_by_site_name(tmp_path: Path) -> None:
