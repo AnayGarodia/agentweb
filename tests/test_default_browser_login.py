@@ -7,8 +7,13 @@ launching a browser.
 
 from __future__ import annotations
 
+from pathlib import Path
+
+import agentweb.connector as connector
 from agentweb.connector import (
+    BrowserProfile,
     default_chrome_user_data_dir,
+    detect_default_browser,
     seed_profile_from_default_browser,
     use_default_browser_enabled,
 )
@@ -98,3 +103,79 @@ def test_seed_profile_no_default_browser(monkeypatch, tmp_path) -> None:
         tmp_path / "site-profile", progress=lambda _msg: None
     )
     assert result == {"seeded": False, "reason": "no_default_browser_profile"}
+
+
+def test_seed_profile_uses_explicit_source(monkeypatch, tmp_path) -> None:
+    # A caller (e.g. a detected Arc profile) can pass the source directory and
+    # name directly; the env override is not consulted.
+    monkeypatch.delenv("AGENTWEB_CHROME_USER_DATA_DIR", raising=False)
+    monkeypatch.delenv("AGENTWEB_CHROME_PROFILE_DIRECTORY", raising=False)
+    source = tmp_path / "Arc" / "User Data"
+    (source / "Default").mkdir(parents=True)
+    (source / "Local State").write_text("state", encoding="utf-8")
+    (source / "Default" / "Cookies").write_text("arc-cookies", encoding="utf-8")
+
+    profile_dir = tmp_path / "site-profile"
+    result = seed_profile_from_default_browser(
+        profile_dir,
+        source_dir=source,
+        source_name="Arc",
+        progress=lambda _m: None,
+    )
+    assert result["seeded"] is True
+    assert result["source_name"] == "Arc"
+    assert (profile_dir / "Default" / "Cookies").read_text() == "arc-cookies"
+
+
+def _profile(name: str, tmp_path: Path) -> BrowserProfile:
+    data_dir = tmp_path / name
+    data_dir.mkdir(exist_ok=True)
+    return BrowserProfile(name=name, executable=f"/bin/{name}", user_data_dir=data_dir)
+
+
+def test_detect_default_browser_prefers_os_default(monkeypatch, tmp_path) -> None:
+    # Arc user with Chrome also installed: the OS default handler wins over the
+    # Chrome-first fallback order, so the everyday browser (Arc) is reused.
+    monkeypatch.delenv("AGENTWEB_CHROME_USER_DATA_DIR", raising=False)
+    chrome = _profile("Google Chrome", tmp_path)
+    arc = _profile("Arc", tmp_path)
+    monkeypatch.setattr(
+        connector, "installed_chromium_browsers", lambda: [chrome, arc]
+    )
+    monkeypatch.setattr(connector, "os_default_browser_key", lambda: "arc")
+    assert detect_default_browser() == arc
+
+
+def test_detect_default_browser_falls_back_to_first(monkeypatch, tmp_path) -> None:
+    # When the OS default can't be read, the preference order (Chrome first) is
+    # used rather than guessing.
+    monkeypatch.delenv("AGENTWEB_CHROME_USER_DATA_DIR", raising=False)
+    chrome = _profile("Google Chrome", tmp_path)
+    arc = _profile("Arc", tmp_path)
+    monkeypatch.setattr(
+        connector, "installed_chromium_browsers", lambda: [chrome, arc]
+    )
+    monkeypatch.setattr(connector, "os_default_browser_key", lambda: None)
+    assert detect_default_browser() == chrome
+
+
+def test_detect_default_browser_none_without_chromium(monkeypatch) -> None:
+    # Safari/Firefox-only machine: nothing to reuse, so login degrades to an
+    # isolated window instead of failing.
+    monkeypatch.delenv("AGENTWEB_CHROME_USER_DATA_DIR", raising=False)
+    monkeypatch.setattr(connector, "installed_chromium_browsers", list)
+    monkeypatch.setattr(connector, "os_default_browser_key", lambda: None)
+    assert detect_default_browser() is None
+
+
+def test_detect_default_browser_override(monkeypatch, tmp_path) -> None:
+    data_dir = tmp_path / "custom"
+    data_dir.mkdir()
+    exe = tmp_path / "mybrowser"
+    exe.write_text("#!/bin/sh\n", encoding="utf-8")
+    monkeypatch.setenv("AGENTWEB_CHROME_USER_DATA_DIR", str(data_dir))
+    monkeypatch.setenv("AGENTWEB_CHROME", str(exe))
+    profile = detect_default_browser()
+    assert profile is not None
+    assert profile.user_data_dir == data_dir
+    assert profile.executable == str(exe)

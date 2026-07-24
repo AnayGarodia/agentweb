@@ -34,6 +34,7 @@ from .connector import (
     CDP_CONNECTION_ERRORS,
     available_port,
     chrome_executable,
+    detect_default_browser,
     open_debugger_client,
     seed_profile_from_default_browser,
     use_default_browser_enabled,
@@ -336,6 +337,11 @@ def browser_execute(
     # signed in on this machine just gets a browser tab that opens
     # authenticated. Only the target site's cookies are ever kept.
     seeded = False
+    # Detect the user's everyday Chromium browser (Chrome, Arc, Brave, ...) once
+    # so we can both seed from it and launch the *same* binary -- each browser
+    # can only decrypt cookies it encrypted, so seeding from Arc then launching
+    # Chrome would open a logged-out window.
+    login_browser = detect_default_browser() if use_default_browser_enabled() else None
     if profile_key is None:
         profile_key = resolved
         web = WebRuntime(
@@ -349,7 +355,11 @@ def browser_execute(
         profile_dir: Path = web.chrome_profile
         web.stop()
         if use_default_browser_enabled():
-            result = seed_profile_from_default_browser(profile_dir)
+            result = seed_profile_from_default_browser(
+                profile_dir,
+                source_dir=login_browser.user_data_dir if login_browser else None,
+                source_name=login_browser.name if login_browser else None,
+            )
             seeded = bool(result.get("seeded"))
         if not seeded:
             raise AgentWebError(
@@ -383,7 +393,7 @@ def browser_execute(
     try:
         port = available_port()
         command = [
-            chrome_executable(),
+            login_browser.executable if login_browser is not None else chrome_executable(),
             f"--user-data-dir={profile_dir}",
             "--remote-debugging-address=127.0.0.1",
             f"--remote-debugging-port={port}",
