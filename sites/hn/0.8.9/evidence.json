@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "flows": [
+    {
+      "command": "stories",
+      "status": "passed",
+      "browser_capture": "evidence/hn-public-2026-07-21.json#flows.stories",
+      "direct_recipe": "adapter.py#Adapter.stories",
+      "fixture": "evidence/conformance.json#flows.stories",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "account_status",
+      "status": "passed",
+      "browser_capture": "evidence/hn-account-actions-2026-07-21.json#flows.account_status",
+      "direct_recipe": "adapter.py#Adapter.account_status",
+      "fixture": "evidence/conformance.json#flows.account_status",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "favorite",
+      "status": "passed",
+      "browser_capture": "evidence/hn-account-actions-2026-07-21.json#flows.favorite",
+      "direct_recipe": "adapter.py#Adapter.favorite",
+      "fixture": "evidence/conformance.json#flows.favorite",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "vote",
+      "status": "passed",
+      "browser_capture": "evidence/hn-account-actions-2026-07-21.json#flows.vote",
+      "direct_recipe": "adapter.py#Adapter.vote",
+      "fixture": "evidence/conformance.json#flows.vote",
+      "last_verified": "2026-07-21"
+    }
+  ]
+}

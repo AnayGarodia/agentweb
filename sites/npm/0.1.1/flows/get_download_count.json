@@ -1,0 +1,81 @@
+{
+  "observed": {
+    "cases": [
+      "success",
+      "live_cli_success",
+      "live_mcp_success"
+    ],
+    "paths": [
+      "https://api.npmjs.org/downloads/point/{period}/{package}"
+    ],
+    "source": "reviewed npm public capability mapping"
+  },
+  "operation": "get_download_count",
+  "recipe": {
+    "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+    "operation": "get_download_count",
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "evidence_1",
+        "path": "https://api.npmjs.org/downloads/point/{period}/{package}"
+      }
+    ],
+    "type": "reviewed_python_binding"
+  },
+  "schema_version": 1,
+  "verification": {
+    "assertions": [
+      {
+        "name": "download summary returns npm's numeric count",
+        "passed": true,
+        "path": "$.data.downloads"
+      }
+    ],
+    "contract_hash": "ce087b0ec64ac1e8bd3cf022189ee50e7a9dfb2e8af87d6a08167b90eda6d030",
+    "recipe_hash": "d6712aff5e1dd4ab4efd45f5d074818c9f1c3e5b24cc67f4bf21085a9bffe17b",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "exit_code": 0,
+      "interfaces": [
+        "domain_first_cli_current",
+        "generic_cli_compatibility",
+        "mcp_site_call"
+      ],
+      "name": "agentweb-npm-release-gate",
+      "runtime_matrix": {
+        "0.16.0": [
+          "adapter_import",
+          "generic_cli",
+          "mcp"
+        ],
+        "0.16.3": [
+          "adapter_import",
+          "generic_cli",
+          "mcp"
+        ],
+        "0.16.4": [
+          "adapter_import",
+          "generic_cli",
+          "mcp"
+        ],
+        "0.16.5": [
+          "adapter_import",
+          "domain_first_cli",
+          "mcp"
+        ]
+      },
+      "runtime_versions": [
+        "0.16.0",
+        "0.16.3",
+        "0.16.4",
+        "0.16.5"
+      ],
+      "version": "1"
+    },
+    "status": "passed",
+    "verified_at_unix": 1784757911.0
+  }
+}

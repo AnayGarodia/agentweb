@@ -1,0 +1,5535 @@
+{
+  "aliases": [
+    "npm",
+    "npmjs"
+  ],
+  "allowed_domains": [
+    "api.npmjs.org",
+    "docs.npmjs.com",
+    "npmjs.com",
+    "registry.npmjs.org",
+    "status.npmjs.org"
+  ],
+  "auth": {
+    "interaction": "not_required",
+    "strategy": "none"
+  },
+  "authoring": {
+    "browserless_parity": true,
+    "catalog_complete": true,
+    "exhaustive": true,
+    "matrix_verified": true,
+    "tool_quality_verified": true
+  },
+  "base_url": "https://www.npmjs.com",
+  "canonical_domain": "npmjs.com",
+  "commands": {
+    "audit_versions": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "security",
+      "description": "Check explicit public npm package versions against npm's bulk security advisory service.",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "packages": {
+              "lodash": [
+                "4.17.20",
+                "4.17.21"
+              ]
+            }
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "packages": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 100,
+              "minItems": 1,
+              "type": "array"
+            },
+            "description": "Mapping of one to one hundred npm package names to explicit version arrays.",
+            "type": "object"
+          }
+        },
+        "required": [
+          "packages"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "advisories": {
+            "description": "Normalized matching security advisories.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "advisory_count": {
+            "description": "Number of returned advisories.",
+            "type": "integer"
+          },
+          "packages": {
+            "description": "Audited package names.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "packages",
+          "advisories",
+          "advisory_count"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call audits its complete bounded input mapping.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not treat an empty result as a guarantee of safety; it only means npm returned no matching known advisories.",
+      "when_to_use": "Use this for a targeted vulnerability check before selecting, installing, or upgrading package versions."
+    },
+    "download_tarball": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "package_contents",
+      "description": "Download one public npm package tarball and return a private local file receipt with its SHA-256 digest.",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "package": "react",
+            "version": "latest"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "version": {
+            "default": "latest",
+            "description": "Exact npm version or distribution tag such as latest, next, beta, or canary.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "package"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "bytes": {
+            "description": "Exact downloaded byte count.",
+            "type": "integer"
+          },
+          "content_type": {
+            "description": "Content type reported by npm.",
+            "type": "string"
+          },
+          "filename": {
+            "description": "Safe local tarball filename.",
+            "type": "string"
+          },
+          "path": {
+            "description": "Private local path where AgentWeb saved the tarball.",
+            "type": "string"
+          },
+          "sha256": {
+            "description": "SHA-256 digest of the downloaded tarball.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "filename",
+          "path",
+          "bytes",
+          "sha256",
+          "content_type"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call downloads one exact resolved package version.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this merely for metadata or a small source file because get_version and read_package_file return smaller results.",
+      "when_to_use": "Use this when another local tool needs the complete published archive rather than individual inspected files."
+    },
+    "get_download_count": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "analytics",
+      "description": "Return npm's aggregate download count for a package over a named period or explicit date range.",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "package": "react",
+            "period": "last-week"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "period": {
+            "default": "last-week",
+            "description": "Named period or inclusive YYYY-MM-DD:YYYY-MM-DD range.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "downloads": {
+            "description": "Downloads during the requested period.",
+            "type": "integer"
+          },
+          "end": {
+            "description": "Inclusive period end date.",
+            "type": "string"
+          },
+          "package": {
+            "description": "Canonical package name.",
+            "type": "string"
+          },
+          "start": {
+            "description": "Inclusive period start date.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package",
+          "downloads",
+          "start",
+          "end"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call returns one aggregate period.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this for day-by-day trends; get_download_history returns the bounded daily series.",
+      "when_to_use": "Use this for compact popularity measurements when daily history is unnecessary."
+    },
+    "get_download_history": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "analytics",
+      "description": "Return a bounded daily npm download series for up to 366 days with local cursor pagination.",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "end": "2026-07-21",
+            "package": "react",
+            "start": "2026-07-01"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "end": {
+            "description": "Inclusive ISO end date in YYYY-MM-DD form.",
+            "format": "date",
+            "type": "string"
+          },
+          "limit": {
+            "default": 90,
+            "description": "Maximum daily points to return.",
+            "maximum": 366,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "start": {
+            "description": "Inclusive ISO start date in YYYY-MM-DD form.",
+            "format": "date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package",
+          "start",
+          "end"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "downloads": {
+            "description": "Daily date and download-count points.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "end": {
+            "description": "Inclusive last date.",
+            "type": "string"
+          },
+          "package": {
+            "description": "Canonical package name.",
+            "type": "string"
+          },
+          "start": {
+            "description": "Inclusive first date.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package",
+          "start",
+          "end",
+          "downloads"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for the next portion of the requested range.",
+        "default_limit": 90,
+        "maximum_limit": 366,
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not request more than one year in one call; split longer analysis into separate date ranges.",
+      "when_to_use": "Use this to analyze download trends, spikes, seasonality, or release impact over time."
+    },
+    "get_package": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "packages",
+      "description": "Return a bounded package overview with the latest release, tags, maintainers, links, and README preview.",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "package": "react"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "dist_tags": {
+            "description": "Current distribution-tag to version mapping.",
+            "type": "object"
+          },
+          "latest": {
+            "description": "Normalized metadata for the latest tagged version.",
+            "type": "object"
+          },
+          "maintainers": {
+            "description": "Current package maintainers.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "name": {
+            "description": "Canonical npm package name.",
+            "type": "string"
+          },
+          "version_count": {
+            "description": "Number of published versions.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name",
+          "dist_tags",
+          "latest",
+          "version_count",
+          "maintainers"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call returns one bounded package overview.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this to retrieve every historical release; use list_versions for bounded pagination.",
+      "when_to_use": "Use this for a complete package-page overview after resolving the exact package name."
+    },
+    "get_provenance": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "security",
+      "description": "Return bounded npm publish and SLSA provenance attestations with transparency-log identifiers.",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "package": "react",
+            "version": "latest"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "version": {
+            "default": "latest",
+            "description": "Exact npm version or distribution tag such as latest, next, beta, or canary.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "package"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "attestations": {
+            "description": "Bounded publish and provenance attestation summaries.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "package": {
+            "description": "Canonical package name.",
+            "type": "string"
+          },
+          "verified_attestation_count": {
+            "description": "Number of attestations npm returned.",
+            "type": "integer"
+          },
+          "version": {
+            "description": "Resolved exact package version.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package",
+          "version",
+          "attestations",
+          "verified_attestation_count"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call covers one exact package release.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not interpret provenance as proof that package code is safe; it only links publication to recorded build identity.",
+      "when_to_use": "Use this to establish whether a release carries npm provenance and where its attestations were logged."
+    },
+    "get_readme": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "documentation",
+      "description": "Read the package README directly from the registry with an explicit character bound and truncation signal.",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "max_chars": 12000,
+            "package": "express"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "max_chars": {
+            "default": 20000,
+            "description": "Maximum README characters to return.",
+            "maximum": 50000,
+            "minimum": 1000,
+            "type": "integer"
+          },
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "characters": {
+            "description": "Untruncated README character count.",
+            "type": "integer"
+          },
+          "content": {
+            "description": "Bounded README content.",
+            "type": "string"
+          },
+          "filename": {
+            "description": "README filename recorded by npm.",
+            "type": "string"
+          },
+          "package": {
+            "description": "Canonical package name.",
+            "type": "string"
+          },
+          "truncated": {
+            "description": "Whether content was shortened to max_chars.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "package",
+          "filename",
+          "content",
+          "characters",
+          "truncated"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Increase max_chars when a longer README excerpt is required.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this for npm's own documentation; read_site_resource handles official npm pages.",
+      "when_to_use": "Use this for package usage, examples, migration notes, and author-provided documentation."
+    },
+    "get_registry_status": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "service_health",
+      "description": "Return npm's current overall status, component states, and active public incidents.",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "components": {
+            "description": "Current npm component states.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "description": {
+            "description": "Plain-language overall service status.",
+            "type": "string"
+          },
+          "incidents": {
+            "description": "Active npm incidents.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "indicator": {
+            "description": "Overall npm service-health indicator.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "components",
+          "incidents"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call returns the current bounded status snapshot.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this as proof that a specific package exists or that an account has permission to access it.",
+      "when_to_use": "Use this when package, downloads, authentication, or website operations fail unexpectedly."
+    },
+    "get_version": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "packages",
+      "description": "Resolve an exact version or distribution tag and return its normalized manifest, dependencies, and integrity data.",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "package": "react",
+            "version": "latest"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "version": {
+            "default": "latest",
+            "description": "Exact npm version or distribution tag such as latest, next, beta, or canary.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "package"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "dependencies": {
+            "description": "Dependencies grouped by runtime, development, peer, optional, and bundled roles.",
+            "type": "object"
+          },
+          "dist": {
+            "description": "Tarball URL, hashes, signatures, size, and attestation pointers.",
+            "type": "object"
+          },
+          "name": {
+            "description": "Canonical package name.",
+            "type": "string"
+          },
+          "version": {
+            "description": "Resolved exact version.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "version",
+          "dependencies",
+          "dist"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call resolves exactly one version or tag.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this to enumerate release history; list_versions supplies bounded pages.",
+      "when_to_use": "Use this when an agent needs the install-time facts for one package release or tag."
+    },
+    "list_dependencies": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "dependencies",
+      "description": "List one package version's runtime, development, peer, optional, and bundled dependencies in normalized pages.",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "kind": "runtime",
+            "package": "express",
+            "version": "latest"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "kind": {
+            "default": "all",
+            "description": "Dependency group to return.",
+            "enum": [
+              "all",
+              "runtime",
+              "development",
+              "peer",
+              "optional",
+              "bundled"
+            ],
+            "type": "string"
+          },
+          "limit": {
+            "default": 100,
+            "description": "Maximum dependencies to return.",
+            "maximum": 250,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "version": {
+            "default": "latest",
+            "description": "Exact npm version or distribution tag such as latest, next, beta, or canary.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "package"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "dependencies": {
+            "description": "Normalized direct dependency requirements.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "package": {
+            "description": "Canonical package name.",
+            "type": "string"
+          },
+          "version": {
+            "description": "Resolved exact package version.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package",
+          "version",
+          "dependencies"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for the next dependency page.",
+        "default_limit": 100,
+        "maximum_limit": 250,
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not interpret this as a fully resolved dependency tree; it reports the published direct manifest requirements.",
+      "when_to_use": "Use this to inspect dependency requirements without downloading or installing the package."
+    },
+    "list_dependents": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "dependencies",
+      "description": "List packages that npm currently shows as depending on a public package, using npm's browser-compatible public page.",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 20,
+            "package": "react"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "limit": {
+            "default": 36,
+            "description": "Maximum dependent package names to return.",
+            "maximum": 36,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "dependents": {
+            "description": "Public dependent package names.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "package": {
+            "description": "Package whose dependents were requested.",
+            "type": "string"
+          },
+          "total": {
+            "description": "Current dependent count displayed by npm.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "package",
+          "dependents"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for npm's next dependents page.",
+        "default_limit": 36,
+        "maximum_limit": 36,
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not treat the order or total as a permanent registry invariant because npm continuously refreshes this index.",
+      "when_to_use": "Use this to estimate downstream ecosystem impact or discover projects built on a package."
+    },
+    "list_maintainer_packages": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "people",
+      "description": "List public packages associated with an npm maintainer account using the registry's maintained search index.",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 20,
+            "username": "ljharb"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum number of records to return.",
+            "maximum": 250,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "description": "Zero-based package result offset.",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "username": {
+            "description": "Exact npm account name, with or without a leading tilde.",
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "username"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "packages": {
+            "description": "Ranked public packages associated with the account.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "total": {
+            "description": "Current matching package count.",
+            "type": "integer"
+          },
+          "username": {
+            "description": "Normalized npm account name.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "packages",
+          "total"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor as offset on the next call.",
+        "default_limit": 20,
+        "maximum_limit": 250,
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this for private packages or account administration because those require authenticated npm access.",
+      "when_to_use": "Use this to inspect a maintainer's public package portfolio without opening the npm profile page."
+    },
+    "list_package_files": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "package_contents",
+      "description": "Inspect a published npm tarball and list its files, sizes, modes, and entry types without extracting it.",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 100,
+            "package": "react",
+            "version": "latest"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "limit": {
+            "default": 100,
+            "description": "Maximum tarball entries to return.",
+            "maximum": 500,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "version": {
+            "default": "latest",
+            "description": "Exact npm version or distribution tag such as latest, next, beta, or canary.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "package"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "compressed_bytes": {
+            "description": "Downloaded compressed tarball size.",
+            "type": "integer"
+          },
+          "files": {
+            "description": "Bounded package file entries.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "package": {
+            "description": "Canonical package name.",
+            "type": "string"
+          },
+          "version": {
+            "description": "Resolved exact package version.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package",
+          "version",
+          "compressed_bytes",
+          "files"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for the next file page.",
+        "default_limit": 100,
+        "maximum_limit": 500,
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this for packages over the documented inspection limits; download_tarball returns a local file receipt instead.",
+      "when_to_use": "Use this to reproduce npm's Code tab or locate a file before calling read_package_file."
+    },
+    "list_versions": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "packages",
+      "description": "List a package's releases in publication order with dates, deprecations, manifests, and distribution integrity.",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 20,
+            "package": "react"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "include_prerelease": {
+            "default": true,
+            "description": "Whether prerelease versions remain in the result.",
+            "type": "boolean"
+          },
+          "limit": {
+            "default": 50,
+            "description": "Maximum versions to return.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "package": {
+            "description": "Canonical package name.",
+            "type": "string"
+          },
+          "versions": {
+            "description": "A bounded release-history page.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "package",
+          "versions"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged to retrieve the next release page.",
+        "default_limit": 50,
+        "maximum_limit": 100,
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not request this when only latest is needed; get_package is smaller and faster.",
+      "when_to_use": "Use this to inspect release history, find an older version, or compare stable and prerelease publication activity."
+    },
+    "read_package_file": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "package_contents",
+      "description": "Read one bounded regular file directly from a public npm tarball as UTF-8 text or base64.",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "package": "react",
+            "path": "package.json",
+            "version": "latest"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "max_bytes": {
+            "default": 200000,
+            "description": "Maximum file bytes to return.",
+            "maximum": 1000000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "path": {
+            "description": "Exact safe relative path returned by list_package_files.",
+            "maxLength": 1000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "version": {
+            "default": "latest",
+            "description": "Exact npm version or distribution tag such as latest, next, beta, or canary.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "package",
+          "path"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "bytes": {
+            "description": "Exact file byte length.",
+            "type": "integer"
+          },
+          "content": {
+            "description": "Complete bounded file content in the declared encoding.",
+            "type": "string"
+          },
+          "encoding": {
+            "description": "utf-8 for text or base64 for binary content.",
+            "type": "string"
+          },
+          "package": {
+            "description": "Canonical package name.",
+            "type": "string"
+          },
+          "path": {
+            "description": "Normalized tarball-relative file path.",
+            "type": "string"
+          },
+          "sha256": {
+            "description": "SHA-256 digest of the returned file.",
+            "type": "string"
+          },
+          "version": {
+            "description": "Resolved exact package version.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package",
+          "version",
+          "path",
+          "bytes",
+          "sha256",
+          "encoding",
+          "content"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call reads one complete bounded regular file.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not request directories, links, unsafe paths, or files larger than the selected byte limit.",
+      "when_to_use": "Use this after list_package_files to inspect package manifests, source, licenses, or bundled documentation."
+    },
+    "read_site_resource": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "documentation",
+      "description": "Read a bounded public npmjs.com policy, product, help, or docs.npmjs.com page without opening a browser.",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "max_chars": 12000,
+            "url": "https://docs.npmjs.com/about-npm/"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "max_chars": {
+            "default": 30000,
+            "description": "Maximum visible page characters to return.",
+            "maximum": 50000,
+            "minimum": 1000,
+            "type": "integer"
+          },
+          "url": {
+            "description": "Absolute HTTPS URL on npmjs.com or docs.npmjs.com.",
+            "maxLength": 2000,
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "characters": {
+            "description": "Untruncated visible character count.",
+            "type": "integer"
+          },
+          "links": {
+            "description": "Up to one hundred labeled links from the page.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "text": {
+            "description": "Bounded visible page text.",
+            "type": "string"
+          },
+          "truncated": {
+            "description": "Whether text was shortened.",
+            "type": "boolean"
+          },
+          "url": {
+            "description": "Final page URL after safe redirects.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url",
+          "text",
+          "characters",
+          "truncated",
+          "links"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Follow a returned link with another bounded call when needed.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use it for arbitrary internet URLs or package READMEs; only official npm pages are accepted.",
+      "when_to_use": "Use this for npm documentation and policy URLs that are not package records."
+    },
+    "search_packages": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "discovery",
+      "description": "Search the public npm registry with npm's text, keyword, maintainer, and scope query syntax.",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 10,
+            "query": "keywords:markdown"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum number of records to return.",
+            "maximum": 250,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "maintenance": {
+            "description": "Optional npm search maintenance weight from zero through one.",
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "offset": {
+            "default": 0,
+            "description": "Zero-based result offset.",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "popularity": {
+            "description": "Optional npm search popularity weight from zero through one.",
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "quality": {
+            "description": "Optional npm search quality weight from zero through one.",
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "query": {
+            "description": "npm search expression, including qualifiers such as maintainer:name, scope:name, or keywords:value.",
+            "maxLength": 500,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "packages": {
+            "description": "Ranked normalized package search results.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "query": {
+            "description": "The search expression npm evaluated.",
+            "type": "string"
+          },
+          "total": {
+            "description": "Total matching packages reported by npm.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "query",
+          "packages",
+          "total"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass the numeric next_cursor as offset on the next call.",
+        "default_limit": 20,
+        "maximum_limit": 250,
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use it when the exact package name is already known; get_package is faster and more complete.",
+      "when_to_use": "Use this to discover packages, compare likely candidates, or enumerate a maintainer, scope, or keyword."
+    }
+  },
+  "compatibility": {
+    "adapter_import_tested": true,
+    "cli_tested": true,
+    "mcp_tested": true,
+    "minimum_runtime": "0.16.0",
+    "tested_runtimes": [
+      "0.16.0",
+      "0.16.3",
+      "0.16.4",
+      "0.16.5"
+    ]
+  },
+  "cookie_domain": ".npmjs.com",
+  "coverage": {
+    "capability": {
+      "coverage_ratio": 0.5517,
+      "discovered_route_count": 29,
+      "excluded_count": 13,
+      "exhaustive": true,
+      "mapped_count": 16,
+      "open_count": 0,
+      "read": {
+        "coverage_ratio": 1.0,
+        "discovered_route_count": 16,
+        "excluded_count": 0,
+        "mapped_count": 16,
+        "open_count": 0
+      },
+      "remaining": [],
+      "schema_version": 1,
+      "write": {
+        "coverage_ratio": 0.0,
+        "discovered_route_count": 13,
+        "excluded_count": 13,
+        "mapped_count": 0,
+        "open_count": 0
+      }
+    },
+    "constraints": [
+      "npm permissions, rate limits, package availability, and service policies still apply",
+      "Published tarball inspection is bounded to 50 MB compressed and 20,000 entries"
+    ],
+    "human_boundaries": [
+      "Account creation, login, passkeys, recovery, and two-factor challenges require the user's credentials and human authorization.",
+      "Adding or removing distribution tags changes what users install and requires package ownership.",
+      "Changing package owners grants or revokes publication authority and requires privileged account access.",
+      "Deprecating or undeprecating releases changes public install warnings and requires package ownership.",
+      "Organization members, teams, roles, and billing require organization-owner access unavailable to the public matrix.",
+      "Package visibility and team access changes require authenticated package or organization administration.",
+      "Pro and Teams purchases, invoices, and payment changes are financial human-only boundaries.",
+      "Profile and email changes require an authenticated npm account and may require password or two-factor confirmation.",
+      "Publishing changes the public software supply chain and requires package contents, ownership, and narrowly scoped human confirmation.",
+      "Staged publication requires an authenticated publisher account and a controlled disposable test package.",
+      "Starring and unstarring packages changes personalized account state and requires a dedicated signed-in mapping account.",
+      "Submitting support or malware reports sends user-provided information and requires case-specific human approval.",
+      "Token creation and revocation expose sensitive credentials and require authenticated human authorization.",
+      "Unpublishing is destructive, time-limited, and requires package ownership plus explicit human confirmation."
+    ],
+    "not_mapped": [],
+    "protocol_fallback": null,
+    "typed_fast_paths": [
+      "audit_versions",
+      "download_tarball",
+      "get_download_count",
+      "get_download_history",
+      "get_package",
+      "get_provenance",
+      "get_readme",
+      "get_registry_status",
+      "get_version",
+      "list_dependencies",
+      "list_dependents",
+      "list_maintainer_packages",
+      "list_package_files",
+      "list_versions",
+      "read_package_file",
+      "read_site_resource",
+      "search_packages"
+    ],
+    "website_parity": "All anonymous public npm package, registry, downloads, package-content, dependents, documentation, policy, and status surfaces in the declared en-US matrix have reviewed browserless operations. Account and publisher roles remain visible outside that matrix."
+  },
+  "description": "Complete browserless interface for npm's anonymous public registry and website surfaces: discovery, metadata, releases, dependencies, dependents, downloads, provenance, security, package contents, documentation, and service health.",
+  "entrypoint": "adapter.py",
+  "evidence_capsules": {
+    "audit_versions": {
+      "contract": "audit_versions",
+      "path": "flows/audit_versions.json"
+    },
+    "download_tarball": {
+      "contract": "download_tarball",
+      "path": "flows/download_tarball.json"
+    },
+    "get_download_count": {
+      "contract": "get_download_count",
+      "path": "flows/get_download_count.json"
+    },
+    "get_download_history": {
+      "contract": "get_download_history",
+      "path": "flows/get_download_history.json"
+    },
+    "get_package": {
+      "contract": "get_package",
+      "path": "flows/get_package.json"
+    },
+    "get_provenance": {
+      "contract": "get_provenance",
+      "path": "flows/get_provenance.json"
+    },
+    "get_readme": {
+      "contract": "get_readme",
+      "path": "flows/get_readme.json"
+    },
+    "get_registry_status": {
+      "contract": "get_registry_status",
+      "path": "flows/get_registry_status.json"
+    },
+    "get_version": {
+      "contract": "get_version",
+      "path": "flows/get_version.json"
+    },
+    "list_dependencies": {
+      "contract": "list_dependencies",
+      "path": "flows/list_dependencies.json"
+    },
+    "list_dependents": {
+      "contract": "list_dependents",
+      "path": "flows/list_dependents.json"
+    },
+    "list_maintainer_packages": {
+      "contract": "list_maintainer_packages",
+      "path": "flows/list_maintainer_packages.json"
+    },
+    "list_package_files": {
+      "contract": "list_package_files",
+      "path": "flows/list_package_files.json"
+    },
+    "list_versions": {
+      "contract": "list_versions",
+      "path": "flows/list_versions.json"
+    },
+    "read_package_file": {
+      "contract": "read_package_file",
+      "path": "flows/read_package_file.json"
+    },
+    "read_site_resource": {
+      "contract": "read_site_resource",
+      "path": "flows/read_site_resource.json"
+    },
+    "search_packages": {
+      "contract": "search_packages",
+      "path": "flows/search_packages.json"
+    }
+  },
+  "flow_capsules": {},
+  "name": "npm",
+  "operation_contracts": {
+    "audit_versions": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+        "method": "audit_versions",
+        "type": "python"
+      },
+      "capabilities": [
+        "audit_security"
+      ],
+      "category": "security",
+      "contract_hash": "7a70df280a21da7f74654af7b2603be6cf8d7c2c0cad19c887dccc97fb281c66",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "packages": {
+              "lodash": [
+                "4.17.20",
+                "4.17.21"
+              ]
+            }
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "packages": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 100,
+              "minItems": 1,
+              "type": "array"
+            },
+            "description": "Mapping of one to one hundred npm package names to explicit version arrays.",
+            "type": "object"
+          }
+        },
+        "required": [
+          "packages"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "audit_versions",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "advisories": {
+            "description": "Normalized matching security advisories.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "advisory_count": {
+            "description": "Number of returned advisories.",
+            "type": "integer"
+          },
+          "packages": {
+            "description": "Audited package names.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "packages",
+          "advisories",
+          "advisory_count"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call audits its complete bounded input mapping.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Live public npm data with bounded local caching appropriate to the resource.",
+        "max_items": 1000,
+        "truncation": "Collections, page text, README content, tarballs, and package files report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784757911.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Check explicit public npm package versions against npm's bulk security advisory service.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "7a70df280a21da7f74654af7b2603be6cf8d7c2c0cad19c887dccc97fb281c66",
+            "input_names": [
+              "packages"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_cli_success",
+            "input_names": [
+              "packages"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_mcp_success",
+            "input_names": [
+              "packages"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "security audit returns normalized advisory results",
+            "path": "$.data.advisories",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_cli_success",
+          "live_mcp_success"
+        ]
+      },
+      "when_not_to_use": "Do not treat an empty result as a guarantee of safety; it only means npm returned no matching known advisories.",
+      "when_to_use": "Use this for a targeted vulnerability check before selecting, installing, or upgrading package versions."
+    },
+    "download_tarball": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+        "method": "download_tarball",
+        "type": "python"
+      },
+      "capabilities": [
+        "download_package"
+      ],
+      "category": "package_contents",
+      "contract_hash": "4678ad381d522e3b6591889183611783189f065ee0f32fe49779cf85e26a99ae",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "package": "react",
+            "version": "latest"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "version": {
+            "default": "latest",
+            "description": "Exact npm version or distribution tag such as latest, next, beta, or canary.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "package"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "download_tarball",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "bytes": {
+            "description": "Exact downloaded byte count.",
+            "type": "integer"
+          },
+          "content_type": {
+            "description": "Content type reported by npm.",
+            "type": "string"
+          },
+          "filename": {
+            "description": "Safe local tarball filename.",
+            "type": "string"
+          },
+          "path": {
+            "description": "Private local path where AgentWeb saved the tarball.",
+            "type": "string"
+          },
+          "sha256": {
+            "description": "SHA-256 digest of the downloaded tarball.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "filename",
+          "path",
+          "bytes",
+          "sha256",
+          "content_type"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call downloads one exact resolved package version.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Live public npm data with bounded local caching appropriate to the resource.",
+        "max_items": 1,
+        "truncation": "Collections, page text, README content, tarballs, and package files report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784757911.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Download one public npm package tarball and return a private local file receipt with its SHA-256 digest.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "4678ad381d522e3b6591889183611783189f065ee0f32fe49779cf85e26a99ae",
+            "input_names": [
+              "package",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_cli_success",
+            "input_names": [
+              "package",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_mcp_success",
+            "input_names": [
+              "package",
+              "version"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "tarball download returns an installed-file receipt",
+            "path": "$.data",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_cli_success",
+          "live_mcp_success"
+        ]
+      },
+      "when_not_to_use": "Do not use this merely for metadata or a small source file because get_version and read_package_file return smaller results.",
+      "when_to_use": "Use this when another local tool needs the complete published archive rather than individual inspected files."
+    },
+    "get_download_count": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+        "method": "get_download_count",
+        "type": "python"
+      },
+      "capabilities": [
+        "inspect_downloads"
+      ],
+      "category": "analytics",
+      "contract_hash": "ce087b0ec64ac1e8bd3cf022189ee50e7a9dfb2e8af87d6a08167b90eda6d030",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "package": "react",
+            "period": "last-week"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "period": {
+            "default": "last-week",
+            "description": "Named period or inclusive YYYY-MM-DD:YYYY-MM-DD range.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "get_download_count",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "downloads": {
+            "description": "Downloads during the requested period.",
+            "type": "integer"
+          },
+          "end": {
+            "description": "Inclusive period end date.",
+            "type": "string"
+          },
+          "package": {
+            "description": "Canonical package name.",
+            "type": "string"
+          },
+          "start": {
+            "description": "Inclusive period start date.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package",
+          "downloads",
+          "start",
+          "end"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call returns one aggregate period.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Live public npm data with bounded local caching appropriate to the resource.",
+        "max_items": 1,
+        "truncation": "Collections, page text, README content, tarballs, and package files report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784757911.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Return npm's aggregate download count for a package over a named period or explicit date range.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "ce087b0ec64ac1e8bd3cf022189ee50e7a9dfb2e8af87d6a08167b90eda6d030",
+            "input_names": [
+              "package",
+              "period"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_cli_success",
+            "input_names": [
+              "package",
+              "period"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_mcp_success",
+            "input_names": [
+              "package",
+              "period"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "download summary returns npm's numeric count",
+            "path": "$.data.downloads",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_cli_success",
+          "live_mcp_success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for day-by-day trends; get_download_history returns the bounded daily series.",
+      "when_to_use": "Use this for compact popularity measurements when daily history is unnecessary."
+    },
+    "get_download_history": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+        "method": "get_download_history",
+        "type": "python"
+      },
+      "capabilities": [
+        "inspect_download_history"
+      ],
+      "category": "analytics",
+      "contract_hash": "b17430474897ae55448596554dfbc8ba1345292517be9bf651b12465a6bd32fe",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "end": "2026-07-21",
+            "package": "react",
+            "start": "2026-07-01"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "end": {
+            "description": "Inclusive ISO end date in YYYY-MM-DD form.",
+            "format": "date",
+            "type": "string"
+          },
+          "limit": {
+            "default": 90,
+            "description": "Maximum daily points to return.",
+            "maximum": 366,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "start": {
+            "description": "Inclusive ISO start date in YYYY-MM-DD form.",
+            "format": "date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package",
+          "start",
+          "end"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "get_download_history",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "downloads": {
+            "description": "Daily date and download-count points.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "end": {
+            "description": "Inclusive last date.",
+            "type": "string"
+          },
+          "package": {
+            "description": "Canonical package name.",
+            "type": "string"
+          },
+          "start": {
+            "description": "Inclusive first date.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package",
+          "start",
+          "end",
+          "downloads"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for the next portion of the requested range.",
+        "default_limit": 90,
+        "maximum_limit": 366,
+        "supported": true
+      },
+      "result": {
+        "freshness": "Live public npm data with bounded local caching appropriate to the resource.",
+        "max_items": 366,
+        "truncation": "Collections, page text, README content, tarballs, and package files report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784757911.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Return a bounded daily npm download series for up to 366 days with local cursor pagination.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "b17430474897ae55448596554dfbc8ba1345292517be9bf651b12465a6bd32fe",
+            "input_names": [
+              "end",
+              "package",
+              "start"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_cli_success",
+            "input_names": [
+              "end",
+              "package",
+              "start"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_mcp_success",
+            "input_names": [
+              "end",
+              "package",
+              "start"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "download history returns bounded daily records",
+            "path": "$.data.downloads",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_cli_success",
+          "live_mcp_success"
+        ]
+      },
+      "when_not_to_use": "Do not request more than one year in one call; split longer analysis into separate date ranges.",
+      "when_to_use": "Use this to analyze download trends, spikes, seasonality, or release impact over time."
+    },
+    "get_package": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+        "method": "get_package",
+        "type": "python"
+      },
+      "capabilities": [
+        "inspect_package",
+        "inspect_collaborators"
+      ],
+      "category": "packages",
+      "contract_hash": "d375287258e32751d506dfd6e49ce3079f0ad4d4d5987871bc7d2b7a5bc9931a",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "package": "react"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "get_package",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "dist_tags": {
+            "description": "Current distribution-tag to version mapping.",
+            "type": "object"
+          },
+          "latest": {
+            "description": "Normalized metadata for the latest tagged version.",
+            "type": "object"
+          },
+          "maintainers": {
+            "description": "Current package maintainers.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "name": {
+            "description": "Canonical npm package name.",
+            "type": "string"
+          },
+          "version_count": {
+            "description": "Number of published versions.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name",
+          "dist_tags",
+          "latest",
+          "version_count",
+          "maintainers"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call returns one bounded package overview.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Live public npm data with bounded local caching appropriate to the resource.",
+        "max_items": 100,
+        "truncation": "Collections, page text, README content, tarballs, and package files report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784757911.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Return a bounded package overview with the latest release, tags, maintainers, links, and README preview.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "d375287258e32751d506dfd6e49ce3079f0ad4d4d5987871bc7d2b7a5bc9931a",
+            "input_names": [
+              "package"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_cli_success",
+            "input_names": [
+              "package"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_mcp_success",
+            "input_names": [
+              "package"
+            ],
+            "passed": true
+          },
+          {
+            "case": "missing_optional",
+            "input_names": [
+              "package"
+            ],
+            "passed": true
+          },
+          {
+            "case": "null_optional",
+            "input_names": [
+              "package"
+            ],
+            "passed": true
+          },
+          {
+            "case": "partial_record",
+            "input_names": [
+              "package"
+            ],
+            "passed": true
+          },
+          {
+            "case": "malformed_json",
+            "input_names": [
+              "package"
+            ],
+            "passed": true
+          },
+          {
+            "case": "unexpected_json_shape",
+            "input_names": [
+              "package"
+            ],
+            "passed": true
+          },
+          {
+            "case": "not_found",
+            "input_names": [
+              "package"
+            ],
+            "passed": true
+          },
+          {
+            "case": "rate_limited",
+            "input_names": [
+              "package"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "package lookup resolves canonical metadata and latest release",
+            "path": "$.data.latest",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_cli_success",
+          "live_mcp_success",
+          "missing_optional",
+          "null_optional",
+          "partial_record",
+          "malformed_json",
+          "unexpected_json_shape",
+          "not_found",
+          "rate_limited"
+        ]
+      },
+      "when_not_to_use": "Do not use this to retrieve every historical release; use list_versions for bounded pagination.",
+      "when_to_use": "Use this for a complete package-page overview after resolving the exact package name."
+    },
+    "get_provenance": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+        "method": "get_provenance",
+        "type": "python"
+      },
+      "capabilities": [
+        "inspect_provenance"
+      ],
+      "category": "security",
+      "contract_hash": "bc49911083201643d1f66b4c405b651aaef187dcfe0bb2ef41add8eb49b6f3fa",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "package": "react",
+            "version": "latest"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "version": {
+            "default": "latest",
+            "description": "Exact npm version or distribution tag such as latest, next, beta, or canary.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "package"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "get_provenance",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "attestations": {
+            "description": "Bounded publish and provenance attestation summaries.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "package": {
+            "description": "Canonical package name.",
+            "type": "string"
+          },
+          "verified_attestation_count": {
+            "description": "Number of attestations npm returned.",
+            "type": "integer"
+          },
+          "version": {
+            "description": "Resolved exact package version.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package",
+          "version",
+          "attestations",
+          "verified_attestation_count"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call covers one exact package release.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Live public npm data with bounded local caching appropriate to the resource.",
+        "max_items": 20,
+        "truncation": "Collections, page text, README content, tarballs, and package files report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784757911.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Return bounded npm publish and SLSA provenance attestations with transparency-log identifiers.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "bc49911083201643d1f66b4c405b651aaef187dcfe0bb2ef41add8eb49b6f3fa",
+            "input_names": [
+              "package",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_cli_success",
+            "input_names": [
+              "package",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_mcp_success",
+            "input_names": [
+              "package",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "empty_result",
+            "input_names": [
+              "package",
+              "version"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "provenance lookup returns an attestation collection for the resolved release",
+            "path": "$.data.attestations",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_cli_success",
+          "live_mcp_success",
+          "empty_result"
+        ]
+      },
+      "when_not_to_use": "Do not interpret provenance as proof that package code is safe; it only links publication to recorded build identity.",
+      "when_to_use": "Use this to establish whether a release carries npm provenance and where its attestations were logged."
+    },
+    "get_readme": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+        "method": "get_readme",
+        "type": "python"
+      },
+      "capabilities": [
+        "read_readme"
+      ],
+      "category": "documentation",
+      "contract_hash": "3cc8bfff867eb312aa0610aa5c38c36fb7e1bc06669c07f12d911e7f557d4d34",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "max_chars": 12000,
+            "package": "express"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "max_chars": {
+            "default": 20000,
+            "description": "Maximum README characters to return.",
+            "maximum": 50000,
+            "minimum": 1000,
+            "type": "integer"
+          },
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "get_readme",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "characters": {
+            "description": "Untruncated README character count.",
+            "type": "integer"
+          },
+          "content": {
+            "description": "Bounded README content.",
+            "type": "string"
+          },
+          "filename": {
+            "description": "README filename recorded by npm.",
+            "type": "string"
+          },
+          "package": {
+            "description": "Canonical package name.",
+            "type": "string"
+          },
+          "truncated": {
+            "description": "Whether content was shortened to max_chars.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "package",
+          "filename",
+          "content",
+          "characters",
+          "truncated"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Increase max_chars when a longer README excerpt is required.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Live public npm data with bounded local caching appropriate to the resource.",
+        "max_items": 1,
+        "truncation": "Collections, page text, README content, tarballs, and package files report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784757911.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Read the package README directly from the registry with an explicit character bound and truncation signal.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "3cc8bfff867eb312aa0610aa5c38c36fb7e1bc06669c07f12d911e7f557d4d34",
+            "input_names": [
+              "max_chars",
+              "package"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_cli_success",
+            "input_names": [
+              "max_chars",
+              "package"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_mcp_success",
+            "input_names": [
+              "max_chars",
+              "package"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "README lookup reports bounded content and truncation",
+            "path": "$.data.content",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_cli_success",
+          "live_mcp_success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for npm's own documentation; read_site_resource handles official npm pages.",
+      "when_to_use": "Use this for package usage, examples, migration notes, and author-provided documentation."
+    },
+    "get_registry_status": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+        "method": "get_registry_status",
+        "type": "python"
+      },
+      "capabilities": [
+        "registry_status"
+      ],
+      "category": "service_health",
+      "contract_hash": "5f92dcda2ff039184d4351c0c7b8cd8089ed06a91adc0e11dce5f78c3bc91a39",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "get_registry_status",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "components": {
+            "description": "Current npm component states.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "description": {
+            "description": "Plain-language overall service status.",
+            "type": "string"
+          },
+          "incidents": {
+            "description": "Active npm incidents.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "indicator": {
+            "description": "Overall npm service-health indicator.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "components",
+          "incidents"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call returns the current bounded status snapshot.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Live public npm data with bounded local caching appropriate to the resource.",
+        "max_items": 100,
+        "truncation": "Collections, page text, README content, tarballs, and package files report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784757911.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Return npm's current overall status, component states, and active public incidents.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "5f92dcda2ff039184d4351c0c7b8cd8089ed06a91adc0e11dce5f78c3bc91a39",
+            "input_names": [],
+            "passed": true
+          },
+          {
+            "case": "live_cli_success",
+            "input_names": [],
+            "passed": true
+          },
+          {
+            "case": "live_mcp_success",
+            "input_names": [],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "registry health returns npm's current status indicator",
+            "path": "$.data.indicator",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_cli_success",
+          "live_mcp_success"
+        ]
+      },
+      "when_not_to_use": "Do not use this as proof that a specific package exists or that an account has permission to access it.",
+      "when_to_use": "Use this when package, downloads, authentication, or website operations fail unexpectedly."
+    },
+    "get_version": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+        "method": "get_version",
+        "type": "python"
+      },
+      "capabilities": [
+        "inspect_version"
+      ],
+      "category": "packages",
+      "contract_hash": "eb11183f44ed4ce941f0ac03d1da266db15b21b748bf93f5899238800d60c895",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "package": "react",
+            "version": "latest"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "version": {
+            "default": "latest",
+            "description": "Exact npm version or distribution tag such as latest, next, beta, or canary.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "package"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "get_version",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "dependencies": {
+            "description": "Dependencies grouped by runtime, development, peer, optional, and bundled roles.",
+            "type": "object"
+          },
+          "dist": {
+            "description": "Tarball URL, hashes, signatures, size, and attestation pointers.",
+            "type": "object"
+          },
+          "name": {
+            "description": "Canonical package name.",
+            "type": "string"
+          },
+          "version": {
+            "description": "Resolved exact version.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "version",
+          "dependencies",
+          "dist"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call resolves exactly one version or tag.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Live public npm data with bounded local caching appropriate to the resource.",
+        "max_items": 100,
+        "truncation": "Collections, page text, README content, tarballs, and package files report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784757911.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Resolve an exact version or distribution tag and return its normalized manifest, dependencies, and integrity data.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "eb11183f44ed4ce941f0ac03d1da266db15b21b748bf93f5899238800d60c895",
+            "input_names": [
+              "package",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_cli_success",
+            "input_names": [
+              "package",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_mcp_success",
+            "input_names": [
+              "package",
+              "version"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "version lookup resolves a concrete published version",
+            "path": "$.data.version",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_cli_success",
+          "live_mcp_success"
+        ]
+      },
+      "when_not_to_use": "Do not use this to enumerate release history; list_versions supplies bounded pages.",
+      "when_to_use": "Use this when an agent needs the install-time facts for one package release or tag."
+    },
+    "list_dependencies": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+        "method": "list_dependencies",
+        "type": "python"
+      },
+      "capabilities": [
+        "inspect_dependencies"
+      ],
+      "category": "dependencies",
+      "contract_hash": "e51a0c690eee50eae358b76ee2b72661ef2d8a91f927ad2739b63be74644cf7f",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "kind": "runtime",
+            "package": "express",
+            "version": "latest"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "kind": {
+            "default": "all",
+            "description": "Dependency group to return.",
+            "enum": [
+              "all",
+              "runtime",
+              "development",
+              "peer",
+              "optional",
+              "bundled"
+            ],
+            "type": "string"
+          },
+          "limit": {
+            "default": 100,
+            "description": "Maximum dependencies to return.",
+            "maximum": 250,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "version": {
+            "default": "latest",
+            "description": "Exact npm version or distribution tag such as latest, next, beta, or canary.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "package"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_dependencies",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "dependencies": {
+            "description": "Normalized direct dependency requirements.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "package": {
+            "description": "Canonical package name.",
+            "type": "string"
+          },
+          "version": {
+            "description": "Resolved exact package version.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package",
+          "version",
+          "dependencies"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for the next dependency page.",
+        "default_limit": 100,
+        "maximum_limit": 250,
+        "supported": true
+      },
+      "result": {
+        "freshness": "Live public npm data with bounded local caching appropriate to the resource.",
+        "max_items": 250,
+        "truncation": "Collections, page text, README content, tarballs, and package files report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784757911.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List one package version's runtime, development, peer, optional, and bundled dependencies in normalized pages.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "e51a0c690eee50eae358b76ee2b72661ef2d8a91f927ad2739b63be74644cf7f",
+            "input_names": [
+              "kind",
+              "package",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_cli_success",
+            "input_names": [
+              "kind",
+              "package",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_mcp_success",
+            "input_names": [
+              "kind",
+              "package",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "empty_result",
+            "input_names": [
+              "kind",
+              "package",
+              "version"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "dependency lookup returns a paginated normalized collection",
+            "path": "$.data.dependencies",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_cli_success",
+          "live_mcp_success",
+          "empty_result"
+        ]
+      },
+      "when_not_to_use": "Do not interpret this as a fully resolved dependency tree; it reports the published direct manifest requirements.",
+      "when_to_use": "Use this to inspect dependency requirements without downloading or installing the package."
+    },
+    "list_dependents": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+        "method": "list_dependents",
+        "type": "python"
+      },
+      "capabilities": [
+        "browse_dependents"
+      ],
+      "category": "dependencies",
+      "contract_hash": "483aa5c4962bb3c61c080dbb63255bfb9800ec2f55c1dc673abf666b1c4e984f",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 20,
+            "package": "react"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "limit": {
+            "default": 36,
+            "description": "Maximum dependent package names to return.",
+            "maximum": 36,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_dependents",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "dependents": {
+            "description": "Public dependent package names.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "package": {
+            "description": "Package whose dependents were requested.",
+            "type": "string"
+          },
+          "total": {
+            "description": "Current dependent count displayed by npm.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "package",
+          "dependents"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for npm's next dependents page.",
+        "default_limit": 36,
+        "maximum_limit": 36,
+        "supported": true
+      },
+      "result": {
+        "freshness": "Live public npm data with bounded local caching appropriate to the resource.",
+        "max_items": 36,
+        "truncation": "Collections, page text, README content, tarballs, and package files report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784757911.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List packages that npm currently shows as depending on a public package, using npm's browser-compatible public page.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "483aa5c4962bb3c61c080dbb63255bfb9800ec2f55c1dc673abf666b1c4e984f",
+            "input_names": [
+              "limit",
+              "package"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_cli_success",
+            "input_names": [
+              "limit",
+              "package"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_mcp_success",
+            "input_names": [
+              "limit",
+              "package"
+            ],
+            "passed": true
+          },
+          {
+            "case": "browser_compatible_transport",
+            "input_names": [
+              "limit",
+              "package"
+            ],
+            "passed": true
+          },
+          {
+            "case": "pagination_boundary",
+            "input_names": [
+              "limit",
+              "package"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "dependent lookup returns package names without browser control",
+            "path": "$.data.dependents",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_cli_success",
+          "live_mcp_success",
+          "browser_compatible_transport",
+          "pagination_boundary"
+        ]
+      },
+      "when_not_to_use": "Do not treat the order or total as a permanent registry invariant because npm continuously refreshes this index.",
+      "when_to_use": "Use this to estimate downstream ecosystem impact or discover projects built on a package."
+    },
+    "list_maintainer_packages": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+        "method": "list_maintainer_packages",
+        "type": "python"
+      },
+      "capabilities": [
+        "browse_maintainer"
+      ],
+      "category": "people",
+      "contract_hash": "4900f26a0efe7563a3b44dce106d909dab2dacd75bd68a1132cad3cdce6d0319",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 20,
+            "username": "ljharb"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum number of records to return.",
+            "maximum": 250,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "description": "Zero-based package result offset.",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "username": {
+            "description": "Exact npm account name, with or without a leading tilde.",
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "username"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_maintainer_packages",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "packages": {
+            "description": "Ranked public packages associated with the account.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "total": {
+            "description": "Current matching package count.",
+            "type": "integer"
+          },
+          "username": {
+            "description": "Normalized npm account name.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "packages",
+          "total"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor as offset on the next call.",
+        "default_limit": 20,
+        "maximum_limit": 250,
+        "supported": true
+      },
+      "result": {
+        "freshness": "Live public npm data with bounded local caching appropriate to the resource.",
+        "max_items": 250,
+        "truncation": "Collections, page text, README content, tarballs, and package files report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784757911.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List public packages associated with an npm maintainer account using the registry's maintained search index.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "4900f26a0efe7563a3b44dce106d909dab2dacd75bd68a1132cad3cdce6d0319",
+            "input_names": [
+              "limit",
+              "username"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_cli_success",
+            "input_names": [
+              "limit",
+              "username"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_mcp_success",
+            "input_names": [
+              "limit",
+              "username"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "maintainer lookup returns packages for the requested account",
+            "path": "$.data.packages",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_cli_success",
+          "live_mcp_success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for private packages or account administration because those require authenticated npm access.",
+      "when_to_use": "Use this to inspect a maintainer's public package portfolio without opening the npm profile page."
+    },
+    "list_package_files": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+        "method": "list_package_files",
+        "type": "python"
+      },
+      "capabilities": [
+        "browse_package_code"
+      ],
+      "category": "package_contents",
+      "contract_hash": "74f8e258057571e8f054e851caa53d1f1fd14a217979e428f04e5e46a8c98e05",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 100,
+            "package": "react",
+            "version": "latest"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "limit": {
+            "default": 100,
+            "description": "Maximum tarball entries to return.",
+            "maximum": 500,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "version": {
+            "default": "latest",
+            "description": "Exact npm version or distribution tag such as latest, next, beta, or canary.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "package"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_package_files",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "compressed_bytes": {
+            "description": "Downloaded compressed tarball size.",
+            "type": "integer"
+          },
+          "files": {
+            "description": "Bounded package file entries.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "package": {
+            "description": "Canonical package name.",
+            "type": "string"
+          },
+          "version": {
+            "description": "Resolved exact package version.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package",
+          "version",
+          "compressed_bytes",
+          "files"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for the next file page.",
+        "default_limit": 100,
+        "maximum_limit": 500,
+        "supported": true
+      },
+      "result": {
+        "freshness": "Live public npm data with bounded local caching appropriate to the resource.",
+        "max_items": 500,
+        "truncation": "Collections, page text, README content, tarballs, and package files report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784757911.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Inspect a published npm tarball and list its files, sizes, modes, and entry types without extracting it.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "74f8e258057571e8f054e851caa53d1f1fd14a217979e428f04e5e46a8c98e05",
+            "input_names": [
+              "limit",
+              "package",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_cli_success",
+            "input_names": [
+              "limit",
+              "package",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_mcp_success",
+            "input_names": [
+              "limit",
+              "package",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "unsafe_path_rejected",
+            "input_names": [
+              "limit",
+              "package",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "archive_bounds",
+            "input_names": [
+              "limit",
+              "package",
+              "version"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "tarball inspection returns bounded safe paths",
+            "path": "$.data.files",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_cli_success",
+          "live_mcp_success",
+          "unsafe_path_rejected",
+          "archive_bounds"
+        ]
+      },
+      "when_not_to_use": "Do not use this for packages over the documented inspection limits; download_tarball returns a local file receipt instead.",
+      "when_to_use": "Use this to reproduce npm's Code tab or locate a file before calling read_package_file."
+    },
+    "list_versions": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+        "method": "list_versions",
+        "type": "python"
+      },
+      "capabilities": [
+        "browse_versions"
+      ],
+      "category": "packages",
+      "contract_hash": "066a71f1c1f8b590019ff052b945130882503aa82520b28f4cf9f4b4ec6a0a71",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 20,
+            "package": "react"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "include_prerelease": {
+            "default": true,
+            "description": "Whether prerelease versions remain in the result.",
+            "type": "boolean"
+          },
+          "limit": {
+            "default": 50,
+            "description": "Maximum versions to return.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_versions",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "package": {
+            "description": "Canonical package name.",
+            "type": "string"
+          },
+          "versions": {
+            "description": "A bounded release-history page.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "package",
+          "versions"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged to retrieve the next release page.",
+        "default_limit": 50,
+        "maximum_limit": 100,
+        "supported": true
+      },
+      "result": {
+        "freshness": "Live public npm data with bounded local caching appropriate to the resource.",
+        "max_items": 100,
+        "truncation": "Collections, page text, README content, tarballs, and package files report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784757911.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List a package's releases in publication order with dates, deprecations, manifests, and distribution integrity.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "066a71f1c1f8b590019ff052b945130882503aa82520b28f4cf9f4b4ec6a0a71",
+            "input_names": [
+              "limit",
+              "package"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_cli_success",
+            "input_names": [
+              "limit",
+              "package"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_mcp_success",
+            "input_names": [
+              "limit",
+              "package"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "version history returns bounded normalized releases",
+            "path": "$.data.versions",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_cli_success",
+          "live_mcp_success"
+        ]
+      },
+      "when_not_to_use": "Do not request this when only latest is needed; get_package is smaller and faster.",
+      "when_to_use": "Use this to inspect release history, find an older version, or compare stable and prerelease publication activity."
+    },
+    "read_package_file": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+        "method": "read_package_file",
+        "type": "python"
+      },
+      "capabilities": [
+        "read_package_code"
+      ],
+      "category": "package_contents",
+      "contract_hash": "6c8e1abf3b47afe24912001a1e4f4c9cf7ef25dff98d8a62a9ecc31a24ae9850",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "package": "react",
+            "path": "package.json",
+            "version": "latest"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "max_bytes": {
+            "default": 200000,
+            "description": "Maximum file bytes to return.",
+            "maximum": 1000000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "package": {
+            "description": "Exact public npm package name, including an @scope/ prefix when applicable.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+            "type": "string"
+          },
+          "path": {
+            "description": "Exact safe relative path returned by list_package_files.",
+            "maxLength": 1000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "version": {
+            "default": "latest",
+            "description": "Exact npm version or distribution tag such as latest, next, beta, or canary.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "package",
+          "path"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "read_package_file",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "bytes": {
+            "description": "Exact file byte length.",
+            "type": "integer"
+          },
+          "content": {
+            "description": "Complete bounded file content in the declared encoding.",
+            "type": "string"
+          },
+          "encoding": {
+            "description": "utf-8 for text or base64 for binary content.",
+            "type": "string"
+          },
+          "package": {
+            "description": "Canonical package name.",
+            "type": "string"
+          },
+          "path": {
+            "description": "Normalized tarball-relative file path.",
+            "type": "string"
+          },
+          "sha256": {
+            "description": "SHA-256 digest of the returned file.",
+            "type": "string"
+          },
+          "version": {
+            "description": "Resolved exact package version.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package",
+          "version",
+          "path",
+          "bytes",
+          "sha256",
+          "encoding",
+          "content"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call reads one complete bounded regular file.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Live public npm data with bounded local caching appropriate to the resource.",
+        "max_items": 1,
+        "truncation": "Collections, page text, README content, tarballs, and package files report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784757911.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Read one bounded regular file directly from a public npm tarball as UTF-8 text or base64.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "6c8e1abf3b47afe24912001a1e4f4c9cf7ef25dff98d8a62a9ecc31a24ae9850",
+            "input_names": [
+              "package",
+              "path",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_cli_success",
+            "input_names": [
+              "package",
+              "path",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_mcp_success",
+            "input_names": [
+              "package",
+              "path",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "utf8_content",
+            "input_names": [
+              "package",
+              "path",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "archive_bounds",
+            "input_names": [
+              "package",
+              "path",
+              "version"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "package file read returns content with a cryptographic digest",
+            "path": "$.data.sha256",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_cli_success",
+          "live_mcp_success",
+          "utf8_content",
+          "archive_bounds"
+        ]
+      },
+      "when_not_to_use": "Do not request directories, links, unsafe paths, or files larger than the selected byte limit.",
+      "when_to_use": "Use this after list_package_files to inspect package manifests, source, licenses, or bundled documentation."
+    },
+    "read_site_resource": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+        "method": "read_site_resource",
+        "type": "python"
+      },
+      "capabilities": [
+        "read_documentation",
+        "read_policies"
+      ],
+      "category": "documentation",
+      "contract_hash": "898c49fb0ede16d688d4a60e09759d582df3e8ebd394f1954f0a5f05ba3d47f1",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "max_chars": 12000,
+            "url": "https://docs.npmjs.com/about-npm/"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "max_chars": {
+            "default": 30000,
+            "description": "Maximum visible page characters to return.",
+            "maximum": 50000,
+            "minimum": 1000,
+            "type": "integer"
+          },
+          "url": {
+            "description": "Absolute HTTPS URL on npmjs.com or docs.npmjs.com.",
+            "maxLength": 2000,
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "read_site_resource",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "characters": {
+            "description": "Untruncated visible character count.",
+            "type": "integer"
+          },
+          "links": {
+            "description": "Up to one hundred labeled links from the page.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "text": {
+            "description": "Bounded visible page text.",
+            "type": "string"
+          },
+          "truncated": {
+            "description": "Whether text was shortened.",
+            "type": "boolean"
+          },
+          "url": {
+            "description": "Final page URL after safe redirects.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url",
+          "text",
+          "characters",
+          "truncated",
+          "links"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Follow a returned link with another bounded call when needed.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Live public npm data with bounded local caching appropriate to the resource.",
+        "max_items": 100,
+        "truncation": "Collections, page text, README content, tarballs, and package files report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784757911.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Read a bounded public npmjs.com policy, product, help, or docs.npmjs.com page without opening a browser.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "898c49fb0ede16d688d4a60e09759d582df3e8ebd394f1954f0a5f05ba3d47f1",
+            "input_names": [
+              "max_chars",
+              "url"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_cli_success",
+            "input_names": [
+              "max_chars",
+              "url"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_mcp_success",
+            "input_names": [
+              "max_chars",
+              "url"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "site resource read returns bounded visible text",
+            "path": "$.data.text",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_cli_success",
+          "live_mcp_success"
+        ]
+      },
+      "when_not_to_use": "Do not use it for arbitrary internet URLs or package READMEs; only official npm pages are accepted.",
+      "when_to_use": "Use this for npm documentation and policy URLs that are not package records."
+    },
+    "search_packages": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+        "method": "search_packages",
+        "type": "python"
+      },
+      "capabilities": [
+        "search_packages",
+        "browse_scopes",
+        "browse_keywords"
+      ],
+      "category": "discovery",
+      "contract_hash": "e6787d95c4a8d03c312e92c824f6ed755f4e4c57aff788e2fa1d5b20d0d5438c",
+      "errors": [
+        {
+          "code": "package_not_found",
+          "field": "package",
+          "message": "npm could not find a public package with that exact name.",
+          "next_operation": "npm.search_packages",
+          "retryable": false,
+          "user_action": "Use search_packages to check the spelling or discover the current package name."
+        },
+        {
+          "code": "npm_rate_limited",
+          "message": "npm is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "npm_unavailable",
+          "message": "An npm public service is temporarily unavailable.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Check get_registry_status and retry after the affected service recovers."
+        },
+        {
+          "code": "invalid_npm_response",
+          "message": "npm returned malformed or unexpectedly encoded public data.",
+          "next_operation": "npm.get_registry_status",
+          "retryable": true,
+          "user_action": "Retry once, then check npm status if the response remains malformed."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 10,
+            "query": "keywords:markdown"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "description": "Maximum number of records to return.",
+            "maximum": 250,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "maintenance": {
+            "description": "Optional npm search maintenance weight from zero through one.",
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "offset": {
+            "default": 0,
+            "description": "Zero-based result offset.",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "popularity": {
+            "description": "Optional npm search popularity weight from zero through one.",
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "quality": {
+            "description": "Optional npm search quality weight from zero through one.",
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "query": {
+            "description": "npm search expression, including qualifiers such as maintainer:name, scope:name, or keywords:value.",
+            "maxLength": 500,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "search_packages",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "packages": {
+            "description": "Ranked normalized package search results.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "query": {
+            "description": "The search expression npm evaluated.",
+            "type": "string"
+          },
+          "total": {
+            "description": "Total matching packages reported by npm.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "query",
+          "packages",
+          "total"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass the numeric next_cursor as offset on the next call.",
+        "default_limit": 20,
+        "maximum_limit": 250,
+        "supported": true
+      },
+      "result": {
+        "freshness": "Live public npm data with bounded local caching appropriate to the resource.",
+        "max_items": 250,
+        "truncation": "Collections, page text, README content, tarballs, and package files report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784757911.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Search the public npm registry with npm's text, keyword, maintainer, and scope query syntax.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "e6787d95c4a8d03c312e92c824f6ed755f4e4c57aff788e2fa1d5b20d0d5438c",
+            "input_names": [
+              "limit",
+              "query"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_cli_success",
+            "input_names": [
+              "limit",
+              "query"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_mcp_success",
+            "input_names": [
+              "limit",
+              "query"
+            ],
+            "passed": true
+          },
+          {
+            "case": "empty_result",
+            "input_names": [
+              "limit",
+              "query"
+            ],
+            "passed": true
+          },
+          {
+            "case": "missing_optional",
+            "input_names": [
+              "limit",
+              "query"
+            ],
+            "passed": true
+          },
+          {
+            "case": "null_optional",
+            "input_names": [
+              "limit",
+              "query"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "search returns a bounded package collection and total",
+            "path": "$.data.packages",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_cli_success",
+          "live_mcp_success",
+          "empty_result",
+          "missing_optional",
+          "null_optional"
+        ]
+      },
+      "when_not_to_use": "Do not use it when the exact package name is already known; get_package is faster and more complete.",
+      "when_to_use": "Use this to discover packages, compare likely candidates, or enumerate a maintainer, scope, or keyword."
+    }
+  },
+  "runtime": {
+    "auth_interaction": "not_required",
+    "browserless_replay": true
+  },
+  "url_routes": [
+    {
+      "arguments": {
+        "package": {
+          "group": "package"
+        }
+      },
+      "operation": "get_package",
+      "path_regex": "/package/(?P<package>@[^/]+/[^/]+|[^/]+)/?"
+    },
+    {
+      "arguments": {
+        "package": {
+          "group": "package"
+        }
+      },
+      "operation": "list_dependents",
+      "path_regex": "/browse/depended/(?P<package>@[^/]+/[^/]+|[^/]+)/?"
+    },
+    {
+      "arguments": {
+        "username": {
+          "group": "username"
+        }
+      },
+      "operation": "list_maintainer_packages",
+      "path_regex": "/~(?P<username>[a-z0-9][a-z0-9._-]*)/?"
+    },
+    {
+      "arguments": {
+        "url": {
+          "url": true
+        }
+      },
+      "host_regex": "docs\\.npmjs\\.com",
+      "operation": "read_site_resource",
+      "path_regex": "/.*"
+    },
+    {
+      "arguments": {},
+      "host_regex": "status\\.npmjs\\.org",
+      "operation": "get_registry_status",
+      "path_regex": "/.*"
+    }
+  ],
+  "version": "0.1.1"
+}

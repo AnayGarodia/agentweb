@@ -1,0 +1,1544 @@
+{
+  "name": "hn",
+  "version": "0.8.9",
+  "description": "Broad public Hacker News search, feeds, threads, users, activity, and live update metadata.",
+  "canonical_domain": "news.ycombinator.com",
+  "aliases": [
+    "hn",
+    "hackernews"
+  ],
+  "url_routes": [
+    {
+      "path_regex": "/item/?",
+      "operation": "item",
+      "arguments": {
+        "item_id": {
+          "query": "id",
+          "transform": "integer"
+        }
+      }
+    }
+  ],
+  "base_url": "https://news.ycombinator.com",
+  "login_url": "https://news.ycombinator.com/login",
+  "signup_url": "https://news.ycombinator.com/login",
+  "auth": {
+    "strategy": "cookie_session",
+    "interaction": "one_time_browser_authorization"
+  },
+  "cookie_domain": ".ycombinator.com",
+  "allowed_domains": [
+    "news.ycombinator.com"
+  ],
+  "runtime": {
+    "browserless_replay": true,
+    "auth_interaction": "one normal Hacker News login when an account action first needs it"
+  },
+  "auth_cookie_names": [
+    "user"
+  ],
+  "entrypoint": "adapter.py",
+  "coverage": {
+    "typed_fast_paths": [
+      "full-text story and comment search",
+      "top, new, best, Ask HN, Show HN, and job feeds",
+      "item details with bounded comment trees",
+      "public user profiles, submission IDs, and resolved activity",
+      "flat comment search within a story",
+      "live changed-item and profile metadata",
+      "current maximum item ID",
+      "bounded read-only access to the official Firebase and Algolia APIs",
+      "retained-session account status, voting, favorites, comments, submissions, flags, edits, and deletions with hidden form tokens replayed directly"
+    ],
+    "website_parity": "Public reads are browserless. After one normal login or signup authorization, all Hacker News account actions fetch their current auth or hidden form tokens and submit directly without a browser. The direct protocol surface covers newly introduced same-site forms.",
+    "protocol_fallback": "direct_workflow",
+    "not_mapped": [],
+    "human_boundaries": [
+      "password entry and any CAPTCHA during login or account creation"
+    ],
+    "constraints": [
+      "Hacker News account rules and rate limits still apply",
+      "CAPTCHA or password entry requires a visible human handoff"
+    ],
+    "capability": {
+      "schema_version": 1,
+      "discovered_route_count": 21,
+      "mapped_count": 15,
+      "excluded_count": 1,
+      "open_count": 5,
+      "exhaustive": false,
+      "coverage_ratio": 0.7143,
+      "remaining": [
+        {
+          "route": "GET /item?id={pollid}#pollopts",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /leaders",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /newcomments",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /pool",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "POST /user?id={user}#edit",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        }
+      ],
+      "read": {
+        "discovered_route_count": 13,
+        "mapped_count": 8,
+        "excluded_count": 1,
+        "open_count": 4,
+        "coverage_ratio": 0.6154
+      },
+      "write": {
+        "discovered_route_count": 8,
+        "mapped_count": 7,
+        "excluded_count": 0,
+        "open_count": 1,
+        "coverage_ratio": 0.875
+      }
+    }
+  },
+  "commands": {
+    "search": {
+      "description": "Search Hacker News stories and comments by relevance or date using compact text previews; call hn.item for a bounded thread.",
+      "category": "discovery",
+      "when_to_use": "Use this to find stories and comments by keyword across Hacker News history.",
+      "when_not_to_use": "Do not use this to read a current ranked feed; call stories instead.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 60,
+      "cli": {
+        "positionals": [
+          "query"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Full-text search query"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 10,
+            "description": "Maximum results",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "sort": {
+            "type": "string",
+            "enum": [
+              "relevance",
+              "date"
+            ],
+            "default": "relevance",
+            "description": "Search ranking"
+          },
+          "result_type": {
+            "type": "string",
+            "enum": [
+              "all",
+              "story",
+              "comment"
+            ],
+            "default": "all",
+            "description": "Result type filter"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "query": "Rust programming"
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "hn_rate_limited",
+          "message": "Hacker News or its search backend asked the client to slow down.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "hn_unavailable",
+          "message": "Hacker News (Firebase or Algolia) is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "stories": {
+      "description": "Read a current ranked Hacker News feed with compact story details.",
+      "category": "discovery",
+      "when_to_use": "Use this to read a current ranked feed (top, new, best, ask, show, or job).",
+      "when_not_to_use": "Do not use this to search by keyword; call search instead.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 30,
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "top",
+              "new",
+              "best",
+              "ask",
+              "show",
+              "job"
+            ],
+            "default": "top",
+            "description": "Feed to read"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 10,
+            "description": "Maximum stories",
+            "minimum": 1,
+            "maximum": 50
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "kind": "top",
+            "limit": 10
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "hn_rate_limited",
+          "message": "Hacker News or its search backend asked the client to slow down.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "hn_unavailable",
+          "message": "Hacker News (Firebase or Algolia) is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "item": {
+      "description": "Fetch one story or comment with live score and comment totals from official Firebase plus a bounded comment tree from Algolia. Index lag is reported explicitly.",
+      "category": "reading",
+      "when_to_use": "Use this to read one story or comment with live score and a bounded comment tree.",
+      "when_not_to_use": "Do not use this to list many comments flatly; call story_comments instead.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 60,
+      "cli": {
+        "positionals": [
+          "item_id"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "item_id"
+        ],
+        "properties": {
+          "item_id": {
+            "type": "integer",
+            "description": "Numeric Hacker News item ID"
+          },
+          "comment_limit": {
+            "type": "integer",
+            "default": 20,
+            "description": "Maximum comments returned across the tree"
+          },
+          "comment_depth": {
+            "type": "integer",
+            "default": 2,
+            "description": "Maximum nested comment depth"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "item_id": 8863
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "item_not_found",
+          "field": "item_id",
+          "message": "Hacker News has no item with that numeric ID.",
+          "retryable": false,
+          "next_operation": "hn.stories",
+          "user_action": "Confirm the ID with stories or search, then retry."
+        },
+        {
+          "code": "hn_rate_limited",
+          "message": "Hacker News or its search backend asked the client to slow down.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "hn_unavailable",
+          "message": "Hacker News (Firebase or Algolia) is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "user": {
+      "description": "Fetch a public Hacker News user profile and recent submission IDs.",
+      "category": "profile",
+      "when_to_use": "Use this to read a public user profile and recent submission IDs.",
+      "when_not_to_use": "Do not use this to resolve submissions into content; call user_activity.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 60,
+      "cli": {
+        "positionals": [
+          "username"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "username"
+        ],
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Case-sensitive Hacker News username"
+          },
+          "submissions_limit": {
+            "type": "integer",
+            "default": 20,
+            "description": "Maximum recent submission IDs"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "username": "pg"
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "user_not_found",
+          "field": "username",
+          "message": "Hacker News has no public profile with that exact username.",
+          "retryable": false,
+          "user_action": "Usernames are case-sensitive; confirm the exact handle and retry."
+        },
+        {
+          "code": "hn_rate_limited",
+          "message": "Hacker News or its search backend asked the client to slow down.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "hn_unavailable",
+          "message": "Hacker News (Firebase or Algolia) is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "max_item": {
+      "description": "Return the newest allocated Hacker News item ID.",
+      "category": "reference",
+      "when_to_use": "Use this to get the newest allocated item ID as an upper bound for scans.",
+      "when_not_to_use": "Do not use this to read item content; call item with a specific ID.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 15,
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {}
+      },
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "errors": [
+        {
+          "code": "hn_rate_limited",
+          "message": "Hacker News or its search backend asked the client to slow down.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "hn_unavailable",
+          "message": "Hacker News (Firebase or Algolia) is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "updates": {
+      "description": "Return recently changed item IDs and public profiles.",
+      "category": "discovery",
+      "when_to_use": "Use this to see recently changed item IDs and profiles for incremental sync.",
+      "when_not_to_use": "Do not use this for ranked discovery; call stories instead.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 15,
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "default": 50,
+            "description": "Maximum items and profiles",
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "limit": 50
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "hn_rate_limited",
+          "message": "Hacker News or its search backend asked the client to slow down.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "hn_unavailable",
+          "message": "Hacker News (Firebase or Algolia) is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "user_activity": {
+      "description": "Resolve a user's recent public submissions into compact stories, comments, jobs, or polls.",
+      "category": "profile",
+      "when_to_use": "Use this to resolve a user's recent submissions into compact stories and comments.",
+      "when_not_to_use": "Do not use this for the raw profile only; call user instead.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 60,
+      "cli": {
+        "positionals": [
+          "username"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "username"
+        ],
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Case-sensitive Hacker News username"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "description": "Maximum activity items",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "item_types": {
+            "type": "array",
+            "description": "Optional item types"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "username": "pg",
+            "limit": 20
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "user_not_found",
+          "field": "username",
+          "message": "Hacker News has no public profile with that exact username.",
+          "retryable": false,
+          "user_action": "Usernames are case-sensitive; confirm the exact handle and retry."
+        },
+        {
+          "code": "hn_rate_limited",
+          "message": "Hacker News or its search backend asked the client to slow down.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "hn_unavailable",
+          "message": "Hacker News (Firebase or Algolia) is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "story_comments": {
+      "description": "List flat comments for one story by date or relevance.",
+      "category": "reading",
+      "when_to_use": "Use this to list a story's comments flatly by date or relevance.",
+      "when_not_to_use": "Do not use this for the nested tree of one item; call item instead.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 60,
+      "cli": {
+        "positionals": [
+          "story_id"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "story_id"
+        ],
+        "properties": {
+          "story_id": {
+            "type": "integer",
+            "description": "Numeric Hacker News story ID"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 50,
+            "minimum": 1,
+            "maximum": 100,
+            "description": "Maximum comments"
+          },
+          "sort": {
+            "type": "string",
+            "enum": [
+              "date",
+              "relevance"
+            ],
+            "default": "date",
+            "description": "Comment ordering: date or relevance"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "story_id": 8863,
+            "limit": 50
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "item_not_found",
+          "field": "item_id",
+          "message": "Hacker News has no item with that numeric ID.",
+          "retryable": false,
+          "next_operation": "hn.stories",
+          "user_action": "Confirm the ID with stories or search, then retry."
+        },
+        {
+          "code": "hn_rate_limited",
+          "message": "Hacker News or its search backend asked the client to slow down.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "hn_unavailable",
+          "message": "Hacker News (Firebase or Algolia) is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "api_get": {
+      "description": "Bounded read-only escape hatch for official Hacker News Firebase or Algolia endpoints. Hosts are fixed and only GET is allowed. Firebase accepts /item/ID.json or /v0/item/ID.json; Algolia accepts /items/ID or /api/v1/items/ID.",
+      "category": "api",
+      "when_to_use": "Use this read-only escape hatch for official Firebase or Algolia endpoints a typed command does not cover.",
+      "when_not_to_use": "Do not use this for mutations; it is read-only and host-restricted.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 30,
+      "cli": {
+        "positionals": [
+          "source",
+          "path"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "source",
+          "path"
+        ],
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "firebase",
+              "algolia"
+            ],
+            "description": "Endpoint family: firebase or algolia"
+          },
+          "path": {
+            "type": "string",
+            "description": "Fixed-host API path, for example /v0/item/8863.json"
+          },
+          "query": {
+            "type": "array",
+            "description": "Repeatable key=value query parameters"
+          },
+          "max_items": {
+            "type": "integer",
+            "default": 50,
+            "minimum": 1,
+            "maximum": 200,
+            "description": "Maximum list items retained in the response"
+          },
+          "max_string": {
+            "type": "integer",
+            "default": 4000,
+            "minimum": 100,
+            "maximum": 20000,
+            "description": "Maximum characters kept per string value"
+          },
+          "max_total_chars": {
+            "type": "integer",
+            "default": 20000,
+            "description": "Hard ceiling for the complete nested JSON response",
+            "minimum": 1000,
+            "maximum": 100000
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "source": "firebase",
+            "path": "/v0/topstories.json"
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "invalid_input",
+          "field": "source",
+          "message": "source must be a supported endpoint family and path must target a fixed host.",
+          "retryable": false,
+          "user_action": "Use source=firebase or source=algolia with an allowed path."
+        },
+        {
+          "code": "hn_rate_limited",
+          "message": "Hacker News or its search backend asked the client to slow down.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "hn_unavailable",
+          "message": "Hacker News (Firebase or Algolia) is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "account_status": {
+      "description": "Verify the retained Hacker News session and report the signed-in username.",
+      "category": "account",
+      "when_to_use": "Use this to check whether a Hacker News session is authenticated and its username.",
+      "when_not_to_use": "Do not use this to read another user; call user instead.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public",
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {}
+      },
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "errors": [
+        {
+          "code": "hn_rate_limited",
+          "message": "Hacker News or its search backend asked the client to slow down.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "hn_unavailable",
+          "message": "Hacker News (Firebase or Algolia) is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "vote": {
+      "description": "Vote or unvote by fetching the current item page, extracting HN's per-action auth URL, and replaying it directly. Requires confirm.",
+      "category": "voting",
+      "when_to_use": "Use this to upvote or unvote an item once a session is authorized; confirm is mandatory.",
+      "when_not_to_use": "Do not use this without confirm=true, and expect no action link when already voted.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": true,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "item_id"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "item_id"
+        ],
+        "properties": {
+          "item_id": {
+            "type": "integer",
+            "description": "Numeric Hacker News item ID"
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "up",
+              "down",
+              "unvote"
+            ],
+            "default": "up",
+            "description": "Vote direction: up or unvote"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to change vote state"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "item_id": 8863,
+            "direction": "up",
+            "confirm": true
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs an authenticated Hacker News session.",
+          "retryable": false,
+          "next_operation": "hn.account_status",
+          "user_action": "Run agentweb connect hn to authorize a session once, then retry."
+        },
+        {
+          "code": "action_unavailable",
+          "message": "Hacker News did not offer this action for the item (already applied, expired, or not permitted).",
+          "retryable": false,
+          "user_action": "Re-read the item to confirm current state and eligibility before retrying."
+        },
+        {
+          "code": "item_not_found",
+          "field": "item_id",
+          "message": "Hacker News has no item with that numeric ID.",
+          "retryable": false,
+          "next_operation": "hn.stories",
+          "user_action": "Confirm the ID with stories or search, then retry."
+        },
+        {
+          "code": "hn_rate_limited",
+          "message": "Hacker News or its search backend asked the client to slow down.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "hn_unavailable",
+          "message": "Hacker News (Firebase or Algolia) is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "favorite": {
+      "description": "Favorite or unfavorite an item by extracting and replaying the current authenticated action URL. Requires confirm.",
+      "category": "voting",
+      "when_to_use": "Use this to favorite or unfavorite an item for an authorized account; confirm is mandatory.",
+      "when_not_to_use": "Do not use this without confirm=true.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": true,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "item_id"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "item_id"
+        ],
+        "properties": {
+          "item_id": {
+            "type": "integer",
+            "description": "Numeric Hacker News item ID"
+          },
+          "enabled": {
+            "type": "boolean",
+            "default": true,
+            "description": "True to favorite, false to unfavorite"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to change favorite state"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "item_id": 8863,
+            "enabled": true,
+            "confirm": true
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs an authenticated Hacker News session.",
+          "retryable": false,
+          "next_operation": "hn.account_status",
+          "user_action": "Run agentweb connect hn to authorize a session once, then retry."
+        },
+        {
+          "code": "action_unavailable",
+          "message": "Hacker News did not offer this action for the item (already applied, expired, or not permitted).",
+          "retryable": false,
+          "user_action": "Re-read the item to confirm current state and eligibility before retrying."
+        },
+        {
+          "code": "item_not_found",
+          "field": "item_id",
+          "message": "Hacker News has no item with that numeric ID.",
+          "retryable": false,
+          "next_operation": "hn.stories",
+          "user_action": "Confirm the ID with stories or search, then retry."
+        },
+        {
+          "code": "hn_rate_limited",
+          "message": "Hacker News or its search backend asked the client to slow down.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "hn_unavailable",
+          "message": "Hacker News (Firebase or Algolia) is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "comment": {
+      "description": "Post a comment or reply by extracting the current hidden HN form fields and submitting them directly. Returns the new comment's id when it can be located. Requires confirm.",
+      "category": "posting",
+      "when_to_use": "Use this to post a public comment or reply once a session is authorized; confirm is mandatory.",
+      "when_not_to_use": "Do not use this without confirm=true; comments are public and hard to remove.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "parent_id",
+          "text"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "parent_id",
+          "text"
+        ],
+        "properties": {
+          "parent_id": {
+            "type": "integer",
+            "description": "Numeric ID of the story or comment to reply to"
+          },
+          "text": {
+            "type": "string",
+            "description": "Comment body text"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to post the comment"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "parent_id": 8863,
+            "text": "Great point, thanks for sharing.",
+            "confirm": true
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs an authenticated Hacker News session.",
+          "retryable": false,
+          "next_operation": "hn.account_status",
+          "user_action": "Run agentweb connect hn to authorize a session once, then retry."
+        },
+        {
+          "code": "action_unavailable",
+          "message": "Hacker News did not offer this action for the item (already applied, expired, or not permitted).",
+          "retryable": false,
+          "user_action": "Re-read the item to confirm current state and eligibility before retrying."
+        },
+        {
+          "code": "item_not_found",
+          "field": "item_id",
+          "message": "Hacker News has no item with that numeric ID.",
+          "retryable": false,
+          "next_operation": "hn.stories",
+          "user_action": "Confirm the ID with stories or search, then retry."
+        },
+        {
+          "code": "hn_rate_limited",
+          "message": "Hacker News or its search backend asked the client to slow down.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "hn_unavailable",
+          "message": "Hacker News (Firebase or Algolia) is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "submit": {
+      "description": "Submit a link or text post by fetching HN's current hidden submission form token and posting directly. Exactly one of url or text is required; confirm is mandatory.",
+      "category": "posting",
+      "when_to_use": "Use this to submit a link or text post for an authorized account; confirm is mandatory.",
+      "when_not_to_use": "Do not use this without confirm=true; submissions are public and rate-limited.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "title"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Post title"
+          },
+          "url": {
+            "type": "string",
+            "description": "Optional link URL for a link post"
+          },
+          "text": {
+            "type": "string",
+            "description": "Optional body text for a text post"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to submit the post"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "title": "Show HN: A tool I built",
+            "url": "https://example.com",
+            "confirm": true
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs an authenticated Hacker News session.",
+          "retryable": false,
+          "next_operation": "hn.account_status",
+          "user_action": "Run agentweb connect hn to authorize a session once, then retry."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        },
+        {
+          "code": "hn_rate_limited",
+          "message": "Hacker News or its search backend asked the client to slow down.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "hn_unavailable",
+          "message": "Hacker News (Firebase or Algolia) is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "flag": {
+      "description": "Flag or unflag an eligible item through its current authenticated action link. Requires confirm.",
+      "category": "voting",
+      "when_to_use": "Use this to flag or unflag an eligible item for an authorized account; confirm is mandatory.",
+      "when_not_to_use": "Do not use this without confirm=true or on items you cannot flag.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": true,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "item_id"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "item_id"
+        ],
+        "properties": {
+          "item_id": {
+            "type": "integer",
+            "description": "Numeric Hacker News item ID"
+          },
+          "enabled": {
+            "type": "boolean",
+            "default": true,
+            "description": "True to flag, false to unflag"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to change flag state"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "item_id": 8863,
+            "enabled": true,
+            "confirm": true
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs an authenticated Hacker News session.",
+          "retryable": false,
+          "next_operation": "hn.account_status",
+          "user_action": "Run agentweb connect hn to authorize a session once, then retry."
+        },
+        {
+          "code": "action_unavailable",
+          "message": "Hacker News did not offer this action for the item (already applied, expired, or not permitted).",
+          "retryable": false,
+          "user_action": "Re-read the item to confirm current state and eligibility before retrying."
+        },
+        {
+          "code": "item_not_found",
+          "field": "item_id",
+          "message": "Hacker News has no item with that numeric ID.",
+          "retryable": false,
+          "next_operation": "hn.stories",
+          "user_action": "Confirm the ID with stories or search, then retry."
+        },
+        {
+          "code": "hn_rate_limited",
+          "message": "Hacker News or its search backend asked the client to slow down.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "hn_unavailable",
+          "message": "Hacker News (Firebase or Algolia) is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "edit": {
+      "description": "Edit an eligible owned item through HN's current edit form. Requires confirm.",
+      "category": "editing",
+      "when_to_use": "Use this to edit an owned, still-editable item; confirm is mandatory.",
+      "when_not_to_use": "Do not use this without confirm=true or after the edit window closes.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": true,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "item_id"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "item_id"
+        ],
+        "properties": {
+          "item_id": {
+            "type": "integer",
+            "description": "Numeric Hacker News item ID"
+          },
+          "text": {
+            "type": "string",
+            "description": "Replacement body text"
+          },
+          "title": {
+            "type": "string",
+            "description": "Replacement title for eligible items"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to apply the edit"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "item_id": 8863,
+            "text": "Updated body text.",
+            "confirm": true
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs an authenticated Hacker News session.",
+          "retryable": false,
+          "next_operation": "hn.account_status",
+          "user_action": "Run agentweb connect hn to authorize a session once, then retry."
+        },
+        {
+          "code": "action_unavailable",
+          "message": "Hacker News did not offer this action for the item (already applied, expired, or not permitted).",
+          "retryable": false,
+          "user_action": "Re-read the item to confirm current state and eligibility before retrying."
+        },
+        {
+          "code": "item_not_found",
+          "field": "item_id",
+          "message": "Hacker News has no item with that numeric ID.",
+          "retryable": false,
+          "next_operation": "hn.stories",
+          "user_action": "Confirm the ID with stories or search, then retry."
+        },
+        {
+          "code": "hn_rate_limited",
+          "message": "Hacker News or its search backend asked the client to slow down.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "hn_unavailable",
+          "message": "Hacker News (Firebase or Algolia) is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "delete": {
+      "description": "Delete an eligible owned item via the delete-confirm form and verify the deletion by re-reading the item page. Fails loudly if the item is still live. Requires confirm.",
+      "category": "editing",
+      "when_to_use": "Use this to delete an owned, still-deletable item; confirm is mandatory.",
+      "when_not_to_use": "Do not use this without confirm=true; deletion is not reversible.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "item_id"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "item_id"
+        ],
+        "properties": {
+          "item_id": {
+            "type": "integer",
+            "description": "Numeric Hacker News item ID"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to delete the item"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "item_id": 8863,
+            "confirm": true
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs an authenticated Hacker News session.",
+          "retryable": false,
+          "next_operation": "hn.account_status",
+          "user_action": "Run agentweb connect hn to authorize a session once, then retry."
+        },
+        {
+          "code": "action_unavailable",
+          "message": "Hacker News did not offer this action for the item (already applied, expired, or not permitted).",
+          "retryable": false,
+          "user_action": "Re-read the item to confirm current state and eligibility before retrying."
+        },
+        {
+          "code": "item_not_found",
+          "field": "item_id",
+          "message": "Hacker News has no item with that numeric ID.",
+          "retryable": false,
+          "next_operation": "hn.stories",
+          "user_action": "Confirm the ID with stories or search, then retry."
+        },
+        {
+          "code": "hn_rate_limited",
+          "message": "Hacker News or its search backend asked the client to slow down.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "hn_unavailable",
+          "message": "Hacker News (Firebase or Algolia) is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "captured_at": "2026-07-21",
+  "site": "github",
+  "repository": "BurntSushi/ripgrep",
+  "flows": {
+    "repository": {
+      "browser": {"stars": 66388, "forks": 2652, "watchers": 294, "open_issues": 115, "open_pull_requests": 44},
+      "direct": {"stars": 66388, "forks": 2652, "watchers": 294, "open_issues": 115, "open_pull_requests": 44},
+      "matched": true
+    },
+    "branches": {
+      "browser_first": ["master", "ag/index-paths", "ag/index"],
+      "direct_first": ["master", "ag/index-paths", "ag/index"],
+      "matched": true
+    },
+    "tags": {
+      "browser_first": ["ignore-0.4.31", "ignore-0.4.30", "15.2.0", "ignore-0.4.29", "grep-searcher-0.1.17"],
+      "direct_first": ["ignore-0.4.31", "ignore-0.4.30", "15.2.0", "ignore-0.4.29", "grep-searcher-0.1.17"],
+      "matched": true
+    },
+    "commits": {
+      "browser_first_shas": ["59e318f5ace48db54f37bb67c152535bc17fa153", "a9dc2228fbddd1d25146f38d0926830812c97419", "be739c7910288905d966f87607b28435d1576295"],
+      "direct_first_shas": ["59e318f5ace48db54f37bb67c152535bc17fa153", "a9dc2228fbddd1d25146f38d0926830812c97419", "be739c7910288905d966f87607b28435d1576295"],
+      "direct_elapsed_ms": 558.9,
+      "matched": true
+    },
+    "website_graphql": {
+      "page": "/AnayGarodia/sitepack/issues/new",
+      "operation": "CreateIssueQuery",
+      "persisted_query_discovered": true,
+      "verified_fetch_nonce_discovered": true,
+      "http_status": 200,
+      "direct_request_count_after_compile": 2,
+      "direct_elapsed_ms": 1353.3,
+      "repository_node_id": "R_kgDOTfhUKw",
+      "matched": true,
+      "remote_state_changed": false
+    }
+  }
+}

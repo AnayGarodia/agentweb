@@ -1,0 +1,49 @@
+{
+  "observed": {
+    "cases": [
+      "success",
+      "live_direct_success"
+    ],
+    "paths": [
+      "https://pypi.org/pypi/{project}/{version}/json",
+      "{file_url}.metadata"
+    ],
+    "source": "reviewed PyPI public capability mapping with live direct replay"
+  },
+  "operation": "get_core_metadata",
+  "recipe": {
+    "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+    "operation": "get_core_metadata",
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "evidence_1",
+        "path": "https://pypi.org/pypi/{project}/{version}/json"
+      },
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "evidence_2",
+        "path": "{file_url}.metadata"
+      }
+    ],
+    "type": "reviewed_python_binding"
+  },
+  "schema_version": 1,
+  "verification": {
+    "assertions": [
+      {
+        "name": "core metadata read returns bounded content",
+        "passed": true,
+        "path": "$.data.content"
+      }
+    ],
+    "contract_hash": "c5f06a29353408ecd686c417454d6eee49610ed02cad01750a76bc965546740f",
+    "recipe_hash": "133d20cbff9164c9843d080770580d610f1c27818f819e97e58a8597f1cc1a47",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784834400.0
+  }
+}

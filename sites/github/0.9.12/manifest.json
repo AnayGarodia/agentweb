@@ -1,0 +1,3423 @@
+{
+  "name": "github",
+  "version": "0.9.12",
+  "description": "Browserless GitHub operations implemented directly through GitHub REST and GraphQL requests, with no external CLI dependency.",
+  "canonical_domain": "github.com",
+  "aliases": [
+    "github"
+  ],
+  "url_routes": [
+    {
+      "path_regex": "/(?P<owner>[^/]+)/(?P<repo>[^/]+)/issues/(?P<number>[0-9]+)(?:/.*)?",
+      "operation": "issue",
+      "arguments": {
+        "owner": {
+          "group": "owner"
+        },
+        "repo": {
+          "group": "repo"
+        },
+        "number": {
+          "group": "number",
+          "transform": "integer"
+        }
+      }
+    },
+    {
+      "path_regex": "/(?P<owner>[^/]+)/(?P<repo>[^/]+)/?",
+      "operation": "repository",
+      "arguments": {
+        "owner": {
+          "group": "owner"
+        },
+        "repo": {
+          "group": "repo"
+        }
+      }
+    }
+  ],
+  "base_url": "https://github.com",
+  "login_url": "https://github.com/login",
+  "signup_url": "https://github.com/signup",
+  "auth": {
+    "strategy": "cookie_session",
+    "interaction": "one_time_browser_authorization",
+    "connection_scope": "github.com website session",
+    "optional_api_setup_operation": "configure_token",
+    "api_setup_scope": "authenticated api.github.com REST and GraphQL with higher rate limits",
+    "website_session_does_not_authenticate_api": true
+  },
+  "auth_cookie_names": [
+    "user_session",
+    "__Host-user_session_same_site",
+    "logged_in"
+  ],
+  "allowed_domains": [
+    "github.com",
+    "githubassets.com"
+  ],
+  "runtime": {
+    "browserless_replay": true,
+    "auth_interaction": "one_time_website_session_or_optional_api_token"
+  },
+  "entrypoint": "adapter.py",
+  "coverage": {
+    "typed_fast_paths": [
+      "public and private repository reads",
+      "public users",
+      "issues, comments, and pull requests",
+      "pull request file changes",
+      "commits, branches, and tags",
+      "repository files and directory listings",
+      "contributors",
+      "releases and assets",
+      "issue creation from a normal website login",
+      "authenticated REST and website GraphQL reads and writes",
+      "bounded access to every GitHub REST and GraphQL endpoint",
+      "authenticated pull request open/merge/review, issue and PR comments, issue edit/close, reactions, stars, forks, releases, workflow dispatch, and gists"
+    ],
+    "website_parity": "Typed commands and api_request cover GitHub REST and GraphQL directly. A normal website authorization can create issues and replay any current persisted website GraphQL operation by discovering its current query ID and verified-fetch nonce from GitHub's own assets. direct_request and direct_workflow reuse the retained session for remaining same-site operations without delegating to another CLI.",
+    "protocol_fallback": "direct_workflow",
+    "not_mapped": [
+      "labels, milestones, and assignees management",
+      "projects, discussions, and wikis",
+      "teams, organization membership, and branch protection",
+      "repository creation, deletion, and settings",
+      "gist edit and delete after creation"
+    ],
+    "human_boundaries": [
+      "password, passkey, OTP, CAPTCHA, organization SSO, legal consent, and payment confirmation when GitHub requires them"
+    ],
+    "constraints": [
+      "GitHub authentication and authorization policies still apply",
+      "payment and other legal confirmations require the human"
+    ],
+    "capability": {
+      "schema_version": 1,
+      "discovered_route_count": 43,
+      "mapped_count": 27,
+      "excluded_count": 1,
+      "open_count": 15,
+      "exhaustive": false,
+      "coverage_ratio": 0.6279,
+      "remaining": [
+        {
+          "route": "GET /gists",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /notifications",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /orgs/{org}",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /repos/{owner}/{repo}/actions",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /repos/{owner}/{repo}/commits/{sha}/status",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /repos/{owner}/{repo}/deployments",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /repos/{owner}/{repo}/discussions",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /repos/{owner}/{repo}/milestones",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /repos/{owner}/{repo}/projects",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /repos/{owner}/{repo}/security/advisories",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /search/code",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /search/issues",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /users/{username}/starred",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /{owner}/{repo}/packages",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /{owner}/{repo}/wiki",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        }
+      ],
+      "read": {
+        "discovered_route_count": 31,
+        "mapped_count": 15,
+        "excluded_count": 1,
+        "open_count": 15,
+        "coverage_ratio": 0.4839
+      },
+      "write": {
+        "discovered_route_count": 12,
+        "mapped_count": 12,
+        "excluded_count": 0,
+        "open_count": 0,
+        "coverage_ratio": 1.0
+      }
+    }
+  },
+  "commands": {
+    "search_repositories": {
+      "description": "Search public GitHub repositories with compact metadata and rate-limit status. Without github.configure_token this uses GitHub's anonymous API quota; a github.com website login does not increase it.",
+      "category": "discovery",
+      "when_to_use": "Use this to find public repositories from a query and qualifiers such as language or stars.",
+      "when_not_to_use": "Do not use this to fetch one known repository; call repository instead.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 120,
+      "cli": {
+        "positionals": [
+          "query"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "GitHub repository search query and qualifiers"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 10,
+            "description": "Maximum repositories",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "sort": {
+            "type": "string",
+            "enum": [
+              "best_match",
+              "stars",
+              "forks",
+              "help_wanted_issues",
+              "updated"
+            ],
+            "default": "best_match",
+            "description": "Search ordering"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "query": "language:python stars:>1000",
+            "limit": 10
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure_token to raise the authenticated rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "repository": {
+      "description": "Fetch public metadata for one GitHub repository.",
+      "category": "repository",
+      "when_to_use": "Use this to fetch metadata for one known public repository.",
+      "when_not_to_use": "Do not use this to search across repositories; call search_repositories.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "python",
+            "repo": "cpython"
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "GitHub has no public resource at that owner, repo, number, or path.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers (or that the resource is public) and retry."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure_token to raise the authenticated rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "issues": {
+      "description": "List public issues for a repository; pull requests are omitted explicitly.",
+      "category": "issues",
+      "when_to_use": "Use this to list a repository's issues (pull requests are excluded).",
+      "when_not_to_use": "Do not use this to read one issue's full body; call issue.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 120,
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed",
+              "all"
+            ],
+            "default": "open",
+            "description": "Issue state"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 10,
+            "description": "Maximum issues",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "labels": {
+            "type": "array",
+            "description": "Label names; repeat --labels in the CLI"
+          },
+          "sort": {
+            "type": "string",
+            "enum": [
+              "created",
+              "updated",
+              "comments"
+            ],
+            "default": "created",
+            "description": "Issue ordering"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "python",
+            "repo": "cpython",
+            "state": "open",
+            "limit": 10
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "GitHub has no public resource at that owner, repo, number, or path.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers (or that the resource is public) and retry."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure_token to raise the authenticated rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "releases": {
+      "description": "List public repository releases and bounded asset metadata.",
+      "category": "repository",
+      "when_to_use": "Use this to list a repository's releases and bounded asset metadata.",
+      "when_not_to_use": "Do not use this to list tags without release notes; call tags.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 10,
+            "description": "Maximum releases",
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "python",
+            "repo": "cpython",
+            "limit": 10
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "GitHub has no public resource at that owner, repo, number, or path.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers (or that the resource is public) and retry."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure_token to raise the authenticated rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "issue": {
+      "description": "Fetch one public issue or pull-request-shaped issue with bounded body text.",
+      "category": "issues",
+      "when_to_use": "Use this to read one issue with its bounded body text.",
+      "when_not_to_use": "Do not use this to read its comment thread; call issue_comments.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 120,
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo",
+          "number"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo",
+          "number"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "number": {
+            "type": "integer",
+            "description": "Issue number"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "python",
+            "repo": "cpython",
+            "number": 100
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "GitHub has no public resource at that owner, repo, number, or path.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers (or that the resource is public) and retry."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure_token to raise the authenticated rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "pull_requests": {
+      "description": "List public pull requests for a repository.",
+      "category": "pull_requests",
+      "when_to_use": "Use this to list a repository's pull requests by state.",
+      "when_not_to_use": "Do not use this to read one pull request's diff; call pull_request_files.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 120,
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed",
+              "all"
+            ],
+            "default": "open",
+            "description": "Pull request state"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 10,
+            "description": "Maximum pull requests",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "sort": {
+            "type": "string",
+            "enum": [
+              "created",
+              "updated",
+              "popularity",
+              "long-running"
+            ],
+            "default": "created",
+            "description": "Ordering"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "python",
+            "repo": "cpython",
+            "state": "open",
+            "limit": 10
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "GitHub has no public resource at that owner, repo, number, or path.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers (or that the resource is public) and retry."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure_token to raise the authenticated rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "pull_request": {
+      "description": "Fetch one public pull request with merge state and change statistics.",
+      "category": "pull_requests",
+      "when_to_use": "Use this to read one pull request with merge state and change statistics.",
+      "when_not_to_use": "Do not use this to list the changed files; call pull_request_files.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 120,
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo",
+          "number"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo",
+          "number"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "number": {
+            "type": "integer",
+            "description": "Pull request number"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "python",
+            "repo": "cpython",
+            "number": 100
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "GitHub has no public resource at that owner, repo, number, or path.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers (or that the resource is public) and retry."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure_token to raise the authenticated rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "commits": {
+      "description": "List recent public commits, optionally restricted to a branch, SHA, or file path.",
+      "category": "repository",
+      "when_to_use": "Use this to list recent commits, optionally limited to a branch, SHA, or file path.",
+      "when_not_to_use": "Do not use this to read file contents at a commit; call contents with a ref.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 120,
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 10,
+            "description": "Maximum commits",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "sha": {
+            "type": "string",
+            "description": "Optional branch or SHA"
+          },
+          "path_filter": {
+            "type": "string",
+            "description": "Optional repository file path"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "python",
+            "repo": "cpython",
+            "limit": 10
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "GitHub has no public resource at that owner, repo, number, or path.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers (or that the resource is public) and retry."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure_token to raise the authenticated rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "contents": {
+      "description": "List a public repository directory or read a bounded UTF-8 file.",
+      "category": "repository",
+      "when_to_use": "Use this to list a repository directory or read one bounded UTF-8 file.",
+      "when_not_to_use": "Do not use this for binary files; the file is decoded as UTF-8 text.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "path": {
+            "type": "string",
+            "default": "",
+            "description": "Repository-relative path"
+          },
+          "ref": {
+            "type": "string",
+            "description": "Optional branch, tag, or SHA"
+          },
+          "max_chars": {
+            "type": "integer",
+            "default": 12000,
+            "description": "Maximum decoded file characters"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "python",
+            "repo": "cpython",
+            "path": "README.rst"
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "GitHub has no public resource at that owner, repo, number, or path.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers (or that the resource is public) and retry."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure_token to raise the authenticated rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "contributors": {
+      "description": "List public repository contributors and contribution counts.",
+      "category": "repository",
+      "when_to_use": "Use this to list a repository's contributors and their contribution counts.",
+      "when_not_to_use": "Do not use this to list organization members; that is not exposed here.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "description": "Maximum contributors",
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "python",
+            "repo": "cpython",
+            "limit": 20
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "GitHub has no public resource at that owner, repo, number, or path.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers (or that the resource is public) and retry."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure_token to raise the authenticated rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "user": {
+      "description": "Fetch one public GitHub user profile.",
+      "category": "profile",
+      "when_to_use": "Use this to read one public GitHub user profile.",
+      "when_not_to_use": "Do not use this to list the user's repositories; use search_repositories with a user qualifier.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "username"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "username"
+        ],
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "GitHub username"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "username": "gvanrossum"
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "GitHub has no public resource at that owner, repo, number, or path.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers (or that the resource is public) and retry."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure_token to raise the authenticated rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "branches": {
+      "description": "List public repository branches and protection state.",
+      "category": "repository",
+      "when_to_use": "Use this to list a repository's branches and their protection state.",
+      "when_not_to_use": "Do not use this to list tags; call tags.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 180,
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "minimum": 1,
+            "maximum": 100,
+            "description": "Maximum branches"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "python",
+            "repo": "cpython",
+            "limit": 20
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "GitHub has no public resource at that owner, repo, number, or path.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers (or that the resource is public) and retry."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure_token to raise the authenticated rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "tags": {
+      "description": "List public repository tags and archive links.",
+      "category": "repository",
+      "when_to_use": "Use this to list a repository's tags and archive links.",
+      "when_not_to_use": "Do not use this to list release notes; call releases.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "minimum": 1,
+            "maximum": 100,
+            "description": "Maximum tags"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "python",
+            "repo": "cpython",
+            "limit": 20
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "GitHub has no public resource at that owner, repo, number, or path.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers (or that the resource is public) and retry."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure_token to raise the authenticated rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "issue_comments": {
+      "description": "Read bounded public comments on an issue or pull request.",
+      "category": "issues",
+      "when_to_use": "Use this to read bounded comments on an issue or pull request.",
+      "when_not_to_use": "Do not use this to read the issue body itself; call issue.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 120,
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo",
+          "number"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo",
+          "number"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "number": {
+            "type": "integer",
+            "description": "Issue or pull request number"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "minimum": 1,
+            "maximum": 100,
+            "description": "Maximum comments"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "python",
+            "repo": "cpython",
+            "number": 100,
+            "limit": 20
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "GitHub has no public resource at that owner, repo, number, or path.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers (or that the resource is public) and retry."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure_token to raise the authenticated rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "pull_request_files": {
+      "description": "List changed files and bounded patches for a public pull request.",
+      "category": "pull_requests",
+      "when_to_use": "Use this to list a pull request's changed files with bounded patches.",
+      "when_not_to_use": "Do not use this to read the pull request summary; call pull_request.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 120,
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo",
+          "number"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo",
+          "number"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "number": {
+            "type": "integer",
+            "description": "Pull request number"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 50,
+            "minimum": 1,
+            "maximum": 100,
+            "description": "Maximum changed files"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "python",
+            "repo": "cpython",
+            "number": 100,
+            "limit": 50
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "GitHub has no public resource at that owner, repo, number, or path.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers (or that the resource is public) and retry."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure_token to raise the authenticated rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "create_issue": {
+      "description": "Create an issue using the retained website login or a configured API token; either credential works. Requires confirm.",
+      "category": "writes",
+      "when_to_use": "Use this to create an issue via the retained website session; confirm is mandatory.",
+      "when_not_to_use": "Do not use this without confirm=true; created issues cannot be un-created.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo",
+          "title"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo",
+          "title"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "title": {
+            "type": "string",
+            "description": "Issue title"
+          },
+          "body": {
+            "type": "string",
+            "default": "",
+            "description": "Issue body markdown"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to create the issue"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "octocat",
+            "repo": "hello-world",
+            "title": "Bug: broken link in README",
+            "body": "Steps to reproduce...",
+            "confirm": true
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs a retained GitHub website session or a configured token.",
+          "retryable": false,
+          "next_operation": "github.auth_status",
+          "user_action": "Run agentweb connect github (or github.configure_token) and retry."
+        },
+        {
+          "code": "website_replay_changed",
+          "message": "GitHub's current website protocol no longer matches the captured operation shape.",
+          "retryable": true,
+          "next_operation": "github.api_request",
+          "user_action": "Retry once; if it persists, use the REST api_request fallback and report the drift."
+        },
+        {
+          "code": "not_found",
+          "message": "GitHub has no public resource at that owner, repo, number, or path.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers (or that the resource is public) and retry."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure_token to raise the authenticated rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "website_graphql": {
+      "description": "Replay a persisted operation used by GitHub's current website. Asset discovery has strict request and time budgets; mutations require confirm.",
+      "category": "writes",
+      "when_to_use": "Use this to replay a persisted GitHub website GraphQL operation when no typed command exists.",
+      "when_not_to_use": "Do not use this for stable reads; prefer a typed command or api_request.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": false,
+        "confirmation": "for_writes"
+      },
+      "cli": {
+        "positionals": [
+          "page_path",
+          "operation_name"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "page_path",
+          "operation_name",
+          "variables"
+        ],
+        "properties": {
+          "page_path": {
+            "type": "string",
+            "description": "Website path whose persisted operation is being replayed"
+          },
+          "operation_name": {
+            "type": "string",
+            "description": "Persisted GraphQL operation name used by that page"
+          },
+          "variables": {
+            "type": "object",
+            "description": "JSON variables object for the persisted operation"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true for mutating operations"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "page_path": "/python/cpython",
+            "operation_name": "RepositoryOverviewQuery",
+            "variables": {}
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs a retained GitHub website session or a configured token.",
+          "retryable": false,
+          "next_operation": "github.auth_status",
+          "user_action": "Run agentweb connect github (or github.configure_token) and retry."
+        },
+        {
+          "code": "website_replay_changed",
+          "message": "GitHub's current website protocol no longer matches the captured operation shape.",
+          "retryable": true,
+          "next_operation": "github.api_request",
+          "user_action": "Retry once; if it persists, use the REST api_request fallback and report the drift."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure_token to raise the authenticated rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "api_get": {
+      "description": "Bounded read-only escape hatch for public GitHub REST endpoints not yet represented by a typed command. Paths stay fixed to api.github.com and only GET is allowed.",
+      "category": "api",
+      "when_to_use": "Use this read-only escape hatch for public REST endpoints without a typed command.",
+      "when_not_to_use": "Do not use this for mutations; it is read-only. Use api_request with confirm.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 60,
+      "cli": {
+        "positionals": [
+          "path"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "path"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "GitHub API path beginning with /"
+          },
+          "query": {
+            "type": "array",
+            "description": "Repeatable key=value query parameters"
+          },
+          "max_items": {
+            "type": "integer",
+            "default": 50,
+            "minimum": 1,
+            "maximum": 200,
+            "description": "Maximum list items retained in the response"
+          },
+          "max_string": {
+            "type": "integer",
+            "default": 4000,
+            "minimum": 100,
+            "maximum": 20000,
+            "description": "Maximum characters kept per string value"
+          },
+          "max_total_chars": {
+            "type": "integer",
+            "default": 20000,
+            "description": "Hard ceiling for the complete nested JSON response",
+            "minimum": 1000,
+            "maximum": 100000
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "path": "/repos/python/cpython/languages"
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "GitHub has no public resource at that owner, repo, number, or path.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers (or that the resource is public) and retry."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure_token to raise the authenticated rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "configure_token": {
+      "description": "Validate and save a GitHub fine-grained or personal access token in the local AgentWeb profile with mode 0600. The token is never returned.",
+      "category": "account",
+      "when_to_use": "Use this once to validate and store a fine-grained or personal access token for higher rate limits.",
+      "when_not_to_use": "Do not use this to authenticate the website session; that uses agentweb connect github.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cli": {
+        "positionals": [
+          "token"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "GitHub fine-grained or personal access token"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "token": "github_pat_xxxxxxxxxxxxxxxxxxxx"
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "invalid_input",
+          "field": "token",
+          "message": "GitHub rejected the provided access token.",
+          "retryable": false,
+          "user_action": "Provide a valid, unexpired token with the needed scopes and retry."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "disconnect": {
+      "description": "Delete the GitHub token stored in this AgentWeb profile. Environment-provided tokens are unchanged.",
+      "category": "account",
+      "when_to_use": "Use this to delete the token stored in this profile; environment-provided tokens are unchanged.",
+      "when_not_to_use": "Do not use this to sign out the website session; it only removes the stored token.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": true,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to delete the stored token"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "confirm": true
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        }
+      ]
+    },
+    "auth_status": {
+      "description": "Report website-session and API-token authentication separately, including API quota tier and the age/freshness of any last-known budget snapshot.",
+      "category": "account",
+      "when_to_use": "Use this to report website-session and API-token authentication and quota tier separately.",
+      "when_not_to_use": "Do not use this to inspect a public user; call user.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public",
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {}
+      },
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "errors": [
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "api_request": {
+      "description": "Call any fixed-host GitHub REST or GraphQL endpoint. GET and HEAD are read-only; POST, PUT, PATCH, and DELETE require confirm=true. Authentication is reused automatically when available.",
+      "category": "api",
+      "when_to_use": "Use this fixed-host REST or GraphQL bridge for reads, or for writes with confirm and a token.",
+      "when_not_to_use": "Do not use this for typed reads that already have a dedicated command.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public",
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": false,
+        "confirmation": "for_writes"
+      },
+      "cli": {
+        "positionals": [
+          "path"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "path"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "GitHub API path such as /user or /graphql"
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "GET",
+              "HEAD",
+              "POST",
+              "PUT",
+              "PATCH",
+              "DELETE"
+            ],
+            "default": "GET",
+            "description": "HTTP method; GET and HEAD are read-only"
+          },
+          "query": {
+            "type": "array",
+            "description": "Repeatable key=value query parameters"
+          },
+          "body": {
+            "type": "object",
+            "description": "JSON request body; use agentweb call or MCP for nested objects"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Required for any state-changing HTTP method"
+          },
+          "max_items": {
+            "type": "integer",
+            "default": 100,
+            "minimum": 1,
+            "maximum": 500,
+            "description": "Maximum list items retained in the response"
+          },
+          "max_string": {
+            "type": "integer",
+            "default": 10000,
+            "minimum": 100,
+            "maximum": 50000,
+            "description": "Maximum characters kept per string value"
+          },
+          "max_total_chars": {
+            "type": "integer",
+            "default": 50000,
+            "minimum": 1000,
+            "maximum": 200000,
+            "description": "Hard ceiling for the complete nested JSON response"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "path": "/user",
+            "method": "GET"
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs a retained GitHub website session or a configured token.",
+          "retryable": false,
+          "next_operation": "github.auth_status",
+          "user_action": "Run agentweb connect github (or github.configure_token) and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "GitHub has no public resource at that owner, repo, number, or path.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers (or that the resource is public) and retry."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure_token to raise the authenticated rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "create_pull_request": {
+      "description": "Open a pull request through the authenticated GitHub REST API using a configured fine-grained token. Fully browserless; no CLI. Requires confirm.",
+      "when_to_use": "Use this to open a PR from head into base; confirm is mandatory.",
+      "when_not_to_use": "Do not use without confirm=true; use github.merge_pull_request to merge.",
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo",
+          "title",
+          "head",
+          "base"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo",
+          "title",
+          "head",
+          "base"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "title": {
+            "type": "string",
+            "description": "Pull request title"
+          },
+          "head": {
+            "type": "string",
+            "description": "Source branch (or owner:branch for a fork)"
+          },
+          "base": {
+            "type": "string",
+            "description": "Target branch to merge into"
+          },
+          "body": {
+            "type": "string",
+            "default": "",
+            "description": "PR description markdown"
+          },
+          "draft": {
+            "type": "boolean",
+            "default": false,
+            "description": "Open as a draft PR"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to perform the write"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "octocat",
+            "repo": "hello-world",
+            "title": "Add feature",
+            "head": "feature-branch",
+            "base": "main",
+            "body": "Implements X",
+            "confirm": true
+          }
+        }
+      ],
+      "category": "writes",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This GitHub write requires a configured API token.",
+          "retryable": false,
+          "next_operation": "github.configure_token",
+          "user_action": "Run github.configure_token once with a fine-grained PAT, then retry."
+        },
+        {
+          "code": "not_found",
+          "message": "GitHub has no resource at that owner, repo, or number.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers and that the token can see the resource."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure a token with a higher rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing inputs."
+        }
+      ]
+    },
+    "merge_pull_request": {
+      "description": "Merge an open pull request via the authenticated REST API. Requires a token and confirm. Merging is irreversible.",
+      "when_to_use": "Use this to merge an open, mergeable PR by number; confirm is mandatory.",
+      "when_not_to_use": "Do not use without confirm=true; a merged PR cannot be un-merged.",
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo",
+          "number"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo",
+          "number"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "number": {
+            "type": "integer",
+            "description": "Pull request number"
+          },
+          "merge_method": {
+            "type": "string",
+            "enum": [
+              "merge",
+              "squash",
+              "rebase"
+            ],
+            "default": "merge",
+            "description": "Merge strategy"
+          },
+          "commit_title": {
+            "type": "string",
+            "default": "",
+            "description": "Optional merge commit title"
+          },
+          "commit_message": {
+            "type": "string",
+            "default": "",
+            "description": "Optional merge commit message"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to perform the write"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "octocat",
+            "repo": "hello-world",
+            "number": 42,
+            "merge_method": "squash",
+            "confirm": true
+          }
+        }
+      ],
+      "category": "writes",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This GitHub write requires a configured API token.",
+          "retryable": false,
+          "next_operation": "github.configure_token",
+          "user_action": "Run github.configure_token once with a fine-grained PAT, then retry."
+        },
+        {
+          "code": "not_found",
+          "message": "GitHub has no resource at that owner, repo, or number.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers and that the token can see the resource."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure a token with a higher rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing inputs."
+        }
+      ]
+    },
+    "review_pull_request": {
+      "description": "Submit a pull request review (APPROVE, REQUEST_CHANGES, or COMMENT) via the authenticated REST API. Requires a token and confirm.",
+      "when_to_use": "Use this to approve, request changes on, or comment on a PR; confirm is mandatory.",
+      "when_not_to_use": "Do not use without confirm=true; REQUEST_CHANGES and COMMENT require a body.",
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo",
+          "number",
+          "event"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo",
+          "number",
+          "event"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "number": {
+            "type": "integer",
+            "description": "Pull request number"
+          },
+          "event": {
+            "type": "string",
+            "enum": [
+              "APPROVE",
+              "REQUEST_CHANGES",
+              "COMMENT"
+            ],
+            "description": "Review verdict"
+          },
+          "body": {
+            "type": "string",
+            "default": "",
+            "description": "Review comment (required unless APPROVE)"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to perform the write"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "octocat",
+            "repo": "hello-world",
+            "number": 42,
+            "event": "APPROVE",
+            "confirm": true
+          }
+        }
+      ],
+      "category": "writes",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This GitHub write requires a configured API token.",
+          "retryable": false,
+          "next_operation": "github.configure_token",
+          "user_action": "Run github.configure_token once with a fine-grained PAT, then retry."
+        },
+        {
+          "code": "not_found",
+          "message": "GitHub has no resource at that owner, repo, or number.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers and that the token can see the resource."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure a token with a higher rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing inputs."
+        }
+      ]
+    },
+    "comment": {
+      "description": "Add a comment to an issue or pull request via the authenticated REST API. Requires a token and confirm.",
+      "when_to_use": "Use this to comment on an issue or PR by number; confirm is mandatory.",
+      "when_not_to_use": "Do not use without confirm=true; use github.review_pull_request for review verdicts.",
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo",
+          "number",
+          "body"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo",
+          "number",
+          "body"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "number": {
+            "type": "integer",
+            "description": "Issue or pull request number"
+          },
+          "body": {
+            "type": "string",
+            "description": "Comment markdown"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to perform the write"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "octocat",
+            "repo": "hello-world",
+            "number": 42,
+            "body": "Thanks for the fix!",
+            "confirm": true
+          }
+        }
+      ],
+      "category": "writes",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This GitHub write requires a configured API token.",
+          "retryable": false,
+          "next_operation": "github.configure_token",
+          "user_action": "Run github.configure_token once with a fine-grained PAT, then retry."
+        },
+        {
+          "code": "not_found",
+          "message": "GitHub has no resource at that owner, repo, or number.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers and that the token can see the resource."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure a token with a higher rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing inputs."
+        }
+      ]
+    },
+    "update_issue": {
+      "description": "Edit an issue or pull request (title, body, state, or state_reason) via the authenticated REST API. Close or reopen by setting state. Requires confirm.",
+      "when_to_use": "Use this to edit, close, or reopen an issue/PR; confirm is mandatory.",
+      "when_not_to_use": "Do not use without confirm=true or without at least one field to change.",
+      "risk": {
+        "level": "write",
+        "reversible": true,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo",
+          "number"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo",
+          "number"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "number": {
+            "type": "integer",
+            "description": "Issue or pull request number"
+          },
+          "title": {
+            "type": "string",
+            "default": "",
+            "description": "New title"
+          },
+          "body": {
+            "type": "string",
+            "default": "",
+            "description": "New body markdown"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "open",
+              "closed"
+            ],
+            "description": "Open or close"
+          },
+          "state_reason": {
+            "type": "string",
+            "enum": [
+              "completed",
+              "not_planned",
+              "reopened"
+            ],
+            "description": "Reason when closing/reopening"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to perform the write"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "octocat",
+            "repo": "hello-world",
+            "number": 42,
+            "state": "closed",
+            "state_reason": "completed",
+            "confirm": true
+          }
+        }
+      ],
+      "category": "writes",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This GitHub write requires a configured API token.",
+          "retryable": false,
+          "next_operation": "github.configure_token",
+          "user_action": "Run github.configure_token once with a fine-grained PAT, then retry."
+        },
+        {
+          "code": "not_found",
+          "message": "GitHub has no resource at that owner, repo, or number.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers and that the token can see the resource."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure a token with a higher rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing inputs."
+        }
+      ]
+    },
+    "add_reaction": {
+      "description": "Add an emoji reaction to an issue or pull request via the authenticated REST API. Requires a token and confirm.",
+      "when_to_use": "Use this to react to an issue or PR; confirm is mandatory.",
+      "when_not_to_use": "Do not use without confirm=true.",
+      "risk": {
+        "level": "write",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo",
+          "number",
+          "content"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo",
+          "number",
+          "content"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "number": {
+            "type": "integer",
+            "description": "Issue or pull request number"
+          },
+          "content": {
+            "type": "string",
+            "enum": [
+              "+1",
+              "-1",
+              "laugh",
+              "confused",
+              "heart",
+              "hooray",
+              "rocket",
+              "eyes"
+            ],
+            "description": "Reaction emoji"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to perform the write"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "octocat",
+            "repo": "hello-world",
+            "number": 42,
+            "content": "rocket",
+            "confirm": true
+          }
+        }
+      ],
+      "category": "writes",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This GitHub write requires a configured API token.",
+          "retryable": false,
+          "next_operation": "github.configure_token",
+          "user_action": "Run github.configure_token once with a fine-grained PAT, then retry."
+        },
+        {
+          "code": "not_found",
+          "message": "GitHub has no resource at that owner, repo, or number.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers and that the token can see the resource."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure a token with a higher rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing inputs."
+        }
+      ]
+    },
+    "set_star": {
+      "description": "Star or unstar a repository for the authenticated user via the REST API. Requires a token and confirm.",
+      "when_to_use": "Use this to star (starred=true) or unstar (starred=false) a repo; confirm is mandatory.",
+      "when_not_to_use": "Do not use without confirm=true.",
+      "risk": {
+        "level": "write",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "starred": {
+            "type": "boolean",
+            "default": true,
+            "description": "True to star, false to unstar"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to perform the write"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "octocat",
+            "repo": "hello-world",
+            "starred": true,
+            "confirm": true
+          }
+        }
+      ],
+      "category": "writes",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This GitHub write requires a configured API token.",
+          "retryable": false,
+          "next_operation": "github.configure_token",
+          "user_action": "Run github.configure_token once with a fine-grained PAT, then retry."
+        },
+        {
+          "code": "not_found",
+          "message": "GitHub has no resource at that owner, repo, or number.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers and that the token can see the resource."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure a token with a higher rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing inputs."
+        }
+      ]
+    },
+    "fork_repository": {
+      "description": "Fork a repository into the authenticated user's account via the REST API. Requires a token and confirm.",
+      "when_to_use": "Use this to fork a repo to your account; confirm is mandatory.",
+      "when_not_to_use": "Do not use without confirm=true.",
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": true,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "default_branch_only": {
+            "type": "boolean",
+            "default": true,
+            "description": "Fork only the default branch"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to perform the write"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "octocat",
+            "repo": "hello-world",
+            "confirm": true
+          }
+        }
+      ],
+      "category": "writes",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This GitHub write requires a configured API token.",
+          "retryable": false,
+          "next_operation": "github.configure_token",
+          "user_action": "Run github.configure_token once with a fine-grained PAT, then retry."
+        },
+        {
+          "code": "not_found",
+          "message": "GitHub has no resource at that owner, repo, or number.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers and that the token can see the resource."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure a token with a higher rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing inputs."
+        }
+      ]
+    },
+    "create_release": {
+      "description": "Create a release (optionally draft or prerelease) for a repository via the authenticated REST API. Requires a token and confirm.",
+      "when_to_use": "Use this to publish or draft a release for a tag; confirm is mandatory.",
+      "when_not_to_use": "Do not use without confirm=true.",
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo",
+          "tag_name"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo",
+          "tag_name"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "tag_name": {
+            "type": "string",
+            "description": "Git tag for the release"
+          },
+          "name": {
+            "type": "string",
+            "default": "",
+            "description": "Release title"
+          },
+          "body": {
+            "type": "string",
+            "default": "",
+            "description": "Release notes markdown"
+          },
+          "draft": {
+            "type": "boolean",
+            "default": false,
+            "description": "Create as a draft"
+          },
+          "prerelease": {
+            "type": "boolean",
+            "default": false,
+            "description": "Mark as a prerelease"
+          },
+          "target_commitish": {
+            "type": "string",
+            "default": "",
+            "description": "Branch or commit the tag points at"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to perform the write"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "octocat",
+            "repo": "hello-world",
+            "tag_name": "v1.2.0",
+            "name": "v1.2.0",
+            "body": "Release notes",
+            "confirm": true
+          }
+        }
+      ],
+      "category": "writes",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This GitHub write requires a configured API token.",
+          "retryable": false,
+          "next_operation": "github.configure_token",
+          "user_action": "Run github.configure_token once with a fine-grained PAT, then retry."
+        },
+        {
+          "code": "not_found",
+          "message": "GitHub has no resource at that owner, repo, or number.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers and that the token can see the resource."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure a token with a higher rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing inputs."
+        }
+      ]
+    },
+    "dispatch_workflow": {
+      "description": "Trigger a workflow_dispatch run for a GitHub Actions workflow via the authenticated REST API. Requires a token and confirm.",
+      "when_to_use": "Use this to run a workflow that supports workflow_dispatch; confirm is mandatory.",
+      "when_not_to_use": "Do not use without confirm=true or for workflows without a dispatch trigger.",
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "owner",
+          "repo",
+          "workflow",
+          "ref"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "owner",
+          "repo",
+          "workflow",
+          "ref"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "workflow": {
+            "type": "string",
+            "description": "Workflow file name (e.g. ci.yml) or numeric id"
+          },
+          "ref": {
+            "type": "string",
+            "description": "Branch or tag to run against"
+          },
+          "inputs": {
+            "type": "object",
+            "description": "Optional workflow_dispatch inputs"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to perform the write"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "owner": "octocat",
+            "repo": "hello-world",
+            "workflow": "ci.yml",
+            "ref": "main",
+            "confirm": true
+          }
+        }
+      ],
+      "category": "writes",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This GitHub write requires a configured API token.",
+          "retryable": false,
+          "next_operation": "github.configure_token",
+          "user_action": "Run github.configure_token once with a fine-grained PAT, then retry."
+        },
+        {
+          "code": "not_found",
+          "message": "GitHub has no resource at that owner, repo, or number.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers and that the token can see the resource."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure a token with a higher rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing inputs."
+        }
+      ]
+    },
+    "create_gist": {
+      "description": "Create a gist for the authenticated user via the REST API. Requires a token and confirm.",
+      "when_to_use": "Use this to create a public or secret gist from one or more files; confirm is mandatory.",
+      "when_not_to_use": "Do not use without confirm=true.",
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "properties": {
+          "files": {
+            "type": "object",
+            "description": "Map of filename to file content"
+          },
+          "description": {
+            "type": "string",
+            "default": "",
+            "description": "Gist description"
+          },
+          "public": {
+            "type": "boolean",
+            "default": false,
+            "description": "True for a public gist"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to perform the write"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "files": {
+              "notes.md": "# Notes"
+            },
+            "description": "Scratch notes",
+            "public": false,
+            "confirm": true
+          }
+        }
+      ],
+      "category": "writes",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This GitHub write requires a configured API token.",
+          "retryable": false,
+          "next_operation": "github.configure_token",
+          "user_action": "Run github.configure_token once with a fine-grained PAT, then retry."
+        },
+        {
+          "code": "not_found",
+          "message": "GitHub has no resource at that owner, repo, or number.",
+          "retryable": false,
+          "user_action": "Confirm the identifiers and that the token can see the resource."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        },
+        {
+          "code": "github_rate_limited",
+          "message": "GitHub applied an API rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 60,
+          "next_operation": "github.configure_token",
+          "user_action": "Wait for the reset, or configure a token with a higher rate limit."
+        },
+        {
+          "code": "github_unavailable",
+          "message": "GitHub is temporarily unavailable or returned a server error.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing inputs."
+        }
+      ]
+    }
+  }
+}

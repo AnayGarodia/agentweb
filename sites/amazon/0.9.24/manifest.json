@@ -1,0 +1,2176 @@
+{
+  "name": "amazon",
+  "version": "0.9.24",
+  "description": "Amazon.com mapping for filtered product discovery, comparisons, reviews, sale checks, account carts, delivery addresses, checkout and explicitly confirmed order placement, Lists reading and typed (UNVERIFIED) Amazon List item add/remove, and order-history reads.",
+  "canonical_domain": "amazon.com",
+  "aliases": [
+    "amazon"
+  ],
+  "url_routes": [
+    {
+      "path_regex": "/(?:[^/]+/)?(?:dp|gp/product)/(?P<asin>[A-Z0-9]{10})(?:/.*)?",
+      "operation": "product",
+      "arguments": {
+        "asin": {
+          "group": "asin"
+        }
+      }
+    }
+  ],
+  "base_url": "https://www.amazon.com",
+  "login_url": "https://www.amazon.com/ap/signin?openid.return_to=https%3A%2F%2Fwww.amazon.com%2F%3Fref_%3Dnav_signin&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.assoc_handle=usflex&openid.mode=checkid_setup&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0",
+  "signup_url": "https://www.amazon.com/ap/register?openid.return_to=https%3A%2F%2Fwww.amazon.com%2F%3F_encoding%3DUTF8%26ref_%3Dnav_custrec_newcust&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.assoc_handle=usflex&openid.mode=checkid_setup&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0",
+  "session_url": "https://www.amazon.com/checkout/entry/cart",
+  "auth": {
+    "strategy": "cookie_session",
+    "interaction": "one_time_browser_authorization"
+  },
+  "cookie_domain": ".amazon.com",
+  "allowed_domains": [
+    "amazon.com"
+  ],
+  "runtime": {
+    "browserless_replay": true,
+    "auth_interaction": "website_session"
+  },
+  "browser_impersonation": {
+    "profile": "chrome146",
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+  },
+  "auth_cookie_names": [
+    "at-main",
+    "sess-at-main",
+    "x-main"
+  ],
+  "session_cookie_names": [
+    "aws-waf-token",
+    "session-id"
+  ],
+  "auth_browser_check": {
+    "account_selector": "#nav-link-accountList-nav-line-1",
+    "entry_selector": "input[name='email']",
+    "signed_out_labels": [
+      "Hello, sign in"
+    ]
+  },
+  "session_browser_check": {
+    "success_url_contains": [
+      "/checkout/"
+    ]
+  },
+  "session_verification": {
+    "operation": "checkout",
+    "arguments": {},
+    "success": "response"
+  },
+  "entrypoint": "adapter.py",
+  "coverage": {
+    "typed_fast_paths": [
+      "search",
+      "product details",
+      "product comparison",
+      "browserless batch product data through Amazon's structured product endpoint",
+      "customer review reading",
+      "product variations and related-product discovery",
+      "best-seller lists",
+      "deal discovery",
+      "single-product sale checks",
+      "cart viewing",
+      "add to cart",
+      "remove from cart",
+      "add and select a delivery address during checkout",
+      "checkout-visible saved payment-method inspection",
+      "checkout inspection and explicitly confirmed order placement with an optional total guard",
+      "login-state detection",
+      "Amazon Lists navigation and list-item reading",
+      "typed Amazon List item add/remove (add_to_list, remove_from_list) with explicit list_id and read-back confirmation, shipped UNVERIFIED",
+      "order-history reading with a connected session"
+    ],
+    "website_parity": "Direct HTTP parity is live-verified for signed-out deal search, Best Sellers, product details, an anonymous add/read/remove cart round trip, authenticated account detection, and an empty account cart. Your Orders remains unverified because the browser required password step-up authentication while the retained direct session reached the order-history document.",
+    "protocol_fallback": "direct_workflow",
+    "not_mapped": [
+      "password-step-up verification for Your Orders",
+      "Amazon List creation, mutation, and deletion",
+      "address editing/deletion outside checkout, returns, subscriptions, and other account-only workflows"
+    ],
+    "human_boundaries": [
+      "password, OTP, CAPTCHA, entering new payment credentials, and legal consent when Amazon requires them"
+    ],
+    "constraints": [
+      "Amazon may challenge or block automation",
+      "separate Amazon products on non-amazon.com domains require their own adapters",
+      "AgentWeb cannot bypass a human verification, new-payment-entry, or legal-consent step; after it is resolved, an explicitly confirmed checkout can resume"
+    ],
+    "capability": {
+      "schema_version": 1,
+      "discovered_route_count": 35,
+      "mapped_count": 22,
+      "excluded_count": 2,
+      "open_count": 11,
+      "exhaustive": false,
+      "coverage_ratio": 0.6286,
+      "remaining": [
+        {
+          "route": "GET /auto-deliveries",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /coupons",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /gc/balance",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /gp/browse-nodes/{node}",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /gp/css/order-history#returns",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /gp/digital/fiona/manage",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /gp/video/storefront",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /music/library",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /shops/{seller}",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "POST /a/addresses#edit",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "POST /review/create-review",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        }
+      ],
+      "read": {
+        "discovered_route_count": 29,
+        "mapped_count": 18,
+        "excluded_count": 2,
+        "open_count": 9,
+        "coverage_ratio": 0.6207
+      },
+      "write": {
+        "discovered_route_count": 6,
+        "mapped_count": 4,
+        "excluded_count": 0,
+        "open_count": 2,
+        "coverage_ratio": 0.6667
+      }
+    }
+  },
+  "commands": {
+    "search": {
+      "description": "Search Amazon products and return compact structured results. Sponsored products are excluded by default and zero organic matches are explicit. A null can_add_to_cart means addability must be resolved on the product page; it does not mean the item is unavailable.",
+      "category": "discovery",
+      "when_to_use": "Use this to search products with compact results; sponsored items are excluded by default.",
+      "when_not_to_use": "Do not use this to fetch a known ASIN; call product.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 180,
+      "cli": {
+        "positionals": [
+          "query"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Product search terms"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50,
+            "default": 10,
+            "description": "Maximum results"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1,
+            "description": "Amazon result page"
+          },
+          "sort": {
+            "type": "string",
+            "default": "featured",
+            "description": "featured, price_asc, price_desc, reviews, or newest"
+          },
+          "include_sponsored": {
+            "type": "boolean",
+            "default": false,
+            "description": "Include clearly labeled sponsored results; false by default so ads cannot masquerade as organic matches"
+          },
+          "min_price": {
+            "type": "number",
+            "description": "Optional local minimum displayed price"
+          },
+          "max_price": {
+            "type": "number",
+            "description": "Optional local maximum displayed price"
+          },
+          "min_rating": {
+            "type": "number",
+            "description": "Optional local minimum rating from 0 to 5"
+          },
+          "department": {
+            "type": "string",
+            "description": "Optional Amazon search index such as electronics, books, or fashion",
+            "enum": [
+              "all",
+              "arts-crafts",
+              "automotive",
+              "baby-products",
+              "beauty",
+              "books",
+              "computers",
+              "electronics",
+              "fashion",
+              "garden",
+              "grocery",
+              "handmade",
+              "health-personal-care",
+              "industrial",
+              "movies-tv",
+              "music",
+              "office-products",
+              "pets",
+              "software",
+              "sporting",
+              "tools",
+              "toys-and-games",
+              "videogames"
+            ]
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "query": "wireless headphones",
+            "limit": 10
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_rate_limited",
+          "message": "Amazon throttled this client or served an interstitial slow-down.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Wait several seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "amazon_unavailable",
+          "message": "Amazon is temporarily unavailable or returned an unexpected page.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "product": {
+      "description": "Fetch current product, price, availability, rating, sale, seller, and cart metadata.",
+      "category": "product",
+      "when_to_use": "Use this to fetch one product's price, availability, rating, sale, seller, and cart metadata.",
+      "when_not_to_use": "Do not use this to compare several products; call compare_products or batch_products.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "asin"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "asin"
+        ],
+        "properties": {
+          "asin": {
+            "type": "string",
+            "description": "ASIN or Amazon product URL"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "asin": "B08N5WRWNW"
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "product_not_found",
+          "field": "asin",
+          "message": "Amazon has no product page for that ASIN or URL in this marketplace.",
+          "retryable": false,
+          "next_operation": "amazon.search",
+          "user_action": "Confirm the ASIN with search, then retry with a valid product."
+        },
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_rate_limited",
+          "message": "Amazon throttled this client or served an interstitial slow-down.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Wait several seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "amazon_unavailable",
+          "message": "Amazon is temporarily unavailable or returned an unexpected page.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "compare_products": {
+      "description": "Fetch and compare 2 to 10 products, including current price, rating, availability, seller, features, and sale state.",
+      "category": "product",
+      "when_to_use": "Use this to fetch and compare 2 to 10 products side by side.",
+      "when_not_to_use": "Do not use this for a compact bulk snapshot of many ASINs; call batch_products.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "asins"
+        ],
+        "properties": {
+          "asins": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Two to ten ASINs or Amazon product URLs"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "asins": [
+              "B08N5WRWNW",
+              "B07XJ8C8F5"
+            ]
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_rate_limited",
+          "message": "Amazon throttled this client or served an interstitial slow-down.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Wait several seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "amazon_unavailable",
+          "message": "Amazon is temporarily unavailable or returned an unexpected page.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "batch_products": {
+      "description": "Fetch compact current title, price, sale, image, and addability data for up to 25 ASINs in two direct requests using Amazon's own structured product endpoint. Public, browserless, and token handling is automatic.",
+      "category": "product",
+      "when_to_use": "Use this to fetch compact title, price, sale, and addability for up to 25 ASINs.",
+      "when_not_to_use": "Do not use this for a full detailed comparison; call compare_products.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 120,
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "asins"
+        ],
+        "properties": {
+          "asins": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "One to twenty-five ASINs or Amazon product URLs"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "asins": [
+              "B08N5WRWNW",
+              "B07XJ8C8F5"
+            ]
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_rate_limited",
+          "message": "Amazon throttled this client or served an interstitial slow-down.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Wait several seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "amazon_unavailable",
+          "message": "Amazon is temporarily unavailable or returned an unexpected page.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "reviews": {
+      "description": "Read the public featured customer reviews visible on a product page. Amazon currently redirects its full sortable review archive to sign-in, so the response states that it is not complete.",
+      "category": "reviews",
+      "when_to_use": "Use this to read the public featured customer reviews shown on a product page.",
+      "when_not_to_use": "Do not use this for full review corpora; only page-visible reviews are exposed.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "asin"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "asin"
+        ],
+        "properties": {
+          "asin": {
+            "type": "string",
+            "description": "ASIN or Amazon product URL"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 10,
+            "description": "Maximum public featured reviews",
+            "minimum": 1,
+            "maximum": 20
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "asin": "B08N5WRWNW",
+            "limit": 10
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "product_not_found",
+          "field": "asin",
+          "message": "Amazon has no product page for that ASIN or URL in this marketplace.",
+          "retryable": false,
+          "next_operation": "amazon.search",
+          "user_action": "Confirm the ASIN with search, then retry with a valid product."
+        },
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_rate_limited",
+          "message": "Amazon throttled this client or served an interstitial slow-down.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Wait several seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "amazon_unavailable",
+          "message": "Amazon is temporarily unavailable or returned an unexpected page.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "variations": {
+      "description": "List product option groups and the ASINs exposed for selectable variants.",
+      "category": "product",
+      "when_to_use": "Use this to list a product's option groups and the ASINs for each selectable variant.",
+      "when_not_to_use": "Do not use this to read one variant's price; call product with the variant ASIN.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "asin"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "asin"
+        ],
+        "properties": {
+          "asin": {
+            "type": "string",
+            "description": "ASIN or Amazon product URL"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "asin": "B08N5WRWNW"
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "product_not_found",
+          "field": "asin",
+          "message": "Amazon has no product page for that ASIN or URL in this marketplace.",
+          "retryable": false,
+          "next_operation": "amazon.search",
+          "user_action": "Confirm the ASIN with search, then retry with a valid product."
+        },
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_rate_limited",
+          "message": "Amazon throttled this client or served an interstitial slow-down.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Wait several seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "amazon_unavailable",
+          "message": "Amazon is temporarily unavailable or returned an unexpected page.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "recommendations": {
+      "description": "List related products directly linked from a public product page, excluding detected credit-card and account promotions.",
+      "category": "product",
+      "when_to_use": "Use this to list related products linked from a public product page.",
+      "when_not_to_use": "Do not use this for search results; call search.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "asin"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "asin"
+        ],
+        "properties": {
+          "asin": {
+            "type": "string",
+            "description": "ASIN or Amazon product URL"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "minimum": 1,
+            "maximum": 100,
+            "description": "Maximum related products"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "asin": "B08N5WRWNW",
+            "limit": 20
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "product_not_found",
+          "field": "asin",
+          "message": "Amazon has no product page for that ASIN or URL in this marketplace.",
+          "retryable": false,
+          "next_operation": "amazon.search",
+          "user_action": "Confirm the ASIN with search, then retry with a valid product."
+        },
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_rate_limited",
+          "message": "Amazon throttled this client or served an interstitial slow-down.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Wait several seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "amazon_unavailable",
+          "message": "Amazon is temporarily unavailable or returned an unexpected page.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "best_sellers": {
+      "description": "Read Amazon's public best-seller list, optionally for a department slug.",
+      "category": "discovery",
+      "when_to_use": "Use this to read the public best-seller list, optionally for a department slug.",
+      "when_not_to_use": "Do not use this for discounted items; call deals.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "department": {
+            "type": "string",
+            "description": "Optional category slug such as electronics"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "minimum": 1,
+            "maximum": 100,
+            "description": "Maximum best-seller entries"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "department": "electronics",
+            "limit": 20
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_rate_limited",
+          "message": "Amazon throttled this client or served an interstitial slow-down.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Wait several seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "amazon_unavailable",
+          "message": "Amazon is temporarily unavailable or returned an unexpected page.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "sale_check": {
+      "description": "Check whether a product currently displays a discount or lower price.",
+      "category": "product",
+      "when_to_use": "Use this to check whether a product currently displays a discount or lower price.",
+      "when_not_to_use": "Do not use this for the full product record; call product.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 180,
+      "cli": {
+        "positionals": [
+          "asin"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "asin"
+        ],
+        "properties": {
+          "asin": {
+            "type": "string",
+            "description": "ASIN or Amazon product URL"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "asin": "B08N5WRWNW"
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "product_not_found",
+          "field": "asin",
+          "message": "Amazon has no product page for that ASIN or URL in this marketplace.",
+          "retryable": false,
+          "next_operation": "amazon.search",
+          "user_action": "Confirm the ASIN with search, then retry with a valid product."
+        },
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_rate_limited",
+          "message": "Amazon throttled this client or served an interstitial slow-down.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Wait several seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "amazon_unavailable",
+          "message": "Amazon is temporarily unavailable or returned an unexpected page.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "deals": {
+      "description": "Search Amazon's Today's Deals index. The query is applied by Amazon upstream rather than by a local title substring filter.",
+      "category": "discovery",
+      "when_to_use": "Use this to search Today's Deals; the query is applied by Amazon upstream.",
+      "when_not_to_use": "Do not use this for a specific product's sale state; call sale_check.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 120,
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Optional query sent to Amazon's Today's Deals search index"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "description": "Maximum deals",
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "query": "laptop",
+            "limit": 20
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_rate_limited",
+          "message": "Amazon throttled this client or served an interstitial slow-down.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Wait several seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "amazon_unavailable",
+          "message": "Amazon is temporarily unavailable or returned an unexpected page.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "cart": {
+      "description": "Read the current profile cart, including whether it belongs to an account or is an isolated anonymous cart that cannot appear in a normal browser.",
+      "category": "cart",
+      "when_to_use": "Use this to read the current profile cart and whether it is an account or isolated anonymous cart.",
+      "when_not_to_use": "Do not use this to modify the cart; call add_to_cart or remove_from_cart.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public",
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {}
+      },
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "errors": [
+        {
+          "code": "authentication_required",
+          "message": "This operation needs a signed-in Amazon session.",
+          "retryable": false,
+          "next_operation": "amazon.account_status",
+          "user_action": "Run agentweb connect amazon to sign in once, then retry."
+        },
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_rate_limited",
+          "message": "Amazon throttled this client or served an interstitial slow-down.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Wait several seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "amazon_unavailable",
+          "message": "Amazon is temporarily unavailable or returned an unexpected page.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "add_to_cart": {
+      "description": "Fetch fresh product tokens and add an item. Defaults to the user's account cart and requests sign-in lazily. Anonymous cart use must be explicit and remains isolated from the user's normal browser. Returns the actual cart price and flags any change from the product-page price. Does not purchase.",
+      "category": "cart",
+      "when_to_use": "Use this to add an item to the account cart (or an explicit anonymous cart); reversible, never purchases.",
+      "when_not_to_use": "Do not expect a purchase; checkout and payment remain human-confirmed boundaries.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public",
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": true,
+        "idempotent": false,
+        "confirmation": "never"
+      },
+      "cli": {
+        "positionals": [
+          "asin"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "asin"
+        ],
+        "properties": {
+          "asin": {
+            "type": "string",
+            "description": "ASIN or Amazon product URL"
+          },
+          "quantity": {
+            "type": "integer",
+            "default": 1,
+            "description": "Quantity to add"
+          },
+          "cart_scope": {
+            "type": "string",
+            "enum": [
+              "account",
+              "anonymous"
+            ],
+            "default": "account",
+            "description": "Use account for 'my cart' (sign-in is requested only if needed). Use anonymous only when the user accepts a separate AgentWeb-only cart."
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "asin": "B08N5WRWNW",
+            "quantity": 1
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "item_not_addable",
+          "field": "asin",
+          "message": "Amazon did not expose an add-to-cart action for that product (out of stock or variation required).",
+          "retryable": false,
+          "next_operation": "amazon.variations",
+          "user_action": "Pick an in-stock variation ASIN with variations or product, then retry."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs a signed-in Amazon session.",
+          "retryable": false,
+          "next_operation": "amazon.account_status",
+          "user_action": "Run agentweb connect amazon to sign in once, then retry."
+        },
+        {
+          "code": "product_not_found",
+          "field": "asin",
+          "message": "Amazon has no product page for that ASIN or URL in this marketplace.",
+          "retryable": false,
+          "next_operation": "amazon.search",
+          "user_action": "Confirm the ASIN with search, then retry with a valid product."
+        },
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_rate_limited",
+          "message": "Amazon throttled this client or served an interstitial slow-down.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Wait several seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "amazon_unavailable",
+          "message": "Amazon is temporarily unavailable or returned an unexpected page.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "remove_from_cart": {
+      "description": "Remove an ASIN from the account cart by default, or from an explicitly selected isolated anonymous cart.",
+      "category": "cart",
+      "when_to_use": "Use this to remove an ASIN from the account cart or a selected anonymous cart.",
+      "when_not_to_use": "Do not use this to clear the whole cart at once; remove items individually.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public",
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": true,
+        "idempotent": false,
+        "confirmation": "never"
+      },
+      "cli": {
+        "positionals": [
+          "asin"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "asin"
+        ],
+        "properties": {
+          "asin": {
+            "type": "string",
+            "description": "ASIN or Amazon product URL"
+          },
+          "cart_scope": {
+            "type": "string",
+            "enum": [
+              "account",
+              "anonymous"
+            ],
+            "default": "account",
+            "description": "Cart ownership boundary; anonymous carts exist only inside the AgentWeb profile."
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "asin": "B08N5WRWNW"
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "authentication_required",
+          "message": "This operation needs a signed-in Amazon session.",
+          "retryable": false,
+          "next_operation": "amazon.account_status",
+          "user_action": "Run agentweb connect amazon to sign in once, then retry."
+        },
+        {
+          "code": "product_not_found",
+          "field": "asin",
+          "message": "Amazon has no product page for that ASIN or URL in this marketplace.",
+          "retryable": false,
+          "next_operation": "amazon.search",
+          "user_action": "Confirm the ASIN with search, then retry with a valid product."
+        },
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_rate_limited",
+          "message": "Amazon throttled this client or served an interstitial slow-down.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Wait several seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "amazon_unavailable",
+          "message": "Amazon is temporarily unavailable or returned an unexpected page.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "account_status": {
+      "description": "Check whether the connected Amazon profile currently represents a signed-in account.",
+      "category": "account",
+      "when_to_use": "Use this to check whether the connected Amazon profile is currently signed in.",
+      "when_not_to_use": "Do not use this to read orders; call orders.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public",
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {}
+      },
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "errors": [
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_rate_limited",
+          "message": "Amazon throttled this client or served an interstitial slow-down.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Wait several seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "amazon_unavailable",
+          "message": "Amazon is temporarily unavailable or returned an unexpected page.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "lists": {
+      "description": "List the signed-in account's Amazon Lists with IDs, privacy, default-list state, suspected QA artifacts, and an explicit-ID-only write policy.",
+      "category": "account",
+      "when_to_use": "Use this to list the signed-in account's Amazon Lists with IDs and privacy state.",
+      "when_not_to_use": "Do not use this to read one list's items; call list.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {}
+      },
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "errors": [
+        {
+          "code": "authentication_required",
+          "message": "This operation needs a signed-in Amazon session.",
+          "retryable": false,
+          "next_operation": "amazon.account_status",
+          "user_action": "Run agentweb connect amazon to sign in once, then retry."
+        },
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_rate_limited",
+          "message": "Amazon throttled this client or served an interstitial slow-down.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Wait several seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "amazon_unavailable",
+          "message": "Amazon is temporarily unavailable or returned an unexpected page.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "list": {
+      "description": "Read one Amazon List and the product cards currently rendered on it.",
+      "category": "account",
+      "when_to_use": "Use this to read one Amazon List and the product cards currently on it.",
+      "when_not_to_use": "Do not use this to enumerate all lists; call lists.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cli": {
+        "positionals": [
+          "list_id"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "list_id"
+        ],
+        "properties": {
+          "list_id": {
+            "type": "string",
+            "description": "Amazon List ID"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "list_id": "LIST_ID"
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "authentication_required",
+          "message": "This operation needs a signed-in Amazon session.",
+          "retryable": false,
+          "next_operation": "amazon.account_status",
+          "user_action": "Run agentweb connect amazon to sign in once, then retry."
+        },
+        {
+          "code": "amazon_list_not_found",
+          "field": "list_id",
+          "message": "Amazon has no list with that ID for the signed-in account.",
+          "retryable": false,
+          "next_operation": "amazon.lists",
+          "user_action": "Confirm the list ID with lists, then retry."
+        },
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_rate_limited",
+          "message": "Amazon throttled this client or served an interstitial slow-down.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Wait several seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "amazon_unavailable",
+          "message": "Amazon is temporarily unavailable or returned an unexpected page.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "orders": {
+      "description": "Read recent order cards using a signed-in imported session. Never modifies orders. Amazon may require a separate password or OTP step-up even when account_status says signed in; that condition is reported distinctly from sign-out.",
+      "category": "account",
+      "when_to_use": "Use this to read recent order cards from a signed-in session; it never modifies orders.",
+      "when_not_to_use": "Do not use this to place or cancel orders; those are human-confirmed boundaries.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "default": 10,
+            "description": "Maximum orders",
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "limit": 10
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "authentication_required",
+          "message": "This operation needs a signed-in Amazon session.",
+          "retryable": false,
+          "next_operation": "amazon.account_status",
+          "user_action": "Run agentweb connect amazon to sign in once, then retry."
+        },
+        {
+          "code": "additional_authentication_required",
+          "message": "Amazon requires a step-up (password or OTP) that must be completed by a human.",
+          "retryable": false,
+          "user_action": "Complete the step-up interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_rate_limited",
+          "message": "Amazon throttled this client or served an interstitial slow-down.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Wait several seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "amazon_unavailable",
+          "message": "Amazon is temporarily unavailable or returned an unexpected page.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "checkout_url": {
+      "description": "Return Amazon's checkout URL. Use checkout for structured inspection or explicitly confirmed order placement.",
+      "category": "checkout",
+      "when_to_use": "Use this to return the normal checkout URL without opening it or placing an order.",
+      "when_not_to_use": "Do not treat this as a purchase; it only returns the URL for human confirmation.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public",
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {}
+      },
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "errors": [
+        {
+          "code": "authentication_required",
+          "message": "This operation needs a signed-in Amazon session.",
+          "retryable": false,
+          "next_operation": "amazon.account_status",
+          "user_action": "Run agentweb connect amazon to sign in once, then retry."
+        },
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_rate_limited",
+          "message": "Amazon throttled this client or served an interstitial slow-down.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Wait several seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "amazon_unavailable",
+          "message": "Amazon is temporarily unavailable or returned an unexpected page.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "payment_methods": {
+      "description": "List payment methods exposed by the current checkout without returning Amazon's opaque instrument tokens. Disabled and ineligible methods are identified explicitly. If none are usable, the response says a new payment method is required instead of incorrectly asking for the address again.",
+      "category": "checkout",
+      "when_to_use": "Use this to list payment methods available in the current checkout without exposing instrument tokens.",
+      "when_not_to_use": "Do not use this to add a card; entering new payment credentials is a human boundary.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {}
+      },
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "errors": [
+        {
+          "code": "authentication_required",
+          "message": "This operation needs a signed-in Amazon session.",
+          "retryable": false,
+          "next_operation": "amazon.account_status",
+          "user_action": "Run agentweb connect amazon to sign in once, then retry."
+        },
+        {
+          "code": "amazon_delivery_address_required",
+          "message": "Checkout has no delivery address selected yet.",
+          "retryable": false,
+          "next_operation": "amazon.add_address",
+          "user_action": "Add and select a delivery address with add_address, then retry."
+        },
+        {
+          "code": "additional_authentication_required",
+          "message": "Amazon requires a step-up (password or OTP) that must be completed by a human.",
+          "retryable": false,
+          "user_action": "Complete the step-up interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_rate_limited",
+          "message": "Amazon throttled this client or served an interstitial slow-down.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Wait several seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "amazon_unavailable",
+          "message": "Amazon is temporarily unavailable or returned an unexpected page.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "add_address": {
+      "description": "Add and select a delivery address for the current Amazon checkout. This is an ordinary confirmed account mutation, not a browser-only checkpoint. AgentWeb fetches and replays Amazon's live opaque checkout form fields, then polls a fresh checkout until Amazon advances away from the address step; disappearance of the response form alone is never reported as success. If Amazon proposes an address correction, the command returns a structured confirmation-required error.",
+      "category": "checkout",
+      "when_to_use": "Use this to add and select a delivery address for the current checkout; confirm is mandatory.",
+      "when_not_to_use": "Do not use this without confirm=true; address editing and deletion outside checkout are not mapped.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "full_name",
+          "phone_number",
+          "address_line1",
+          "city",
+          "state_or_region",
+          "postal_code"
+        ],
+        "properties": {
+          "full_name": {
+            "type": "string",
+            "description": "Recipient full name"
+          },
+          "phone_number": {
+            "type": "string",
+            "description": "Contact phone number"
+          },
+          "address_line1": {
+            "type": "string",
+            "description": "Street address line 1"
+          },
+          "address_line2": {
+            "type": "string",
+            "description": "Optional street address line 2"
+          },
+          "city": {
+            "type": "string",
+            "description": "City"
+          },
+          "state_or_region": {
+            "type": "string",
+            "description": "State or region"
+          },
+          "postal_code": {
+            "type": "string",
+            "description": "Postal or ZIP code"
+          },
+          "country_code": {
+            "type": "string",
+            "default": "US",
+            "minLength": 2,
+            "maxLength": 2,
+            "description": "ISO 3166-1 alpha-2 country code"
+          },
+          "make_default": {
+            "type": "boolean",
+            "default": false,
+            "description": "Set this address as the account default"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to add and select the address"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "full_name": "Jane Doe",
+            "phone_number": "5551234567",
+            "address_line1": "1 Main St",
+            "city": "Seattle",
+            "state_or_region": "WA",
+            "postal_code": "98101",
+            "confirm": true
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs a signed-in Amazon session.",
+          "retryable": false,
+          "next_operation": "amazon.account_status",
+          "user_action": "Run agentweb connect amazon to sign in once, then retry."
+        },
+        {
+          "code": "amazon_address_confirmation_required",
+          "message": "Amazon proposed an address correction that must be confirmed.",
+          "retryable": false,
+          "user_action": "Review Amazon's suggested address and resubmit the chosen version."
+        },
+        {
+          "code": "amazon_address_not_persisted",
+          "message": "Amazon did not persist the submitted delivery address.",
+          "retryable": true,
+          "user_action": "Retry once; if it persists, add the address interactively in the browser."
+        },
+        {
+          "code": "website_replay_changed",
+          "message": "Amazon's current checkout protocol no longer matches the captured form shape.",
+          "retryable": true,
+          "user_action": "Retry once; if it persists, complete the step in the browser and report the drift."
+        },
+        {
+          "code": "additional_authentication_required",
+          "message": "Amazon requires a step-up (password or OTP) that must be completed by a human.",
+          "retryable": false,
+          "user_action": "Complete the step-up interactively in the browser, then retry."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        },
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_rate_limited",
+          "message": "Amazon throttled this client or served an interstitial slow-down.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Wait several seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "amazon_unavailable",
+          "message": "Amazon is temporarily unavailable or returned an unexpected page.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "checkout": {
+      "description": "Inspect the live account checkout by its active forms rather than generic links shared by every checkout page. Missing delivery-address state routes to amazon.add_address; payment selection routes to amazon.payment_methods and never asks for the address again. With place_order=true and confirm=true, submit the selected address/payment checkout and verify Amazon's order confirmation. expected_total provides a price-change guard. Password, OTP, CAPTCHA, new card entry, or site-required legal consent remain resumable human checkpoints.",
+      "category": "checkout",
+      "when_to_use": "Use this to inspect the live checkout; with place_order=true and confirm=true it submits the order and verifies confirmation. Pass expected_total as a price guard.",
+      "when_not_to_use": "Do not place orders casually: placing an order spends money and is irreversible. Password, OTP, CAPTCHA, new card entry, and legal consent remain human checkpoints.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "place_order": {
+            "type": "boolean",
+            "default": false,
+            "description": "Set true (with confirm) to actually submit and place the order"
+          },
+          "expected_total": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Optional exact expected order total; submission stops if Amazon shows another amount"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to submit a state-changing checkout step"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "errors": [
+        {
+          "code": "additional_authentication_required",
+          "message": "Amazon requires a step-up (password or OTP) that must be completed by a human.",
+          "retryable": false,
+          "user_action": "Complete the step-up interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_checkout_checkpoint_required",
+          "message": "Amazon inserted a human checkpoint (CAPTCHA, consent, or new card entry) into checkout.",
+          "retryable": false,
+          "user_action": "Resolve the checkpoint interactively in the browser, then resume checkout."
+        },
+        {
+          "code": "amazon_order_confirmation_uncertain",
+          "message": "AgentWeb could not confirm whether the order was actually placed.",
+          "retryable": false,
+          "user_action": "Check Your Orders before retrying so you do not place a duplicate order."
+        },
+        {
+          "code": "amazon_delivery_address_required",
+          "message": "Checkout has no delivery address selected yet.",
+          "retryable": false,
+          "next_operation": "amazon.add_address",
+          "user_action": "Add and select a delivery address with add_address, then retry."
+        },
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs a signed-in Amazon session.",
+          "retryable": false,
+          "next_operation": "amazon.account_status",
+          "user_action": "Run agentweb connect amazon to sign in once, then retry."
+        },
+        {
+          "code": "website_replay_changed",
+          "message": "Amazon's current checkout protocol no longer matches the captured form shape.",
+          "retryable": true,
+          "user_action": "Retry once; if it persists, complete the step in the browser and report the drift."
+        },
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "amazon_rate_limited",
+          "message": "Amazon throttled this client or served an interstitial slow-down.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Wait several seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "amazon_unavailable",
+          "message": "Amazon is temporarily unavailable or returned an unexpected page.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "add_to_list": {
+      "description": "Add a product to a specific Amazon List (wishlist) by ASIN and list_id, then confirm by reading the list back. UNVERIFIED: rides Amazon's reverse-engineered wishlist add-items endpoint, so success means the item was observed on the list after the write.",
+      "category": "account",
+      "when_to_use": "Use this to add an ASIN to a known Amazon List; pass the list_id from lists/list and confirm=true.",
+      "when_not_to_use": "Do not use this without an explicit list_id, and do not rely on it as verified: the wishlist endpoint is reverse-engineered.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "asin",
+          "list_id"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "asin",
+          "list_id"
+        ],
+        "properties": {
+          "asin": {
+            "type": "string",
+            "description": "The product ASIN (or a product URL containing it)"
+          },
+          "list_id": {
+            "type": "string",
+            "description": "The target Amazon List ID (from lists/list)"
+          },
+          "quantity": {
+            "type": "integer",
+            "default": 1,
+            "minimum": 1,
+            "maximum": 999,
+            "description": "Desired quantity for the list item"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to add the item to the list"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "asin": "B0EXAMPLE01",
+            "list_id": "LIST_ID",
+            "confirm": true
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs a signed-in Amazon session.",
+          "retryable": false,
+          "next_operation": "amazon.account_status",
+          "user_action": "Run agentweb connect amazon to sign in once, then retry."
+        },
+        {
+          "code": "amazon_list_not_found",
+          "field": "list_id",
+          "message": "Amazon has no list with that ID for the signed-in account.",
+          "retryable": false,
+          "next_operation": "amazon.lists",
+          "user_action": "Confirm the list ID with lists, then retry."
+        },
+        {
+          "code": "amazon_list_add_not_confirmed",
+          "message": "Amazon accepted the request but the item was not observed on the list.",
+          "retryable": true,
+          "user_action": "Verify the ASIN is purchasable and the list is writable, then retry once."
+        },
+        {
+          "code": "website_replay_changed",
+          "message": "Amazon's list page no longer exposes the expected write token.",
+          "retryable": true,
+          "user_action": "Retry once; if it persists, add the item interactively and report the drift."
+        },
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "remove_from_list": {
+      "description": "Remove an item from a specific Amazon List (wishlist) by list_id and item_id, then confirm by reading the list back. UNVERIFIED: rides Amazon's reverse-engineered wishlist delete endpoint.",
+      "category": "account",
+      "when_to_use": "Use this to remove an item from a known Amazon List; pass the item_id from list and confirm=true.",
+      "when_not_to_use": "Do not use this to delete a whole list; whole-list deletion is not mapped.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": true,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "list_id",
+          "item_id"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "list_id",
+          "item_id"
+        ],
+        "properties": {
+          "list_id": {
+            "type": "string",
+            "description": "The Amazon List ID that holds the item"
+          },
+          "item_id": {
+            "type": "string",
+            "description": "The list item id (from amazon.list item cards)"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to remove the item from the list"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "list_id": "LIST_ID",
+            "item_id": "ITEM_ID",
+            "confirm": true
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs a signed-in Amazon session.",
+          "retryable": false,
+          "next_operation": "amazon.account_status",
+          "user_action": "Run agentweb connect amazon to sign in once, then retry."
+        },
+        {
+          "code": "amazon_list_item_not_found",
+          "field": "item_id",
+          "message": "The item is not on the specified Amazon List.",
+          "retryable": false,
+          "next_operation": "amazon.list",
+          "user_action": "Confirm the item_id with list, then retry."
+        },
+        {
+          "code": "amazon_list_remove_not_confirmed",
+          "message": "Amazon accepted the request but the item was still present on the list.",
+          "retryable": true,
+          "user_action": "Retry once; if it persists, remove the item interactively."
+        },
+        {
+          "code": "website_replay_changed",
+          "message": "Amazon's list page no longer exposes the expected write token.",
+          "retryable": true,
+          "user_action": "Retry once; if it persists, remove the item interactively and report the drift."
+        },
+        {
+          "code": "amazon_human_verification_required",
+          "message": "Amazon presented a robot check or CAPTCHA that must be solved by a human.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    }
+  }
+}

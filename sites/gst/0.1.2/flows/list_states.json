@@ -1,0 +1,74 @@
+{
+  "captured_at_unix": 1784709964.8619452,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {
+      "bytes": 1700,
+      "fields": [
+        {
+          "path": "data.0.c",
+          "sensitive": false,
+          "type": "str"
+        },
+        {
+          "path": "data.0.n",
+          "sensitive": false,
+          "type": "str"
+        },
+        {
+          "path": "data.0.u",
+          "sensitive": false,
+          "type": "str"
+        },
+        {
+          "path": "data.0.m",
+          "sensitive": false,
+          "type": "str"
+        }
+      ],
+      "format": "json",
+      "truncated": false
+    },
+    "page_transition": {
+      "after": "https://services.gst.gov.in/master/states",
+      "before": "https://services.gst.gov.in/services/holiday"
+    },
+    "steps": [
+      {
+        "mime_type": "application/json",
+        "name": "states",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "list_states",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "states",
+        "path": "https://services.gst.gov.in/master/states"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "gst",
+  "verification": {
+    "contract_hash": "5a625d67b06764bc0c64b58ad93ff7e44631b06284e20349f513da706a4fdf60",
+    "recipe_hash": "802f1d9d02b69218dfa6c441b9bae3472b1f88465303aeb37f0628bf51c0ccec",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784713098.752893
+  }
+}

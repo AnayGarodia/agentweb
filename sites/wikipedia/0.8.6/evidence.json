@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "flows": [
+    {
+      "command": "search",
+      "status": "passed",
+      "browser_capture": "evidence/wikipedia-public-2026-07-21.json#flows.search",
+      "direct_recipe": "adapter.py#Adapter.search",
+      "fixture": "evidence/conformance.json#flows.search",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "page",
+      "status": "passed",
+      "browser_capture": "evidence/wikipedia-public-2026-07-21.json#flows.page",
+      "direct_recipe": "adapter.py#Adapter.page",
+      "fixture": "evidence/conformance.json#flows.page",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "random",
+      "status": "passed",
+      "browser_capture": "evidence/wikipedia-public-2026-07-21.json#flows.random",
+      "direct_recipe": "adapter.py#Adapter.random",
+      "fixture": "evidence/conformance.json#flows.random",
+      "last_verified": "2026-07-21"
+    }
+  ]
+}

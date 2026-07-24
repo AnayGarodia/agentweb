@@ -1,0 +1,100 @@
+{
+  "captured_at_unix": 1784750269.643392,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {
+      "bytes": 7870,
+      "fields": [
+        {
+          "attribute": "content",
+          "path": "viewport",
+          "selector": "meta[name=\"viewport\"]",
+          "sensitive": false,
+          "source": "html"
+        },
+        {
+          "attribute": "content",
+          "path": "msapplication-TileColor",
+          "selector": "meta[name=\"msapplication-TileColor\"]",
+          "sensitive": false,
+          "source": "html"
+        },
+        {
+          "attribute": "content",
+          "path": "theme-color",
+          "selector": "meta[name=\"theme-color\"]",
+          "sensitive": false,
+          "source": "html"
+        },
+        {
+          "attribute": "value",
+          "path": "query",
+          "selector": "input[name=\"query\"]",
+          "sensitive": false,
+          "source": "html"
+        },
+        {
+          "attribute": "value",
+          "path": "searchtype",
+          "selector": "input[name=\"searchtype\"]",
+          "sensitive": false,
+          "source": "html"
+        },
+        {
+          "attribute": "value",
+          "path": "source",
+          "selector": "input[name=\"source\"]",
+          "sensitive": false,
+          "source": "html"
+        }
+      ],
+      "format": "html",
+      "truncated": false
+    },
+    "page_transition": {
+      "after": "https://arxiv.org/format/1706.03762",
+      "before": "https://arxiv.org/bibtex/1706.03762"
+    },
+    "steps": [
+      {
+        "mime_type": "text/html",
+        "name": "1706_03762",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "list_export_formats",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "id"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "1706_03762",
+        "path": "https://arxiv.org/abs/{id}",
+        "response_mode": "html_links",
+        "selector": "main a[href]"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "arxiv",
+  "verification": {
+    "contract_hash": "a8b7fda24f08ad3b658bae79bf83e28c8c6f6d2eb77f8a8b409723b93c6e2ade",
+    "recipe_hash": "89398617d489c5f37ae915026157734a48072e2abe9013a557c55141394599d3",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784750967.882827
+  }
+}

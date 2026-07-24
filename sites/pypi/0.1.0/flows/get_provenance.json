@@ -1,0 +1,42 @@
+{
+  "observed": {
+    "cases": [
+      "success",
+      "live_direct_success"
+    ],
+    "paths": [
+      "https://pypi.org/integrity/{project}/{version}/{filename}/provenance"
+    ],
+    "source": "reviewed PyPI public capability mapping with live direct replay"
+  },
+  "operation": "get_provenance",
+  "recipe": {
+    "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+    "operation": "get_provenance",
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "evidence_1",
+        "path": "https://pypi.org/integrity/{project}/{version}/{filename}/provenance"
+      }
+    ],
+    "type": "reviewed_python_binding"
+  },
+  "schema_version": 1,
+  "verification": {
+    "assertions": [
+      {
+        "name": "provenance lookup returns an attestation collection",
+        "passed": true,
+        "path": "$.data.attestation_bundles"
+      }
+    ],
+    "contract_hash": "b54bb65e6d96e52d1d095da28d565f19325ed40d3754f39559cacf1446e17755",
+    "recipe_hash": "087bc64a6ba119057b2e5da99029762c9915de0544c6b7135d10096aad605d54",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784834400.0
+  }
+}

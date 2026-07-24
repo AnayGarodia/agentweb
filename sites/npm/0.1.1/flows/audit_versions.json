@@ -1,0 +1,81 @@
+{
+  "observed": {
+    "cases": [
+      "success",
+      "live_cli_success",
+      "live_mcp_success"
+    ],
+    "paths": [
+      "https://registry.npmjs.org/-/npm/v1/security/advisories/bulk"
+    ],
+    "source": "reviewed npm public capability mapping"
+  },
+  "operation": "audit_versions",
+  "recipe": {
+    "implementation_hash": "98313b5160a6b05cb12de0840f9f77b01861a5616c500b54d167dce2011b0036",
+    "operation": "audit_versions",
+    "steps": [
+      {
+        "classification": "read",
+        "method": "POST",
+        "name": "evidence_1",
+        "path": "https://registry.npmjs.org/-/npm/v1/security/advisories/bulk"
+      }
+    ],
+    "type": "reviewed_python_binding"
+  },
+  "schema_version": 1,
+  "verification": {
+    "assertions": [
+      {
+        "name": "security audit returns normalized advisory results",
+        "passed": true,
+        "path": "$.data.advisories"
+      }
+    ],
+    "contract_hash": "7a70df280a21da7f74654af7b2603be6cf8d7c2c0cad19c887dccc97fb281c66",
+    "recipe_hash": "e6bdf71d70e7e14b9d98ae3b344b5687ebd3dc7e578e3cc3503cc5be168472ae",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "exit_code": 0,
+      "interfaces": [
+        "domain_first_cli_current",
+        "generic_cli_compatibility",
+        "mcp_site_call"
+      ],
+      "name": "agentweb-npm-release-gate",
+      "runtime_matrix": {
+        "0.16.0": [
+          "adapter_import",
+          "generic_cli",
+          "mcp"
+        ],
+        "0.16.3": [
+          "adapter_import",
+          "generic_cli",
+          "mcp"
+        ],
+        "0.16.4": [
+          "adapter_import",
+          "generic_cli",
+          "mcp"
+        ],
+        "0.16.5": [
+          "adapter_import",
+          "domain_first_cli",
+          "mcp"
+        ]
+      },
+      "runtime_versions": [
+        "0.16.0",
+        "0.16.3",
+        "0.16.4",
+        "0.16.5"
+      ],
+      "version": "1"
+    },
+    "status": "passed",
+    "verified_at_unix": 1784757911.0
+  }
+}

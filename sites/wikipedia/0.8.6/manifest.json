@@ -1,0 +1,1771 @@
+{
+  "name": "wikipedia",
+  "version": "0.8.6",
+  "description": "Broad public Wikipedia research across search, pages, links, categories, history, languages, geography, users, and random discovery.",
+  "canonical_domain": "wikipedia.org",
+  "aliases": [
+    "wikipedia",
+    "wiki"
+  ],
+  "url_routes": [
+    {
+      "host_regex": "(?P<language>[a-z-]+)\\.wikipedia\\.org",
+      "path_regex": "/wiki/(?P<title>[^?#]+)",
+      "operation": "page",
+      "arguments": {
+        "title": {
+          "group": "title",
+          "transform": "underscores_to_spaces"
+        },
+        "language": {
+          "group": "language"
+        }
+      }
+    }
+  ],
+  "base_url": "https://www.wikipedia.org",
+  "login_url": "https://en.wikipedia.org/w/index.php?title=Special:UserLogin",
+  "signup_url": "https://en.wikipedia.org/w/index.php?title=Special:CreateAccount",
+  "auth": {
+    "strategy": "cookie_session",
+    "interaction": "one_time_browser_authorization"
+  },
+  "cookie_domain": ".wikipedia.org",
+  "allowed_domains": [
+    "wikipedia.org",
+    "wikimedia.org"
+  ],
+  "runtime": {
+    "browserless_replay": true,
+    "auth_interaction": "one normal Wikipedia login when an account action first needs it"
+  },
+  "auth_cookie_names": [
+    "enwikiUserID",
+    "enwikiUserName",
+    "centralauth_User"
+  ],
+  "entrypoint": "adapter.py",
+  "coverage": {
+    "typed_fast_paths": [
+      "article search and extracts",
+      "article sections, categories, and images",
+      "outgoing links and backlinks",
+      "category members",
+      "revision history",
+      "language links",
+      "nearby geosearch",
+      "pageview history",
+      "public user contributions",
+      "random pages",
+      "language-specific public reads",
+      "account status",
+      "CSRF-protected page editing",
+      "multipart uploads",
+      "bounded read and write access to the MediaWiki Action API"
+    ],
+    "website_parity": "After one normal login or signup authorization, AgentWeb reuses the retained session and obtains MediaWiki CSRF tokens automatically. api_request covers Action API reads and mutations, upload handles multipart media, and the direct protocol surface covers REST and newly introduced same-site operations.",
+    "protocol_fallback": "direct_workflow",
+    "not_mapped": [],
+    "human_boundaries": [
+      "password, CAPTCHA, email verification, and terms consent during account authorization"
+    ],
+    "constraints": [
+      "MediaWiki permissions and abuse filters still apply",
+      "CAPTCHA and account verification require a visible human handoff"
+    ],
+    "capability": {
+      "schema_version": 1,
+      "discovered_route_count": 25,
+      "mapped_count": 16,
+      "excluded_count": 1,
+      "open_count": 8,
+      "exhaustive": false,
+      "coverage_ratio": 0.64,
+      "remaining": [
+        {
+          "route": "GET /w/api.php?action=query&list=recentchanges",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /w/api.php?action=query&list=watchlist",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /w/api.php?action=query&meta=notifications",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /w/api.php?action=query&meta=userinfo&uiprop=options",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "POST /w/api.php?action=delete",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "POST /w/api.php?action=move",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "POST /w/api.php?action=patrol",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "POST /w/api.php?action=protect",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        }
+      ],
+      "read": {
+        "discovered_route_count": 19,
+        "mapped_count": 14,
+        "excluded_count": 1,
+        "open_count": 4,
+        "coverage_ratio": 0.7368
+      },
+      "write": {
+        "discovered_route_count": 6,
+        "mapped_count": 2,
+        "excluded_count": 0,
+        "open_count": 4,
+        "coverage_ratio": 0.3333
+      }
+    }
+  },
+  "commands": {
+    "search": {
+      "description": "Search Wikipedia article titles and text with compact snippets.",
+      "category": "discovery",
+      "when_to_use": "Use this to find article titles from keywords when the exact page title is unknown.",
+      "when_not_to_use": "Do not use this when the exact article title is already known; call page instead.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "query"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Search query"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 10,
+            "description": "Maximum results",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code, such as en or hi"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "query": "Ada Lovelace"
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "wikipedia_rate_limited",
+          "message": "Wikipedia asked the client to slow down before another request.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "wikipedia_unavailable",
+          "message": "Wikipedia or the Wikimedia API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "page": {
+      "description": "Read a Wikipedia page as bounded plain text with canonical metadata.",
+      "category": "reading",
+      "when_to_use": "Use this to read one article's bounded plain-text extract and canonical metadata.",
+      "when_not_to_use": "Do not use this to discover articles from keywords; call search first.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 900,
+      "cli": {
+        "positionals": [
+          "title"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Article title"
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          },
+          "max_chars": {
+            "type": "integer",
+            "default": 8000,
+            "description": "Maximum extract characters"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "title": "Ada Lovelace"
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "page_not_found",
+          "field": "title",
+          "message": "Wikipedia has no page with that exact title in the chosen language.",
+          "retryable": false,
+          "next_operation": "wikipedia.search",
+          "user_action": "Confirm the title with search, then retry with the canonical title."
+        },
+        {
+          "code": "wikipedia_rate_limited",
+          "message": "Wikipedia asked the client to slow down before another request.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "wikipedia_unavailable",
+          "message": "Wikipedia or the Wikimedia API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "random": {
+      "description": "Return random article titles and links from a Wikipedia language edition.",
+      "category": "discovery",
+      "when_to_use": "Use this to sample random main-namespace articles for exploration or testing.",
+      "when_not_to_use": "Do not use this when a specific topic or title is required.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "default": 5,
+            "description": "Maximum pages",
+            "minimum": 1,
+            "maximum": 20
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "limit": 5
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "wikipedia_rate_limited",
+          "message": "Wikipedia asked the client to slow down before another request.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "wikipedia_unavailable",
+          "message": "Wikipedia or the Wikimedia API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "links": {
+      "description": "List main-namespace pages linked from an article.",
+      "category": "reading",
+      "when_to_use": "Use this to list main-namespace articles that a page links out to.",
+      "when_not_to_use": "Do not use this to find pages that link in; call backlinks instead.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 600,
+      "cli": {
+        "positionals": [
+          "title"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Article title"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 50,
+            "description": "Maximum links",
+            "minimum": 1,
+            "maximum": 500
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "title": "Ada Lovelace",
+            "limit": 50
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "page_not_found",
+          "field": "title",
+          "message": "Wikipedia has no page with that exact title in the chosen language.",
+          "retryable": false,
+          "next_operation": "wikipedia.search",
+          "user_action": "Confirm the title with search, then retry with the canonical title."
+        },
+        {
+          "code": "wikipedia_rate_limited",
+          "message": "Wikipedia asked the client to slow down before another request.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "wikipedia_unavailable",
+          "message": "Wikipedia or the Wikimedia API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "backlinks": {
+      "description": "List main-namespace pages that link to an article.",
+      "category": "reading",
+      "when_to_use": "Use this to find which articles link to a page (its incoming links).",
+      "when_not_to_use": "Do not use this to list a page's outgoing links; call links instead.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 600,
+      "cli": {
+        "positionals": [
+          "title"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Article title"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 50,
+            "description": "Maximum backlinks",
+            "minimum": 1,
+            "maximum": 500
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "title": "Ada Lovelace",
+            "limit": 50
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "wikipedia_rate_limited",
+          "message": "Wikipedia asked the client to slow down before another request.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "wikipedia_unavailable",
+          "message": "Wikipedia or the Wikimedia API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "category_members": {
+      "description": "List pages and subcategories inside a Wikipedia category.",
+      "category": "discovery",
+      "when_to_use": "Use this to list the pages and subcategories inside a Wikipedia category.",
+      "when_not_to_use": "Do not use this to list the categories of a single article; call categories instead.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 600,
+      "cli": {
+        "positionals": [
+          "category"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "category"
+        ],
+        "properties": {
+          "category": {
+            "type": "string",
+            "description": "Category title with or without Category prefix"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 50,
+            "description": "Maximum members",
+            "minimum": 1,
+            "maximum": 500
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "category": "Women computer scientists",
+            "limit": 50
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "wikipedia_rate_limited",
+          "message": "Wikipedia asked the client to slow down before another request.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "wikipedia_unavailable",
+          "message": "Wikipedia or the Wikimedia API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "revisions": {
+      "description": "List recent page revisions with editors, comments, sizes, and timestamps.",
+      "category": "history",
+      "when_to_use": "Use this to inspect a page's recent edit history with editors, sizes, and comments.",
+      "when_not_to_use": "Do not use this to read current article text; call page instead.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "title"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Article title"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "description": "Maximum revisions",
+            "minimum": 1,
+            "maximum": 500
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "title": "Ada Lovelace",
+            "limit": 20
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "page_not_found",
+          "field": "title",
+          "message": "Wikipedia has no page with that exact title in the chosen language.",
+          "retryable": false,
+          "next_operation": "wikipedia.search",
+          "user_action": "Confirm the title with search, then retry with the canonical title."
+        },
+        {
+          "code": "wikipedia_rate_limited",
+          "message": "Wikipedia asked the client to slow down before another request.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "wikipedia_unavailable",
+          "message": "Wikipedia or the Wikimedia API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "languages": {
+      "description": "List available language editions for an article.",
+      "category": "reading",
+      "when_to_use": "Use this to list the other language editions available for an article.",
+      "when_not_to_use": "Do not use this to translate article text; it only returns interwiki links.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 900,
+      "cli": {
+        "positionals": [
+          "title"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Article title"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 100,
+            "description": "Maximum languages",
+            "minimum": 1,
+            "maximum": 500
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Source Wikipedia language code"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "title": "Ada Lovelace"
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "page_not_found",
+          "field": "title",
+          "message": "Wikipedia has no page with that exact title in the chosen language.",
+          "retryable": false,
+          "next_operation": "wikipedia.search",
+          "user_action": "Confirm the title with search, then retry with the canonical title."
+        },
+        {
+          "code": "wikipedia_rate_limited",
+          "message": "Wikipedia asked the client to slow down before another request.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "wikipedia_unavailable",
+          "message": "Wikipedia or the Wikimedia API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "nearby": {
+      "description": "Find geotagged Wikipedia pages near coordinates.",
+      "category": "discovery",
+      "when_to_use": "Use this to find geotagged articles near a latitude/longitude coordinate.",
+      "when_not_to_use": "Do not use this for place-name search; use search with the place name.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "latitude",
+          "longitude"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "latitude",
+          "longitude"
+        ],
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "description": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "description": "Longitude"
+          },
+          "radius": {
+            "type": "integer",
+            "default": 1000,
+            "description": "Radius in meters"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "description": "Maximum pages",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "latitude": 48.8584,
+            "longitude": 2.2945,
+            "radius": 1000
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "wikipedia_rate_limited",
+          "message": "Wikipedia asked the client to slow down before another request.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "wikipedia_unavailable",
+          "message": "Wikipedia or the Wikimedia API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "user_contributions": {
+      "description": "List a public Wikipedia user's recent contributions.",
+      "category": "history",
+      "when_to_use": "Use this to review a public user's recent edits across pages.",
+      "when_not_to_use": "Do not use this to read the authenticated account's own status; call account_status.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "username"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "username"
+        ],
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Wikipedia username"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "description": "Maximum contributions",
+            "minimum": 1,
+            "maximum": 500
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "username": "Jimbo Wales",
+            "limit": 20
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "wikipedia_rate_limited",
+          "message": "Wikipedia asked the client to slow down before another request.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "wikipedia_unavailable",
+          "message": "Wikipedia or the Wikimedia API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "sections": {
+      "description": "List an article's section hierarchy and anchors.",
+      "category": "reading",
+      "when_to_use": "Use this to get an article's section hierarchy and anchors before deep reading.",
+      "when_not_to_use": "Do not use this to read section body text; call page for the extract.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 900,
+      "cli": {
+        "positionals": [
+          "title"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Article title"
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "title": "Ada Lovelace"
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "page_not_found",
+          "field": "title",
+          "message": "Wikipedia has no page with that exact title in the chosen language.",
+          "retryable": false,
+          "next_operation": "wikipedia.search",
+          "user_action": "Confirm the title with search, then retry with the canonical title."
+        },
+        {
+          "code": "wikipedia_rate_limited",
+          "message": "Wikipedia asked the client to slow down before another request.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "wikipedia_unavailable",
+          "message": "Wikipedia or the Wikimedia API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "categories": {
+      "description": "List the visible categories assigned to an article.",
+      "category": "reading",
+      "when_to_use": "Use this to list the visible categories an article belongs to.",
+      "when_not_to_use": "Do not use this to list members of a category; call category_members.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 900,
+      "cli": {
+        "positionals": [
+          "title"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Article title"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 50,
+            "minimum": 1,
+            "maximum": 500,
+            "description": "Maximum categories"
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "title": "Ada Lovelace"
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "page_not_found",
+          "field": "title",
+          "message": "Wikipedia has no page with that exact title in the chosen language.",
+          "retryable": false,
+          "next_operation": "wikipedia.search",
+          "user_action": "Confirm the title with search, then retry with the canonical title."
+        },
+        {
+          "code": "wikipedia_rate_limited",
+          "message": "Wikipedia asked the client to slow down before another request.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "wikipedia_unavailable",
+          "message": "Wikipedia or the Wikimedia API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "images": {
+      "description": "List image and media file pages used by an article.",
+      "category": "reading",
+      "when_to_use": "Use this to list the image and media file pages used by an article.",
+      "when_not_to_use": "Do not use this to download image bytes; it returns file page references only.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 900,
+      "cli": {
+        "positionals": [
+          "title"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Article title"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 50,
+            "minimum": 1,
+            "maximum": 500,
+            "description": "Maximum media files"
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "title": "Ada Lovelace"
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "page_not_found",
+          "field": "title",
+          "message": "Wikipedia has no page with that exact title in the chosen language.",
+          "retryable": false,
+          "next_operation": "wikipedia.search",
+          "user_action": "Confirm the title with search, then retry with the canonical title."
+        },
+        {
+          "code": "wikipedia_rate_limited",
+          "message": "Wikipedia asked the client to slow down before another request.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "wikipedia_unavailable",
+          "message": "Wikipedia or the Wikimedia API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "pageviews": {
+      "description": "Return daily public pageviews and a total for a date range.",
+      "category": "analytics",
+      "when_to_use": "Use this to get daily pageview counts and a total for an article over a date range.",
+      "when_not_to_use": "Do not use hyphenated dates; the range must be eight-digit YYYYMMDD values.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 3600,
+      "cli": {
+        "positionals": [
+          "title",
+          "start",
+          "end"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title",
+          "start",
+          "end"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Article title"
+          },
+          "start": {
+            "type": "string",
+            "description": "Eight-digit YYYYMMDD date, for example 20260701; hyphens are not accepted."
+          },
+          "end": {
+            "type": "string",
+            "description": "Eight-digit YYYYMMDD date, for example 20260731; hyphens are not accepted."
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "title": "Ada Lovelace",
+            "start": "20260101",
+            "end": "20260131"
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        },
+        {
+          "code": "page_not_found",
+          "field": "title",
+          "message": "Wikimedia has no pageview series for that title and date range.",
+          "retryable": false,
+          "next_operation": "wikipedia.search",
+          "user_action": "Confirm the title with search and use an eight-digit YYYYMMDD range."
+        },
+        {
+          "code": "wikipedia_rate_limited",
+          "message": "Wikipedia asked the client to slow down before another request.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "wikipedia_unavailable",
+          "message": "Wikipedia or the Wikimedia API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "api_query": {
+      "description": "Bounded read-only escape hatch for MediaWiki query, parse, opensearch, and help actions. Write actions are rejected.",
+      "category": "api",
+      "when_to_use": "Use this read-only escape hatch when a typed command does not cover a MediaWiki read.",
+      "when_not_to_use": "Do not use this for mutations; write actions are rejected. Use api_request with confirm.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 60,
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "parameters"
+        ],
+        "properties": {
+          "parameters": {
+            "type": [
+              "object",
+              "array"
+            ],
+            "description": "A normal JSON object of MediaWiki parameters, such as {\"action\":\"opensearch\",\"search\":\"Alan Turing\"}. A legacy array of key=value strings is also accepted."
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          },
+          "max_items": {
+            "type": "integer",
+            "default": 50,
+            "minimum": 1,
+            "maximum": 200,
+            "description": "Maximum list items retained in the response"
+          },
+          "max_string": {
+            "type": "integer",
+            "default": 4000,
+            "minimum": 100,
+            "maximum": 20000,
+            "description": "Maximum characters kept per string value"
+          },
+          "max_total_chars": {
+            "type": "integer",
+            "default": 20000,
+            "description": "Hard ceiling for the complete nested JSON response",
+            "minimum": 1000,
+            "maximum": 100000
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "parameters": {
+              "action": "opensearch",
+              "search": "Alan Turing"
+            }
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "invalid_input",
+          "field": "parameters",
+          "message": "api_query permits only read-only query, parse, opensearch, or help actions.",
+          "retryable": false,
+          "user_action": "Remove write actions and use a read-only MediaWiki action."
+        },
+        {
+          "code": "mediawiki_api_error",
+          "message": "The MediaWiki Action API rejected the request or reported an error.",
+          "retryable": false,
+          "user_action": "Read the returned error text, correct the parameters, and retry."
+        },
+        {
+          "code": "wikipedia_rate_limited",
+          "message": "Wikipedia asked the client to slow down before another request.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "wikipedia_unavailable",
+          "message": "Wikipedia or the Wikimedia API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "account_status": {
+      "description": "Verify the retained Wikipedia session and report the authenticated user, groups, rights, and block state.",
+      "category": "account",
+      "when_to_use": "Use this to check whether a Wikipedia session is authenticated and its groups and rights.",
+      "when_not_to_use": "Do not use this to inspect another user; call user_contributions.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "errors": [
+        {
+          "code": "wikipedia_rate_limited",
+          "message": "Wikipedia asked the client to slow down before another request.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "wikipedia_unavailable",
+          "message": "Wikipedia or the Wikimedia API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "edit": {
+      "description": "Create or replace a Wikipedia page through the MediaWiki Action API. AgentWeb fetches the CSRF token automatically; confirm is mandatory.",
+      "category": "editing",
+      "when_to_use": "Use this to create or replace a page's wikitext once a session is authorized; confirm is mandatory.",
+      "when_not_to_use": "Do not use this without confirm=true, and prefer a sandbox page when testing.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": true,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "title",
+          "text",
+          "summary"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title",
+          "text",
+          "summary"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Target page title"
+          },
+          "text": {
+            "type": "string",
+            "description": "Full replacement wikitext for the page or section"
+          },
+          "summary": {
+            "type": "string",
+            "description": "Short edit summary shown in the page history"
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          },
+          "section": {
+            "type": "string",
+            "description": "Optional section index or 'new' to append a section"
+          },
+          "minor": {
+            "type": "boolean",
+            "default": false,
+            "description": "Mark the edit as minor"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to perform the state-changing edit"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "title": "User:Example/sandbox",
+            "text": "Hello from AgentWeb.",
+            "summary": "Sandbox test edit",
+            "confirm": true
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs an authenticated Wikipedia session.",
+          "retryable": false,
+          "next_operation": "wikipedia.account_status",
+          "user_action": "Run agentweb connect wikipedia to authorize a session once, then retry."
+        },
+        {
+          "code": "mediawiki_api_error",
+          "message": "The MediaWiki Action API rejected the request or reported an error.",
+          "retryable": false,
+          "user_action": "Read the returned error text, correct the parameters, and retry."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        },
+        {
+          "code": "wikipedia_rate_limited",
+          "message": "Wikipedia asked the client to slow down before another request.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "wikipedia_unavailable",
+          "message": "Wikipedia or the Wikimedia API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "api_request": {
+      "description": "Call a fixed-host MediaWiki Action API operation. Read actions use GET; mutations use POST, require confirm, reuse the retained login session, and fetch a fresh CSRF token automatically.",
+      "category": "api",
+      "when_to_use": "Use this fixed-host Action API bridge for reads, or for writes with confirm and a retained login.",
+      "when_not_to_use": "Do not use this for typed reads that already have a dedicated command.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public",
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": false,
+        "confirmation": "for_writes"
+      },
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "parameters"
+        ],
+        "properties": {
+          "parameters": {
+            "type": "array",
+            "description": "Repeatable key=value API parameters"
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true for write actions that change remote state"
+          },
+          "max_items": {
+            "type": "integer",
+            "default": 100,
+            "minimum": 1,
+            "maximum": 500,
+            "description": "Maximum list items retained in the response"
+          },
+          "max_string": {
+            "type": "integer",
+            "default": 10000,
+            "minimum": 100,
+            "maximum": 50000,
+            "description": "Maximum characters kept per string value"
+          },
+          "max_total_chars": {
+            "type": "integer",
+            "default": 50000,
+            "minimum": 1000,
+            "maximum": 250000,
+            "description": "Hard ceiling for the complete nested JSON response"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "parameters": [
+              "action=query",
+              "meta=siteinfo"
+            ]
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs an authenticated Wikipedia session.",
+          "retryable": false,
+          "next_operation": "wikipedia.account_status",
+          "user_action": "Run agentweb connect wikipedia to authorize a session once, then retry."
+        },
+        {
+          "code": "mediawiki_api_error",
+          "message": "The MediaWiki Action API rejected the request or reported an error.",
+          "retryable": false,
+          "user_action": "Read the returned error text, correct the parameters, and retry."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        },
+        {
+          "code": "wikipedia_rate_limited",
+          "message": "Wikipedia asked the client to slow down before another request.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "wikipedia_unavailable",
+          "message": "Wikipedia or the Wikimedia API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "upload": {
+      "description": "Upload a local file through MediaWiki's multipart Action API. AgentWeb fetches the CSRF token automatically and never returns the local path; confirm is mandatory.",
+      "category": "editing",
+      "when_to_use": "Use this to upload a local media file through MediaWiki's multipart API; confirm is mandatory.",
+      "when_not_to_use": "Do not use this without confirm=true; uploads are hard to reverse and need file rights.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "path"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "path"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Local file path to upload; the path is never echoed back"
+          },
+          "filename": {
+            "type": "string",
+            "description": "Destination filename on the wiki"
+          },
+          "comment": {
+            "type": "string",
+            "default": "Uploaded through AgentWeb",
+            "description": "Upload log comment"
+          },
+          "description": {
+            "type": "string",
+            "description": "Initial file description wikitext"
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Wikipedia language code"
+          },
+          "ignore_warnings": {
+            "type": "boolean",
+            "default": false,
+            "description": "Proceed even if MediaWiki reports non-fatal warnings"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to perform the upload"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "path": "/tmp/example.png",
+            "filename": "AgentWeb example.png",
+            "comment": "Example upload",
+            "confirm": true
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs an authenticated Wikipedia session.",
+          "retryable": false,
+          "next_operation": "wikipedia.account_status",
+          "user_action": "Run agentweb connect wikipedia to authorize a session once, then retry."
+        },
+        {
+          "code": "mediawiki_api_error",
+          "message": "The MediaWiki Action API rejected the request or reported an error.",
+          "retryable": false,
+          "user_action": "Read the returned error text, correct the parameters, and retry."
+        },
+        {
+          "code": "wikipedia_rate_limited",
+          "message": "Wikipedia asked the client to slow down before another request.",
+          "retryable": true,
+          "retry_after_seconds": 5,
+          "user_action": "Wait a few seconds, then retry the same request unchanged."
+        },
+        {
+          "code": "wikipedia_unavailable",
+          "message": "Wikipedia or the Wikimedia API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    }
+  }
+}

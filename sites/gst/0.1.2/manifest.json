@@ -1,0 +1,3901 @@
+{
+  "aliases": [
+    "gst"
+  ],
+  "allowed_domains": [
+    "gst.gov.in",
+    "services.gst.gov.in",
+    "tutorial.gst.gov.in",
+    "www.gst.gov.in"
+  ],
+  "auth": {
+    "interaction": "not_required",
+    "strategy": "none"
+  },
+  "authoring": {
+    "browserless_parity": false,
+    "catalog_complete": false,
+    "exhaustive": false,
+    "matrix_verified": true,
+    "tool_quality_verified": true
+  },
+  "base_url": "https://www.gst.gov.in",
+  "canonical_domain": "www.gst.gov.in",
+  "commands": {
+    "download_hsn_sac_directory": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "classification",
+      "description": "Download the GST portal's published HSN and SAC directory as a local Excel file with a verification receipt.",
+      "errors": [
+        {
+          "code": "gst_directory_unavailable",
+          "message": "The published HSN and SAC spreadsheet is not currently available at the GST portal's download location.",
+          "next_operation": "gst.download_hsn_sac_directory",
+          "retryable": true,
+          "user_action": "Retry later or use the live GST classification search operations instead."
+        },
+        {
+          "code": "gst_portal_unavailable",
+          "message": "The GST portal download service is temporarily unavailable.",
+          "next_operation": "gst.download_hsn_sac_directory",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same download operation."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "bytes": {
+            "description": "Size of the downloaded spreadsheet in bytes.",
+            "type": "integer"
+          },
+          "content_type": {
+            "description": "Media type reported by the GST portal for the downloaded file.",
+            "type": "string"
+          },
+          "filename": {
+            "description": "Stable filename used for the downloaded spreadsheet.",
+            "type": "string"
+          },
+          "path": {
+            "description": "Private local path where AgentWeb saved the downloaded spreadsheet.",
+            "type": "string"
+          },
+          "sha256": {
+            "description": "SHA-256 checksum for identifying and verifying the downloaded file.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "filename",
+          "path",
+          "bytes",
+          "sha256",
+          "content_type"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "This operation downloads one current spreadsheet and does not paginate.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use a downloaded directory as a substitute for professional classification advice or assume it is legally binding.",
+      "when_to_use": "Use this when an agent needs the full published HSN and SAC spreadsheet for offline analysis or exhaustive local search."
+    },
+    "list_advisories": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "news_and_guidance",
+      "description": "List current or archived GSTN advisories for a calendar year with clean text, dates, modules, and links.",
+      "errors": [
+        {
+          "code": "invalid_advisory_year",
+          "field": "year",
+          "message": "The requested advisory year is not accepted by the GST portal.",
+          "next_operation": "gst.list_advisories",
+          "retryable": false,
+          "user_action": "Provide a four-digit year from 2017 onward and call this operation again."
+        },
+        {
+          "code": "gst_portal_unavailable",
+          "message": "The GST portal advisory service is temporarily unavailable.",
+          "next_operation": "gst.list_advisories",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same advisory request."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "year": 2026
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque cursor returned by a previous call for the same advisory year.",
+            "type": "string"
+          },
+          "limit": {
+            "description": "Maximum advisories to return in this page.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "year": {
+            "description": "Four-digit calendar year whose GST portal advisories should be returned.",
+            "maximum": 2100,
+            "minimum": 2017,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "year"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "advisories": {
+            "description": "GSTN advisories for the requested year, newest first as returned by the portal.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "content": {
+                  "description": "Plain-text advisory body with HTML presentation removed.",
+                  "type": "string"
+                },
+                "date": {
+                  "description": "Publication date string supplied by the GST portal.",
+                  "type": "string"
+                },
+                "id": {
+                  "description": "Stable numeric advisory identifier assigned by the portal.",
+                  "type": "integer"
+                },
+                "is_external": {
+                  "description": "Whether the advisory's primary destination is outside the GST portal.",
+                  "type": "boolean"
+                },
+                "link_url": {
+                  "description": "External or detail link supplied by the portal, or an empty string when none is supplied.",
+                  "type": "string"
+                },
+                "module": {
+                  "description": "GST product area associated with the advisory.",
+                  "type": "string"
+                },
+                "title": {
+                  "description": "Published advisory title.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "content",
+                "date",
+                "module",
+                "is_external",
+                "link_url"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "advisories"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "AgentWeb fetches the selected year once, then returns a bounded slice. Pass next_cursor back with the same year to continue.",
+        "cursor": "Opaque offset into that year's live advisory archive.",
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not treat an advisory as legislation; use the GST law operations for acts, rules, notifications, circulars, and orders.",
+      "when_to_use": "Use this when an agent needs current GST portal operational guidance, system-change announcements, or an annual advisory archive."
+    },
+    "list_due_dates": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "deadlines_and_compliance",
+      "description": "Return the GST portal's current filing, statement, refund, and quarterly compliance deadlines as structured data.",
+      "errors": [
+        {
+          "code": "gst_due_dates_unavailable",
+          "message": "The GST portal's current due-date feed is temporarily unavailable.",
+          "next_operation": "gst.list_due_dates",
+          "retryable": true,
+          "user_action": "Wait briefly and retry this operation."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "due_dates": {
+            "description": "Current filing and compliance dates shown on the GST portal home page.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "category_code": {
+                  "description": "GST portal display-category code retained for fidelity.",
+                  "type": "string"
+                },
+                "due_date": {
+                  "description": "Published due date or rule-based deadline text.",
+                  "type": "string"
+                },
+                "form_or_obligation": {
+                  "description": "GST form, facility, or compliance obligation and period.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "form_or_obligation",
+                "due_date",
+                "category_code"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "due_dates"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The complete current home-page deadline feed is returned at once.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not infer a taxpayer-specific filing obligation from this general feed; applicability can depend on registration type, turnover, state, extensions, and notifications.",
+      "when_to_use": "Use this for the current general GST deadlines that would otherwise require opening the portal calendar."
+    },
+    "list_gst_law_sources": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "law_and_guidance",
+      "description": "List every official central, state, and union-territory source linked by GSTN for GST laws and legal updates.",
+      "errors": [
+        {
+          "code": "gst_law_directory_unavailable",
+          "message": "The GST portal law-source directory is temporarily unavailable.",
+          "next_operation": "gst.list_gst_law_sources",
+          "retryable": true,
+          "user_action": "Wait briefly and retry this operation."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "sources": {
+            "description": "Official central, state, and union-territory websites linked by the GST portal for laws, rules, notifications, amendments, and circulars.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "description": "Jurisdiction or authority name.",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "Official law-source website URL published by GSTN.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "url"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "sources"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The complete official jurisdiction directory is returned in one bounded result.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this as the full text of legislation or as legal advice; it is the GSTN-maintained source directory.",
+      "when_to_use": "Use this to discover the authoritative central or state website that publishes GST acts, rules, notifications, circulars, and amendments."
+    },
+    "list_gst_statistics": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "statistics_and_downloads",
+      "description": "List every official GST registration, return, collection, settlement, e-way-bill, and yearwise statistical download.",
+      "errors": [
+        {
+          "code": "gst_statistics_unavailable",
+          "message": "The GST statistics directory is temporarily unavailable.",
+          "next_operation": "gst.list_gst_statistics",
+          "retryable": true,
+          "user_action": "Wait briefly and retry this operation."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "files": {
+            "description": "All current GSTN statistical workbooks and reports, with the table-row context that identifies each dataset and year.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "description": {
+                  "description": "Dataset, return type, collection type, and financial-year context shown by GSTN.",
+                  "type": "string"
+                },
+                "filename": {
+                  "description": "Published file name, which identifies the dataset where the table row contains only a year.",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "Official direct spreadsheet or report URL.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "description",
+                "filename",
+                "url"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "files"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The complete current statistics directory is returned in one call.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not treat these published aggregates as live taxpayer-level data.",
+      "when_to_use": "Use this when an agent needs official GST registration, return, tax-collection, IGST-settlement, e-way-bill, or yearwise revenue datasets."
+    },
+    "list_help_resources": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "help_and_support",
+      "description": "List every public GSTN help, support, grievance, system-requirement, and taxpayer-facility resource with its official URL.",
+      "errors": [
+        {
+          "code": "help_directory_unavailable",
+          "message": "The GST help and taxpayer-facilities directory is temporarily unavailable.",
+          "next_operation": "gst.list_help_resources",
+          "retryable": true,
+          "user_action": "Wait briefly and retry this operation."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "resources": {
+            "description": "Public help, support, system-requirement, media, and grievance resources published by GSTN.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "description": {
+                  "description": "GSTN's explanation of what the resource provides.",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "Public resource name.",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "Resolved official GSTN resource URL.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "description",
+                "url"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "resources"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The complete current public help directory is returned at once.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this for account-specific tickets or to submit a grievance; use the returned grievance resource when human follow-up is required.",
+      "when_to_use": "Use this to find the current GST knowledge portal, error guides, system requirements, media, grievance channels, nodal officers, or other taxpayer-help destinations without navigating the legacy site."
+    },
+    "list_holidays": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "calendar",
+      "description": "List GST portal centre and state non-working days for one state code and calendar year.",
+      "errors": [
+        {
+          "code": "invalid_holiday_filter",
+          "message": "The GST portal did not accept the state code or calendar year.",
+          "next_operation": "gst.list_holidays",
+          "retryable": false,
+          "user_action": "Call gst.list_states for the exact two-character code, then retry with a four-digit year."
+        },
+        {
+          "code": "gst_portal_unavailable",
+          "message": "The GST portal holiday service is temporarily unavailable.",
+          "next_operation": "gst.list_holidays",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same holiday request."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "state_code": "29",
+            "year": 2026
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "state_code": {
+            "description": "Assigned two-character GST state or union-territory code from gst.list_states (01 through 38, or 97).",
+            "enum": [
+              "01",
+              "02",
+              "03",
+              "04",
+              "05",
+              "06",
+              "07",
+              "08",
+              "09",
+              "10",
+              "11",
+              "12",
+              "13",
+              "14",
+              "15",
+              "16",
+              "17",
+              "18",
+              "19",
+              "20",
+              "21",
+              "22",
+              "23",
+              "24",
+              "25",
+              "26",
+              "27",
+              "28",
+              "29",
+              "30",
+              "31",
+              "32",
+              "33",
+              "34",
+              "35",
+              "36",
+              "37",
+              "38",
+              "97"
+            ],
+            "maxLength": 2,
+            "minLength": 2,
+            "pattern": "^[0-9]{2}$",
+            "type": "string"
+          },
+          "year": {
+            "description": "Four-digit calendar year to retrieve.",
+            "maximum": 2100,
+            "minimum": 2017,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "state_code",
+          "year"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "holidays": {
+            "description": "Centre and state non-working days returned by the GST portal.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "created_by": {
+                  "description": "Portal authorities that published the calendar entry.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "date": {
+                  "description": "Calendar date string supplied by the GST portal.",
+                  "type": "string"
+                },
+                "day": {
+                  "description": "English weekday name supplied by the portal.",
+                  "type": "string"
+                },
+                "descriptions": {
+                  "description": "One or more reasons or labels for the non-working day.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "state_codes": {
+                  "description": "GST state codes to which the entry applies.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              },
+              "required": [
+                "date",
+                "day",
+                "descriptions",
+                "state_codes",
+                "created_by"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "holidays"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The portal returns the complete selected state and year calendar in one response.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this as a statutory filing-deadline calendar; use the dedicated GST due-date operation for compliance deadlines.",
+      "when_to_use": "Use this when an agent needs the GST portal's non-working-day calendar for a specific state or union territory."
+    },
+    "list_offline_tools": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "downloads_and_utilities",
+      "description": "List every current GST offline return, ITC, transition, advance-ruling, and IMS utility with its official URL.",
+      "errors": [
+        {
+          "code": "offline_tool_directory_unavailable",
+          "message": "The GST offline-tool directory is temporarily unavailable.",
+          "next_operation": "gst.list_offline_tools",
+          "retryable": true,
+          "user_action": "Wait briefly and retry this operation."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "tools": {
+            "description": "Current GST offline utilities. A URL either downloads the utility directly or opens its versioned download page.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "description": "Official utility name.",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "Current direct download or official versioned download-page URL.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "url"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "tools"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The complete current utility index is returned at once.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this to file a return or to assume that a Windows-only utility can run in AgentWeb.",
+      "when_to_use": "Use this to discover the current official offline utility or its versioned download page without navigating GST menus."
+    },
+    "list_states": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "reference_data",
+      "description": "List GST state and union territory codes, names, and territory classification for other state-scoped operations.",
+      "errors": [
+        {
+          "code": "gst_portal_unavailable",
+          "message": "The GST portal state-code directory is temporarily unavailable.",
+          "next_operation": "gst.list_states",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "states": {
+            "description": "States and union territories recognized by the GST portal.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "description": "Two-character GST state or territory code, preserving leading zeroes.",
+                  "type": "string"
+                },
+                "is_union_territory": {
+                  "description": "Whether the portal identifies the entry as a union territory.",
+                  "type": "boolean"
+                },
+                "name": {
+                  "description": "Published state or union territory name.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "code",
+                "name",
+                "is_union_territory"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "states"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The portal returns the complete directory in one response.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not infer tax jurisdiction solely from a name; use the exact code required by the target GST operation.",
+      "when_to_use": "Use this before a GST operation asks for a state or union territory code and the agent only knows its name."
+    },
+    "search_gst_practitioners": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "taxpayer_services",
+      "description": "Search the public GST practitioner register by state, optional name, district, or PIN code, without exposing unnecessary contact data.",
+      "errors": [
+        {
+          "code": "invalid_practitioner_search",
+          "message": "The practitioner search needs a valid two-digit state code and, when supplied, at least three name characters.",
+          "next_operation": "gst.search_gst_practitioners",
+          "retryable": false,
+          "user_action": "Use gst.list_states to choose a state code, then correct the search fields and retry."
+        },
+        {
+          "code": "gst_practitioner_search_unavailable",
+          "message": "The GST practitioner search service is temporarily unavailable.",
+          "next_operation": "gst.search_gst_practitioners",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same search."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 25,
+            "name": "Example Practitioner",
+            "state_code": "29"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque cursor returned by the previous page of the same search.",
+            "type": "string"
+          },
+          "district_code": {
+            "description": "Optional GST district code within the selected state.",
+            "type": "string"
+          },
+          "limit": {
+            "description": "Maximum practitioners to return in this page.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "name": {
+            "description": "Optional practitioner name fragment; use at least three characters when supplied.",
+            "minLength": 3,
+            "type": "string"
+          },
+          "pincode": {
+            "description": "Optional six-digit Indian PIN code.",
+            "pattern": "^[0-9]{6}$",
+            "type": "string"
+          },
+          "state_code": {
+            "description": "Required two-digit GST state or union-territory code from gst.list_states.",
+            "pattern": "^[0-9]{2}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "state_code"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "practitioners": {
+            "description": "Matching active or inactive GST practitioner records. Raw phone numbers and email addresses are intentionally omitted.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "address": {
+                  "description": "Published practitioner office address.",
+                  "type": "string"
+                },
+                "category_code": {
+                  "description": "GST practitioner-category code.",
+                  "type": "string"
+                },
+                "enrolment_number": {
+                  "description": "Official GST practitioner enrolment number.",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "Published practitioner name.",
+                  "type": "string"
+                },
+                "state_code": {
+                  "description": "Two-digit GST state code.",
+                  "type": "string"
+                },
+                "status": {
+                  "description": "GST practitioner status code returned by the portal.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "enrolment_number",
+                "name",
+                "state_code",
+                "category_code",
+                "status",
+                "address"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "practitioners"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "AgentWeb returns a bounded slice of the live result and provides next_cursor when more records remain.",
+        "cursor": "Opaque offset into the current live result ordering.",
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this to contact practitioners, rank them, or infer professional quality; phone and email data are intentionally not returned.",
+      "when_to_use": "Use this to locate and verify GST practitioners by public enrolment data and geography."
+    },
+    "search_hsn_sac": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "classification",
+      "description": "Look up live GST portal HSN or SAC classification suggestions from a known numeric code.",
+      "errors": [
+        {
+          "code": "invalid_classification_query",
+          "message": "The code is empty, too long, or not accepted by the GST portal.",
+          "next_operation": "gst.search_hsn_sac",
+          "retryable": false,
+          "user_action": "Provide two to eight digits from an HSN or SAC code and call this operation again."
+        },
+        {
+          "code": "gst_portal_unavailable",
+          "message": "The GST portal classification service is temporarily unavailable.",
+          "next_operation": "gst.search_hsn_sac",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing the query."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "query": "8471"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Two to eight digits from the HSN or SAC code to look up, such as 8471.",
+            "maxLength": 8,
+            "minLength": 2,
+            "pattern": "^[0-9]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "matches": {
+            "description": "Classification suggestions returned by the live GST portal in its own order.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "description": "The HSN or SAC classification code.",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "The classification description published by the GST portal.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "code",
+                "description"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "matches"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The portal returns a small autocomplete result set and does not expose pagination for this lookup.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not treat these suggestions as legal classification advice or as a binding statement by GSTN.",
+      "when_to_use": "Use this when the agent already has part or all of an HSN or SAC code and needs the portal's matching descriptions."
+    },
+    "search_hsn_sac_by_description": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "classification",
+      "description": "Find live GST portal HSN goods or SAC services classification candidates from a plain-language description.",
+      "errors": [
+        {
+          "code": "invalid_classification_description",
+          "message": "The description is empty, too long, or not accepted by the GST portal.",
+          "next_operation": "gst.search_hsn_sac_by_description",
+          "retryable": false,
+          "user_action": "Provide a short plain-language goods or services description and call this operation again."
+        },
+        {
+          "code": "gst_portal_unavailable",
+          "message": "The GST portal classification service is temporarily unavailable.",
+          "next_operation": "gst.search_hsn_sac_by_description",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing the description."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "classification_type": "goods",
+            "description": "laptop computer"
+          }
+        },
+        {
+          "input": {
+            "classification_type": "services",
+            "description": "software consulting"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "classification_type": {
+            "description": "Whether to search goods HSN classifications or services SAC classifications.",
+            "enum": [
+              "goods",
+              "services"
+            ],
+            "type": "string"
+          },
+          "description": {
+            "description": "A plain-language description of the goods or services to classify.",
+            "maxLength": 40,
+            "minLength": 3,
+            "type": "string"
+          }
+        },
+        "required": [
+          "classification_type",
+          "description"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "matches": {
+            "description": "Candidate classifications returned by the live GST portal in relevance order.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "description": "The candidate HSN or SAC classification code.",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "The candidate classification description published by the GST portal.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "code",
+                "description"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "matches"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The portal returns a small autocomplete result set and does not expose pagination for this lookup.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not treat candidate matches as legal classification advice or as a binding statement by GSTN.",
+      "when_to_use": "Use this when the agent has a goods or services description but does not yet know the corresponding HSN or SAC code."
+    }
+  },
+  "cookie_domain": ".www.gst.gov.in",
+  "coverage": {
+    "constraints": [
+      "Site permissions, rate limits, and anti-automation rules still apply"
+    ],
+    "human_boundaries": [
+      "A genuine failed-payment CPIN and authorized taxpayer fixture are required to verify PMT-07 preparation and submission safely.",
+      "A valid GSTIN or authorized Other ID from a dedicated mapping account is required to reach and verify challan creation without using a third party identity.",
+      "A valid refund ARN with known case history from an authorized mapping account is required; only the no-record error path has been verified.",
+      "An authorized CPIN or payment reference with known state is required to verify that the public tracker returns the correct payment meaning.",
+      "An authorized GSTIN or CPIN with known challan history is required to verify the returned records without probing another taxpayer account.",
+      "GST requires a visual CAPTCHA and then email/mobile OTP verification before generating a temporary unregistered-applicant ID; AgentWeb must pause for the applicant.",
+      "GST requires a visual CAPTCHA before a TRN application can be resumed, followed by account-bound verification; AgentWeb must show the challenge and pause for the user.",
+      "GST requires a visual CAPTCHA before exposing advance-ruling search filters and results; AgentWeb must show the challenge and resume after the user completes it.",
+      "GST requires an OTP sent through the account recovery channel before new credentials can be set; AgentWeb must pause for the user to enter it.",
+      "GST requires an OTP sent to the registered contact before revealing a username; AgentWeb must pause for the account holder.",
+      "GST sends separate OTPs to the applicant email address and mobile number before registration can continue; AgentWeb can fill the form but must pause for the applicant.",
+      "No mapping account with the required GST role is currently available.",
+      "The GST portal requires the taxpayer to enter private credentials in its login form. AgentWeb must open a visible private session for the user, persist only the resulting session, and never capture or publish the password.",
+      "The live RFN document verification flow requires a six-digit image CAPTCHA after a syntactically valid RFN is entered. AgentWeb must pause for visible user completion and must not automate the challenge.",
+      "The live composition opt-in/opt-out search requires a six-character image CAPTCHA after its search mode is selected. AgentWeb must pause for visible user completion and must not automate the challenge.",
+      "The live public ARN/SRN/FRN status lookup requires a six-character image CAPTCHA after an identifier is entered. AgentWeb must pause for visible user completion and must not automate the challenge.",
+      "The live public GSTIN/UIN lookup renders a required six-digit image CAPTCHA after a valid identifier is entered. AgentWeb must pause for the user to complete it visibly and must not automate or bypass it.",
+      "The live public PAN lookup requires a six-character image CAPTCHA after a syntactically valid PAN is entered. AgentWeb must pause for visible user completion and must not automate the challenge.",
+      "The public temporary-ID/mobile search displays a required six-character image CAPTCHA before submission. AgentWeb must pause for visible user completion and must not automate the challenge.",
+      "Twenty-five safe live searches across five states and five authority types over a three-year range returned no hearings, so a known hearing fixture is required for semantic success evidence."
+    ],
+    "not_mapped": [
+      "Authoring gates are incomplete",
+      "Excluded operations without current reviewed evidence: track_refund_application"
+    ],
+    "protocol_fallback": null,
+    "typed_fast_paths": [
+      "download_hsn_sac_directory",
+      "list_advisories",
+      "list_due_dates",
+      "list_gst_law_sources",
+      "list_gst_statistics",
+      "list_help_resources",
+      "list_holidays",
+      "list_offline_tools",
+      "list_states",
+      "search_gst_practitioners",
+      "search_hsn_sac",
+      "search_hsn_sac_by_description"
+    ],
+    "website_parity": "Mapping mode can inspect the remaining website while direct request recipes are compiled. Browser commands are never counted as runtime parity."
+  },
+  "description": "Experimental, incomplete API for www.gst.gov.in. Available operations have reviewed evidence, but full website parity has not been verified.",
+  "entrypoint": "adapter.py",
+  "evidence_capsules": {
+    "list_advisories": {
+      "contract": "list_advisories",
+      "path": "flows/list_advisories.json"
+    },
+    "search_hsn_sac": {
+      "contract": "search_hsn_sac",
+      "path": "flows/search_hsn_sac.json"
+    }
+  },
+  "flow_capsules": {
+    "download_hsn_sac_directory": {
+      "contract": "download_hsn_sac_directory",
+      "path": "flows/download_hsn_sac_directory.json"
+    },
+    "list_due_dates": {
+      "contract": "list_due_dates",
+      "path": "flows/list_due_dates.json"
+    },
+    "list_gst_law_sources": {
+      "contract": "list_gst_law_sources",
+      "path": "flows/list_gst_law_sources.json"
+    },
+    "list_gst_statistics": {
+      "contract": "list_gst_statistics",
+      "path": "flows/list_gst_statistics.json"
+    },
+    "list_help_resources": {
+      "contract": "list_help_resources",
+      "path": "flows/list_help_resources.json"
+    },
+    "list_holidays": {
+      "contract": "list_holidays",
+      "path": "flows/list_holidays.json"
+    },
+    "list_offline_tools": {
+      "contract": "list_offline_tools",
+      "path": "flows/list_offline_tools.json"
+    },
+    "list_states": {
+      "contract": "list_states",
+      "path": "flows/list_states.json"
+    },
+    "search_gst_practitioners": {
+      "contract": "search_gst_practitioners",
+      "path": "flows/search_gst_practitioners.json"
+    },
+    "search_hsn_sac_by_description": {
+      "contract": "search_hsn_sac_by_description",
+      "path": "flows/search_hsn_sac_by_description.json"
+    }
+  },
+  "name": "gst",
+  "operation_contracts": {
+    "download_hsn_sac_directory": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "404": "gst_directory_unavailable",
+          "429": "gst_portal_unavailable",
+          "500": "gst_portal_unavailable",
+          "502": "gst_portal_unavailable",
+          "503": "gst_portal_unavailable",
+          "504": "gst_portal_unavailable"
+        },
+        "include_steps": [
+          "hsn_sac_xlsx"
+        ],
+        "recipe_hash": "3a85d5da475c27dedc6faa11d48ee48aa84d15f0f833d80261bbd7de2f14b93d",
+        "step_options": {
+          "hsn_sac_xlsx": {
+            "filename": "HSN_SAC.xlsx",
+            "response_mode": "download"
+          }
+        },
+        "type": "generated_recipe"
+      },
+      "capabilities": [
+        "download_hsn_sac_directory"
+      ],
+      "category": "classification",
+      "contract_hash": "a12aa2365c917d2000b30660da52d603567fdb7462897635f5956525f2840514",
+      "errors": [
+        {
+          "code": "gst_directory_unavailable",
+          "message": "The published HSN and SAC spreadsheet is not currently available at the GST portal's download location.",
+          "next_operation": "gst.download_hsn_sac_directory",
+          "retryable": true,
+          "user_action": "Retry later or use the live GST classification search operations instead."
+        },
+        {
+          "code": "gst_portal_unavailable",
+          "message": "The GST portal download service is temporarily unavailable.",
+          "next_operation": "gst.download_hsn_sac_directory",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same download operation."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "download_hsn_sac_directory",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "bytes": {
+            "description": "Size of the downloaded spreadsheet in bytes.",
+            "type": "integer"
+          },
+          "content_type": {
+            "description": "Media type reported by the GST portal for the downloaded file.",
+            "type": "string"
+          },
+          "filename": {
+            "description": "Stable filename used for the downloaded spreadsheet.",
+            "type": "string"
+          },
+          "path": {
+            "description": "Private local path where AgentWeb saved the downloaded spreadsheet.",
+            "type": "string"
+          },
+          "sha256": {
+            "description": "SHA-256 checksum for identifying and verifying the downloaded file.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "filename",
+          "path",
+          "bytes",
+          "sha256",
+          "content_type"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "This operation downloads one current spreadsheet and does not paginate.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Downloads the current file from the live GST portal on every call.",
+        "max_items": 1,
+        "truncation": "The spreadsheet is saved as a file; its binary contents are never placed in the tool response."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784713111.1888168,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Download the GST portal's published HSN and SAC directory as a local Excel file with a verification receipt.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "saves the spreadsheet to a local file",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "returns the reviewed spreadsheet filename",
+                "passed": true,
+                "type": "equals"
+              },
+              {
+                "name": "returns a file checksum",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "a12aa2365c917d2000b30660da52d603567fdb7462897635f5956525f2840514",
+            "input_names": [],
+            "passed": true,
+            "recipe_hash": "3a85d5da475c27dedc6faa11d48ee48aa84d15f0f833d80261bbd7de2f14b93d",
+            "verified_at_unix": 1784713079.763554
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "saves the spreadsheet to a local file",
+            "path": "$.data.path",
+            "type": "non_empty"
+          },
+          {
+            "name": "returns the reviewed spreadsheet filename",
+            "path": "$.data.filename",
+            "type": "equals",
+            "value": "HSN_SAC.xlsx"
+          },
+          {
+            "name": "returns a file checksum",
+            "path": "$.data.sha256",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use a downloaded directory as a substitute for professional classification advice or assume it is legally binding.",
+      "when_to_use": "Use this when an agent needs the full published HSN and SAC spreadsheet for offline analysis or exhaustive local search."
+    },
+    "list_advisories": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "400": "invalid_advisory_year",
+          "429": "gst_portal_unavailable",
+          "500": "gst_portal_unavailable",
+          "502": "gst_portal_unavailable",
+          "503": "gst_portal_unavailable",
+          "504": "gst_portal_unavailable"
+        },
+        "include_steps": [
+          "2026"
+        ],
+        "output": {
+          "collection": "advisories",
+          "item_fields": {
+            "content": {
+              "path": "$.content",
+              "transform": "html_to_text"
+            },
+            "date": "$.date",
+            "id": "$.id",
+            "is_external": {
+              "path": "$.IsExternal",
+              "transform": "yn_boolean"
+            },
+            "link_url": {
+              "default": "",
+              "path": "$.linkURl"
+            },
+            "module": {
+              "default": "",
+              "path": "$.module"
+            },
+            "title": "$.title"
+          },
+          "pagination": {
+            "cursor_input": "cursor",
+            "default_limit": 25,
+            "limit_input": "limit",
+            "max_limit": 100
+          },
+          "source": "$.data"
+        },
+        "recipe_hash": "ecf7a9a2ce37d69ecdf05551cd25611f6080a6680d6c74ea1ed0d396ba0ca1bd",
+        "step_options": {
+          "2026": {
+            "path": "https://services.gst.gov.in/master/advisories/updated/{year}"
+          }
+        },
+        "type": "generated_recipe",
+        "variables": {
+          "year": "year"
+        }
+      },
+      "capabilities": [
+        "view_advisories"
+      ],
+      "category": "news_and_guidance",
+      "contract_hash": "37a6eccdd6c0c07746482c41bac80b2100fedd9914889a250812aaf0273c0d57",
+      "errors": [
+        {
+          "code": "invalid_advisory_year",
+          "field": "year",
+          "message": "The requested advisory year is not accepted by the GST portal.",
+          "next_operation": "gst.list_advisories",
+          "retryable": false,
+          "user_action": "Provide a four-digit year from 2017 onward and call this operation again."
+        },
+        {
+          "code": "gst_portal_unavailable",
+          "message": "The GST portal advisory service is temporarily unavailable.",
+          "next_operation": "gst.list_advisories",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same advisory request."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "year": 2026
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque cursor returned by a previous call for the same advisory year.",
+            "type": "string"
+          },
+          "limit": {
+            "description": "Maximum advisories to return in this page.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "year": {
+            "description": "Four-digit calendar year whose GST portal advisories should be returned.",
+            "maximum": 2100,
+            "minimum": 2017,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "year"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_advisories",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "advisories": {
+            "description": "GSTN advisories for the requested year, newest first as returned by the portal.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "content": {
+                  "description": "Plain-text advisory body with HTML presentation removed.",
+                  "type": "string"
+                },
+                "date": {
+                  "description": "Publication date string supplied by the GST portal.",
+                  "type": "string"
+                },
+                "id": {
+                  "description": "Stable numeric advisory identifier assigned by the portal.",
+                  "type": "integer"
+                },
+                "is_external": {
+                  "description": "Whether the advisory's primary destination is outside the GST portal.",
+                  "type": "boolean"
+                },
+                "link_url": {
+                  "description": "External or detail link supplied by the portal, or an empty string when none is supplied.",
+                  "type": "string"
+                },
+                "module": {
+                  "description": "GST product area associated with the advisory.",
+                  "type": "string"
+                },
+                "title": {
+                  "description": "Published advisory title.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "content",
+                "date",
+                "module",
+                "is_external",
+                "link_url"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "advisories"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "AgentWeb fetches the selected year once, then returns a bounded slice. Pass next_cursor back with the same year to continue.",
+        "cursor": "Opaque offset into that year's live advisory archive.",
+        "supported": true
+      },
+      "result": {
+        "freshness": "Fetched live from the GST portal for every call.",
+        "max_items": 100,
+        "truncation": "Each page contains at most 100 advisories. Pagination metadata and warnings explain how to continue."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784754262.208517,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List current or archived GSTN advisories for a calendar year with clean text, dates, modules, and links.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns published advisories",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "returns an advisory title",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "returns a plain-text advisory body",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "37a6eccdd6c0c07746482c41bac80b2100fedd9914889a250812aaf0273c0d57",
+            "input_names": [
+              "limit",
+              "year"
+            ],
+            "passed": true,
+            "recipe_hash": "ecf7a9a2ce37d69ecdf05551cd25611f6080a6680d6c74ea1ed0d396ba0ca1bd",
+            "verified_at_unix": 1784754232.210073
+          },
+          {
+            "assertions": [
+              {
+                "name": "returns published advisories",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "returns an advisory title",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "returns a plain-text advisory body",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "archived_year",
+            "cleanup": null,
+            "contract_hash": "37a6eccdd6c0c07746482c41bac80b2100fedd9914889a250812aaf0273c0d57",
+            "input_names": [
+              "limit",
+              "year"
+            ],
+            "passed": true,
+            "recipe_hash": "ecf7a9a2ce37d69ecdf05551cd25611f6080a6680d6c74ea1ed0d396ba0ca1bd",
+            "verified_at_unix": 1784754262.12533
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns published advisories",
+            "path": "$.data.advisories",
+            "type": "non_empty"
+          },
+          {
+            "name": "returns an advisory title",
+            "path": "$.data.advisories.0.title",
+            "type": "non_empty"
+          },
+          {
+            "name": "returns a plain-text advisory body",
+            "path": "$.data.advisories.0.content",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "archived_year"
+        ]
+      },
+      "when_not_to_use": "Do not treat an advisory as legislation; use the GST law operations for acts, rules, notifications, circulars, and orders.",
+      "when_to_use": "Use this when an agent needs current GST portal operational guidance, system-change announcements, or an annual advisory archive."
+    },
+    "list_due_dates": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "include_steps": [
+          "impdts"
+        ],
+        "output": {
+          "collection": "due_dates",
+          "item_fields": {
+            "category_code": "$.t",
+            "due_date": "$.d",
+            "form_or_obligation": "$.f"
+          },
+          "source": "$.data",
+          "source_transform": "json_decode"
+        },
+        "recipe_hash": "78f76a18fed61648a7cef336eed4ffb532daead857add15eb0faff476ee1db56",
+        "type": "generated_recipe"
+      },
+      "capabilities": [
+        "view_due_dates"
+      ],
+      "category": "deadlines_and_compliance",
+      "contract_hash": "eb65bb7661d295f2dfd64244fe1759702407aadb50f8a952b25be750b07b8278",
+      "errors": [
+        {
+          "code": "gst_due_dates_unavailable",
+          "message": "The GST portal's current due-date feed is temporarily unavailable.",
+          "next_operation": "gst.list_due_dates",
+          "retryable": true,
+          "user_action": "Wait briefly and retry this operation."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_due_dates",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "due_dates": {
+            "description": "Current filing and compliance dates shown on the GST portal home page.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "category_code": {
+                  "description": "GST portal display-category code retained for fidelity.",
+                  "type": "string"
+                },
+                "due_date": {
+                  "description": "Published due date or rule-based deadline text.",
+                  "type": "string"
+                },
+                "form_or_obligation": {
+                  "description": "GST form, facility, or compliance obligation and period.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "form_or_obligation",
+                "due_date",
+                "category_code"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "due_dates"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The complete current home-page deadline feed is returned at once.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live from GSTN for every call.",
+        "max_items": 50,
+        "truncation": "The current deadline feed fits in one bounded result."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784713111.839185,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Return the GST portal's current filing, statement, refund, and quarterly compliance deadlines as structured data.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns current GST deadlines",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "returns a named form or obligation",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "returns the published date text",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "eb65bb7661d295f2dfd64244fe1759702407aadb50f8a952b25be750b07b8278",
+            "input_names": [],
+            "passed": true,
+            "recipe_hash": "78f76a18fed61648a7cef336eed4ffb532daead857add15eb0faff476ee1db56",
+            "verified_at_unix": 1784713086.966302
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns current GST deadlines",
+            "path": "$.data.due_dates",
+            "type": "non_empty"
+          },
+          {
+            "name": "returns a named form or obligation",
+            "path": "$.data.due_dates.0.form_or_obligation",
+            "type": "non_empty"
+          },
+          {
+            "name": "returns the published date text",
+            "path": "$.data.due_dates.0.due_date",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not infer a taxpayer-specific filing obligation from this general feed; applicability can depend on registration type, turnover, state, extensions, and notifications.",
+      "when_to_use": "Use this for the current general GST deadlines that would otherwise require opening the portal calendar."
+    },
+    "list_gst_law_sources": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "include_steps": [
+          "gstlawlist"
+        ],
+        "output": {
+          "collection": "sources",
+          "item_fields": {
+            "name": "$.text",
+            "url": "$.url"
+          },
+          "source": "$"
+        },
+        "recipe_hash": "326834de3af2c488fc9f275c4cae8cc885a8f239598aaf2a42652fe54d5ba3c2",
+        "step_options": {
+          "gstlawlist": {
+            "response_mode": "html_links",
+            "selector": ".st-vat a[data-popup=true]"
+          }
+        },
+        "type": "generated_recipe"
+      },
+      "capabilities": [
+        "view_gst_law"
+      ],
+      "category": "law_and_guidance",
+      "contract_hash": "bc1e665e9ec4daa002943d9597fef68d0f3526ddee3ba4b45215d04d297f04ed",
+      "errors": [
+        {
+          "code": "gst_law_directory_unavailable",
+          "message": "The GST portal law-source directory is temporarily unavailable.",
+          "next_operation": "gst.list_gst_law_sources",
+          "retryable": true,
+          "user_action": "Wait briefly and retry this operation."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_gst_law_sources",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "sources": {
+            "description": "Official central, state, and union-territory websites linked by the GST portal for laws, rules, notifications, amendments, and circulars.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "description": "Jurisdiction or authority name.",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "Official law-source website URL published by GSTN.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "url"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "sources"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The complete official jurisdiction directory is returned in one bounded result.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live from the GST portal for every call.",
+        "max_items": 50,
+        "truncation": "The current directory fits within one response; AgentWeb still enforces its normal output budget."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784713112.153516,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List every official central, state, and union-territory source linked by GSTN for GST laws and legal updates.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns official jurisdiction sources",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "includes the central CBIC source",
+                "passed": true,
+                "type": "equals"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "bc1e665e9ec4daa002943d9597fef68d0f3526ddee3ba4b45215d04d297f04ed",
+            "input_names": [],
+            "passed": true,
+            "recipe_hash": "326834de3af2c488fc9f275c4cae8cc885a8f239598aaf2a42652fe54d5ba3c2",
+            "verified_at_unix": 1784713088.5582788
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns official jurisdiction sources",
+            "path": "$.data.sources",
+            "type": "non_empty"
+          },
+          {
+            "name": "includes the central CBIC source",
+            "path": "$.data.sources.0.name",
+            "type": "equals",
+            "value": "CBIC"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this as the full text of legislation or as legal advice; it is the GSTN-maintained source directory.",
+      "when_to_use": "Use this to discover the authoritative central or state website that publishes GST acts, rules, notifications, circulars, and amendments."
+    },
+    "list_gst_statistics": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "include_steps": [
+          "gststatistics"
+        ],
+        "output": {
+          "collection": "files",
+          "item_fields": {
+            "description": "$.context",
+            "filename": {
+              "path": "$.url",
+              "transform": "url_filename"
+            },
+            "url": "$.url"
+          },
+          "source": "$"
+        },
+        "recipe_hash": "1b94c06bd9d718ca84b127ac848d872c3f5fb3665d15063b4c0d02bc97030aa3",
+        "step_options": {
+          "gststatistics": {
+            "context_selector": "tr",
+            "response_mode": "html_links",
+            "selector": "a[data-download=true]"
+          }
+        },
+        "type": "generated_recipe"
+      },
+      "capabilities": [
+        "download_gst_statistics"
+      ],
+      "category": "statistics_and_downloads",
+      "contract_hash": "3c541db4d6f4c678997f8144e60013938af9f6b87524573d2c122a93db8b0d82",
+      "errors": [
+        {
+          "code": "gst_statistics_unavailable",
+          "message": "The GST statistics directory is temporarily unavailable.",
+          "next_operation": "gst.list_gst_statistics",
+          "retryable": true,
+          "user_action": "Wait briefly and retry this operation."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_gst_statistics",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "files": {
+            "description": "All current GSTN statistical workbooks and reports, with the table-row context that identifies each dataset and year.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "description": {
+                  "description": "Dataset, return type, collection type, and financial-year context shown by GSTN.",
+                  "type": "string"
+                },
+                "filename": {
+                  "description": "Published file name, which identifies the dataset where the table row contains only a year.",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "Official direct spreadsheet or report URL.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "description",
+                "filename",
+                "url"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "files"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The complete current statistics directory is returned in one call.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live from the GST statistics page for every call.",
+        "max_items": 100,
+        "truncation": "AgentWeb returns the current directory within its bounded result budget."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784713112.474991,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List every official GST registration, return, collection, settlement, e-way-bill, and yearwise statistical download.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns statistical downloads",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "each first result has identifying context",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "each first result has a direct URL",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "3c541db4d6f4c678997f8144e60013938af9f6b87524573d2c122a93db8b0d82",
+            "input_names": [],
+            "passed": true,
+            "recipe_hash": "1b94c06bd9d718ca84b127ac848d872c3f5fb3665d15063b4c0d02bc97030aa3",
+            "verified_at_unix": 1784713090.248387
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns statistical downloads",
+            "path": "$.data.files",
+            "type": "non_empty"
+          },
+          {
+            "name": "each first result has identifying context",
+            "path": "$.data.files.0.description",
+            "type": "non_empty"
+          },
+          {
+            "name": "each first result has a direct URL",
+            "path": "$.data.files.0.url",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not treat these published aggregates as live taxpayer-level data.",
+      "when_to_use": "Use this when an agent needs official GST registration, return, tax-collection, IGST-settlement, e-way-bill, or yearwise revenue datasets."
+    },
+    "list_help_resources": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "include_steps": [
+          "helpandtaxpayerfacilities_html"
+        ],
+        "output": {
+          "collection": "resources",
+          "item_fields": {
+            "description": "$.context",
+            "name": "$.text",
+            "url": "$.url"
+          },
+          "source": "$"
+        },
+        "recipe_hash": "e1051e66699088a6ac3c3178bfd0bad8e6aaaa682ffa69a26a2d5cab0d4c8cc3",
+        "step_options": {
+          "helpandtaxpayerfacilities_html": {
+            "context_selector": ".cards",
+            "context_text_selector": ".card-body",
+            "link_attributes": [
+              "href",
+              "data-ng-href"
+            ],
+            "link_replacements": {
+              "{{servers.GST_CONTENT_R1_URL}}": "https://www.gst.gov.in",
+              "{{servers.GST_SERVICES_R1_URL}}": "https://services.gst.gov.in"
+            },
+            "response_mode": "html_links",
+            "selector": ".cards:not([data-ng-show]) a, .cards[data-ng-show=\"!udata\"] a"
+          }
+        },
+        "type": "generated_recipe"
+      },
+      "capabilities": [
+        "view_help_guides"
+      ],
+      "category": "help_and_support",
+      "contract_hash": "95a6f150b8a9278af8fdb6a8d15f4b5e9be7fa160680af217da32367ffb826aa",
+      "errors": [
+        {
+          "code": "help_directory_unavailable",
+          "message": "The GST help and taxpayer-facilities directory is temporarily unavailable.",
+          "next_operation": "gst.list_help_resources",
+          "retryable": true,
+          "user_action": "Wait briefly and retry this operation."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_help_resources",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "resources": {
+            "description": "Public help, support, system-requirement, media, and grievance resources published by GSTN.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "description": {
+                  "description": "GSTN's explanation of what the resource provides.",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "Public resource name.",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "Resolved official GSTN resource URL.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "description",
+                "url"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "resources"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The complete current public help directory is returned at once.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live from the GST portal for every call.",
+        "max_items": 25,
+        "truncation": "The directory is bounded by AgentWeb's standard output limit."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784713112.8076658,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List every public GSTN help, support, grievance, system-requirement, and taxpayer-facility resource with its official URL.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns public help resources",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "starts with free accounting services",
+                "passed": true,
+                "type": "equals"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "95a6f150b8a9278af8fdb6a8d15f4b5e9be7fa160680af217da32367ffb826aa",
+            "input_names": [],
+            "passed": true,
+            "recipe_hash": "e1051e66699088a6ac3c3178bfd0bad8e6aaaa682ffa69a26a2d5cab0d4c8cc3",
+            "verified_at_unix": 1784713091.9373481
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns public help resources",
+            "path": "$.data.resources",
+            "type": "non_empty"
+          },
+          {
+            "name": "starts with free accounting services",
+            "path": "$.data.resources.0.name",
+            "type": "equals",
+            "value": "Free Accounting and Billing Services"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for account-specific tickets or to submit a grievance; use the returned grievance resource when human follow-up is required.",
+      "when_to_use": "Use this to find the current GST knowledge portal, error guides, system requirements, media, grievance channels, nodal officers, or other taxpayer-help destinations without navigating the legacy site."
+    },
+    "list_holidays": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "400": "invalid_holiday_filter",
+          "429": "gst_portal_unavailable",
+          "500": "gst_portal_unavailable",
+          "502": "gst_portal_unavailable",
+          "503": "gst_portal_unavailable",
+          "504": "gst_portal_unavailable"
+        },
+        "include_steps": [
+          "holidaylist"
+        ],
+        "output": {
+          "collection": "holidays",
+          "item_fields": {
+            "created_by": "$.createdBy",
+            "date": "$.date",
+            "day": "$.day",
+            "descriptions": "$.descrptn",
+            "state_codes": "$.stateCodes"
+          },
+          "source": "$.finalHolidayList"
+        },
+        "recipe_hash": "e5d7eeb7e2ca8fe0c59c5a4313f1f2ee80228fb99a92ec929384e417ba13ac3d",
+        "type": "generated_recipe",
+        "variables": {
+          "sccodes": "state_code",
+          "year": "year"
+        }
+      },
+      "capabilities": [
+        "view_holiday_list"
+      ],
+      "category": "calendar",
+      "contract_hash": "2400cc50a237ed62cd7913e1611c6b7ab8cb405f863ca00d678e6d114552e663",
+      "errors": [
+        {
+          "code": "invalid_holiday_filter",
+          "message": "The GST portal did not accept the state code or calendar year.",
+          "next_operation": "gst.list_holidays",
+          "retryable": false,
+          "user_action": "Call gst.list_states for the exact two-character code, then retry with a four-digit year."
+        },
+        {
+          "code": "gst_portal_unavailable",
+          "message": "The GST portal holiday service is temporarily unavailable.",
+          "next_operation": "gst.list_holidays",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same holiday request."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "state_code": "29",
+            "year": 2026
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "state_code": {
+            "description": "Assigned two-character GST state or union-territory code from gst.list_states (01 through 38, or 97).",
+            "enum": [
+              "01",
+              "02",
+              "03",
+              "04",
+              "05",
+              "06",
+              "07",
+              "08",
+              "09",
+              "10",
+              "11",
+              "12",
+              "13",
+              "14",
+              "15",
+              "16",
+              "17",
+              "18",
+              "19",
+              "20",
+              "21",
+              "22",
+              "23",
+              "24",
+              "25",
+              "26",
+              "27",
+              "28",
+              "29",
+              "30",
+              "31",
+              "32",
+              "33",
+              "34",
+              "35",
+              "36",
+              "37",
+              "38",
+              "97"
+            ],
+            "maxLength": 2,
+            "minLength": 2,
+            "pattern": "^[0-9]{2}$",
+            "type": "string"
+          },
+          "year": {
+            "description": "Four-digit calendar year to retrieve.",
+            "maximum": 2100,
+            "minimum": 2017,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "state_code",
+          "year"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_holidays",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "holidays": {
+            "description": "Centre and state non-working days returned by the GST portal.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "created_by": {
+                  "description": "Portal authorities that published the calendar entry.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "date": {
+                  "description": "Calendar date string supplied by the GST portal.",
+                  "type": "string"
+                },
+                "day": {
+                  "description": "English weekday name supplied by the portal.",
+                  "type": "string"
+                },
+                "descriptions": {
+                  "description": "One or more reasons or labels for the non-working day.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "state_codes": {
+                  "description": "GST state codes to which the entry applies.",
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              },
+              "required": [
+                "date",
+                "day",
+                "descriptions",
+                "state_codes",
+                "created_by"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "holidays"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The portal returns the complete selected state and year calendar in one response.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live from the GST portal for every call.",
+        "max_items": 366,
+        "truncation": "AgentWeb permits a full leap-year calendar and reports if the portal exceeds that bound."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784754262.219869,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List GST portal centre and state non-working days for one state code and calendar year.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns calendar entries",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "returns a dated entry",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "2400cc50a237ed62cd7913e1611c6b7ab8cb405f863ca00d678e6d114552e663",
+            "input_names": [
+              "state_code",
+              "year"
+            ],
+            "passed": true,
+            "recipe_hash": "e5d7eeb7e2ca8fe0c59c5a4313f1f2ee80228fb99a92ec929384e417ba13ac3d",
+            "verified_at_unix": 1784754233.602925
+          },
+          {
+            "assertions": [
+              {
+                "name": "returns calendar entries",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "returns a dated entry",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "second_state",
+            "cleanup": null,
+            "contract_hash": "2400cc50a237ed62cd7913e1611c6b7ab8cb405f863ca00d678e6d114552e663",
+            "input_names": [
+              "state_code",
+              "year"
+            ],
+            "passed": true,
+            "recipe_hash": "e5d7eeb7e2ca8fe0c59c5a4313f1f2ee80228fb99a92ec929384e417ba13ac3d",
+            "verified_at_unix": 1784754234.808987
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns calendar entries",
+            "path": "$.data.holidays",
+            "type": "non_empty"
+          },
+          {
+            "name": "returns a dated entry",
+            "path": "$.data.holidays.0.date",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "second_state"
+        ]
+      },
+      "when_not_to_use": "Do not use this as a statutory filing-deadline calendar; use the dedicated GST due-date operation for compliance deadlines.",
+      "when_to_use": "Use this when an agent needs the GST portal's non-working-day calendar for a specific state or union territory."
+    },
+    "list_offline_tools": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "include_steps": [
+          "downloads_utilities"
+        ],
+        "output": {
+          "collection": "tools",
+          "item_fields": {
+            "name": "$.text",
+            "url": "$.url"
+          },
+          "source": "$"
+        },
+        "recipe_hash": "f8b220297288ff85edb95f1e4dbeb54994e4b7ab2a8969a72663e523678ac881",
+        "step_options": {
+          "downloads_utilities": {
+            "response_mode": "html_links",
+            "selector": ".content-pane ul a[href]"
+          }
+        },
+        "type": "generated_recipe"
+      },
+      "capabilities": [
+        "download_offline_tools"
+      ],
+      "category": "downloads_and_utilities",
+      "contract_hash": "dad8808fd0286d04ec5410210282d8ee0500ddef99bb0bb0d1e033a1c1622cdc",
+      "errors": [
+        {
+          "code": "offline_tool_directory_unavailable",
+          "message": "The GST offline-tool directory is temporarily unavailable.",
+          "next_operation": "gst.list_offline_tools",
+          "retryable": true,
+          "user_action": "Wait briefly and retry this operation."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_offline_tools",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "tools": {
+            "description": "Current GST offline utilities. A URL either downloads the utility directly or opens its versioned download page.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "description": "Official utility name.",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "Current direct download or official versioned download-page URL.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "url"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "tools"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The complete current utility index is returned at once.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live from the GST downloads index for every call.",
+        "max_items": 50,
+        "truncation": "The directory is bounded by AgentWeb's standard output limit."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784713113.4648268,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List every current GST offline return, ITC, transition, advance-ruling, and IMS utility with its official URL.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns offline utilities",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "starts with the Returns Offline Utility",
+                "passed": true,
+                "type": "equals"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "dad8808fd0286d04ec5410210282d8ee0500ddef99bb0bb0d1e033a1c1622cdc",
+            "input_names": [],
+            "passed": true,
+            "recipe_hash": "f8b220297288ff85edb95f1e4dbeb54994e4b7ab2a8969a72663e523678ac881",
+            "verified_at_unix": 1784713097.115305
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns offline utilities",
+            "path": "$.data.tools",
+            "type": "non_empty"
+          },
+          {
+            "name": "starts with the Returns Offline Utility",
+            "path": "$.data.tools.0.name",
+            "type": "equals",
+            "value": "Returns Offline Utility"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this to file a return or to assume that a Windows-only utility can run in AgentWeb.",
+      "when_to_use": "Use this to discover the current official offline utility or its versioned download page without navigating GST menus."
+    },
+    "list_states": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "429": "gst_portal_unavailable",
+          "500": "gst_portal_unavailable",
+          "502": "gst_portal_unavailable",
+          "503": "gst_portal_unavailable",
+          "504": "gst_portal_unavailable"
+        },
+        "include_steps": [
+          "states"
+        ],
+        "output": {
+          "collection": "states",
+          "item_fields": {
+            "code": "$.c",
+            "is_union_territory": {
+              "path": "$.u",
+              "transform": "yn_boolean"
+            },
+            "name": "$.n"
+          },
+          "source": "$.data"
+        },
+        "recipe_hash": "802f1d9d02b69218dfa6c441b9bae3472b1f88465303aeb37f0628bf51c0ccec",
+        "type": "generated_recipe"
+      },
+      "capabilities": [
+        "list_gst_states"
+      ],
+      "category": "reference_data",
+      "contract_hash": "5a625d67b06764bc0c64b58ad93ff7e44631b06284e20349f513da706a4fdf60",
+      "errors": [
+        {
+          "code": "gst_portal_unavailable",
+          "message": "The GST portal state-code directory is temporarily unavailable.",
+          "next_operation": "gst.list_states",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation."
+        }
+      ],
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {},
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_states",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "states": {
+            "description": "States and union territories recognized by the GST portal.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "description": "Two-character GST state or territory code, preserving leading zeroes.",
+                  "type": "string"
+                },
+                "is_union_territory": {
+                  "description": "Whether the portal identifies the entry as a union territory.",
+                  "type": "boolean"
+                },
+                "name": {
+                  "description": "Published state or union territory name.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "code",
+                "name",
+                "is_union_territory"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "states"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The portal returns the complete directory in one response.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live from the GST portal for every call.",
+        "max_items": 100,
+        "truncation": "The complete current directory fits within the operation's fixed result bound."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784713113.805302,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List GST state and union territory codes, names, and territory classification for other state-scoped operations.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns the GST state directory",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "preserves the first two-character code",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "5a625d67b06764bc0c64b58ad93ff7e44631b06284e20349f513da706a4fdf60",
+            "input_names": [],
+            "passed": true,
+            "recipe_hash": "802f1d9d02b69218dfa6c441b9bae3472b1f88465303aeb37f0628bf51c0ccec",
+            "verified_at_unix": 1784713098.752893
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns the GST state directory",
+            "path": "$.data.states",
+            "type": "non_empty"
+          },
+          {
+            "name": "preserves the first two-character code",
+            "path": "$.data.states.0.code",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not infer tax jurisdiction solely from a name; use the exact code required by the target GST operation.",
+      "when_to_use": "Use this before a GST operation asks for a state or union territory code and the agent only knows its name."
+    },
+    "search_gst_practitioners": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "include_steps": [
+          "gstp"
+        ],
+        "output": {
+          "collection": "practitioners",
+          "empty_when": {
+            "equals": "IM_SRS_FO_001_01",
+            "path": "$.errorCode",
+            "value": []
+          },
+          "item_fields": {
+            "address": "$.adrs.addr",
+            "category_code": "$.ctgry",
+            "enrolment_number": "$.enrlNo",
+            "name": "$.trpNam",
+            "state_code": "$.stCd",
+            "status": "$.status"
+          },
+          "pagination": {
+            "cursor_input": "cursor",
+            "default_limit": 25,
+            "limit_input": "limit",
+            "max_limit": 100
+          },
+          "source": "$"
+        },
+        "recipe_hash": "7e1bc5ec6b0b0be7ad3679a17fcca49c961b47e577a84f12b7d662867b26463e",
+        "step_options": {
+          "gstp": {
+            "classification": "read",
+            "mutating": false
+          }
+        },
+        "type": "generated_recipe",
+        "variables": {
+          "dstcd": {
+            "default": null,
+            "source": "district_code"
+          },
+          "pincd": {
+            "default": "",
+            "source": "pincode"
+          },
+          "searchtype": {
+            "constant": "A"
+          },
+          "stcd": "state_code",
+          "trpnam": {
+            "default": "",
+            "source": "name"
+          }
+        }
+      },
+      "capabilities": [
+        "locate_gst_practitioner"
+      ],
+      "category": "taxpayer_services",
+      "contract_hash": "8b355fbb678c778d27d08c6b7454739aa8daf81fa9823cc7f21a808b13605c79",
+      "errors": [
+        {
+          "code": "invalid_practitioner_search",
+          "message": "The practitioner search needs a valid two-digit state code and, when supplied, at least three name characters.",
+          "next_operation": "gst.search_gst_practitioners",
+          "retryable": false,
+          "user_action": "Use gst.list_states to choose a state code, then correct the search fields and retry."
+        },
+        {
+          "code": "gst_practitioner_search_unavailable",
+          "message": "The GST practitioner search service is temporarily unavailable.",
+          "next_operation": "gst.search_gst_practitioners",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same search."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 25,
+            "name": "Example Practitioner",
+            "state_code": "29"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque cursor returned by the previous page of the same search.",
+            "type": "string"
+          },
+          "district_code": {
+            "description": "Optional GST district code within the selected state.",
+            "type": "string"
+          },
+          "limit": {
+            "description": "Maximum practitioners to return in this page.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "name": {
+            "description": "Optional practitioner name fragment; use at least three characters when supplied.",
+            "minLength": 3,
+            "type": "string"
+          },
+          "pincode": {
+            "description": "Optional six-digit Indian PIN code.",
+            "pattern": "^[0-9]{6}$",
+            "type": "string"
+          },
+          "state_code": {
+            "description": "Required two-digit GST state or union-territory code from gst.list_states.",
+            "pattern": "^[0-9]{2}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "state_code"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "search_gst_practitioners",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "practitioners": {
+            "description": "Matching active or inactive GST practitioner records. Raw phone numbers and email addresses are intentionally omitted.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "address": {
+                  "description": "Published practitioner office address.",
+                  "type": "string"
+                },
+                "category_code": {
+                  "description": "GST practitioner-category code.",
+                  "type": "string"
+                },
+                "enrolment_number": {
+                  "description": "Official GST practitioner enrolment number.",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "Published practitioner name.",
+                  "type": "string"
+                },
+                "state_code": {
+                  "description": "Two-digit GST state code.",
+                  "type": "string"
+                },
+                "status": {
+                  "description": "GST practitioner status code returned by the portal.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "enrolment_number",
+                "name",
+                "state_code",
+                "category_code",
+                "status",
+                "address"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "practitioners"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "AgentWeb returns a bounded slice of the live result and provides next_cursor when more records remain.",
+        "cursor": "Opaque offset into the current live result ordering.",
+        "supported": true
+      },
+      "result": {
+        "freshness": "Fetched live from GSTN for every call.",
+        "max_items": 100,
+        "truncation": "Each page contains at most 100 records; use next_cursor to continue."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784713114.132628,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Search the public GST practitioner register by state, optional name, district, or PIN code, without exposing unnecessary contact data.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns practitioner matches",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "returns an enrolment number",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "8b355fbb678c778d27d08c6b7454739aa8daf81fa9823cc7f21a808b13605c79",
+            "input_names": [
+              "limit",
+              "name",
+              "state_code"
+            ],
+            "passed": true,
+            "recipe_hash": "7e1bc5ec6b0b0be7ad3679a17fcca49c961b47e577a84f12b7d662867b26463e",
+            "verified_at_unix": 1784713102.12383
+          },
+          {
+            "assertions": [
+              {
+                "name": "returns an empty bounded collection",
+                "passed": true,
+                "type": "equals"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "empty_result",
+            "cleanup": null,
+            "contract_hash": "8b355fbb678c778d27d08c6b7454739aa8daf81fa9823cc7f21a808b13605c79",
+            "input_names": [
+              "limit",
+              "name",
+              "state_code"
+            ],
+            "passed": true,
+            "recipe_hash": "7e1bc5ec6b0b0be7ad3679a17fcca49c961b47e577a84f12b7d662867b26463e",
+            "verified_at_unix": 1784713103.8661509
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "cases": [
+              "success"
+            ],
+            "name": "returns practitioner matches",
+            "path": "$.data.practitioners",
+            "type": "non_empty"
+          },
+          {
+            "cases": [
+              "success"
+            ],
+            "name": "returns an enrolment number",
+            "path": "$.data.practitioners.0.enrolment_number",
+            "type": "non_empty"
+          },
+          {
+            "cases": [
+              "empty_result"
+            ],
+            "name": "returns an empty bounded collection",
+            "path": "$.data.practitioners",
+            "type": "equals",
+            "value": []
+          }
+        ],
+        "case_expectations": {
+          "empty_result": {
+            "allow_empty_response": true
+          }
+        },
+        "required_cases": [
+          "success",
+          "empty_result"
+        ]
+      },
+      "when_not_to_use": "Do not use this to contact practitioners, rank them, or infer professional quality; phone and email data are intentionally not returned.",
+      "when_to_use": "Use this to locate and verify GST practitioners by public enrolment data and geography."
+    },
+    "search_hsn_sac": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "400": "invalid_classification_query",
+          "429": "gst_portal_unavailable",
+          "500": "gst_portal_unavailable",
+          "502": "gst_portal_unavailable",
+          "503": "gst_portal_unavailable",
+          "504": "gst_portal_unavailable"
+        },
+        "include_steps": [
+          "qsearch"
+        ],
+        "output": {
+          "collection": "matches",
+          "item_fields": {
+            "code": "$.c",
+            "description": "$.n"
+          },
+          "source": "$.data"
+        },
+        "recipe_hash": "e27dcc5ea536baaeb616e503a44b760bfd53fe41abfd44a773c772809a1104ce",
+        "type": "generated_recipe",
+        "variables": {
+          "inputtext": "query",
+          "selectedtype": {
+            "constant": "byCode"
+          }
+        }
+      },
+      "capabilities": [
+        "search_hsn_sac"
+      ],
+      "category": "classification",
+      "contract_hash": "d23a9b7be397bf003fb3e8ae140ccb78bbfbd8683441d0da061eca25e2e72cfd",
+      "errors": [
+        {
+          "code": "invalid_classification_query",
+          "message": "The code is empty, too long, or not accepted by the GST portal.",
+          "next_operation": "gst.search_hsn_sac",
+          "retryable": false,
+          "user_action": "Provide two to eight digits from an HSN or SAC code and call this operation again."
+        },
+        {
+          "code": "gst_portal_unavailable",
+          "message": "The GST portal classification service is temporarily unavailable.",
+          "next_operation": "gst.search_hsn_sac",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing the query."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "query": "8471"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Two to eight digits from the HSN or SAC code to look up, such as 8471.",
+            "maxLength": 8,
+            "minLength": 2,
+            "pattern": "^[0-9]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "search_hsn_sac",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "matches": {
+            "description": "Classification suggestions returned by the live GST portal in its own order.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "description": "The HSN or SAC classification code.",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "The classification description published by the GST portal.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "code",
+                "description"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "matches"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The portal returns a small autocomplete result set and does not expose pagination for this lookup.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live from the GST portal for every call.",
+        "max_items": 25,
+        "truncation": "AgentWeb returns at most 25 matches and reports a warning if a larger portal response is truncated."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784709094.537854,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Look up live GST portal HSN or SAC classification suggestions from a known numeric code.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns at least one classification match",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "d23a9b7be397bf003fb3e8ae140ccb78bbfbd8683441d0da061eca25e2e72cfd",
+            "input_names": [
+              "query"
+            ],
+            "passed": true,
+            "recipe_hash": "e27dcc5ea536baaeb616e503a44b760bfd53fe41abfd44a773c772809a1104ce",
+            "verified_at_unix": 1784709076.201567
+          },
+          {
+            "assertions": [
+              {
+                "name": "returns an empty bounded match list",
+                "passed": true,
+                "type": "equals"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "empty_result",
+            "cleanup": null,
+            "contract_hash": "d23a9b7be397bf003fb3e8ae140ccb78bbfbd8683441d0da061eca25e2e72cfd",
+            "input_names": [
+              "query"
+            ],
+            "passed": true,
+            "recipe_hash": "e27dcc5ea536baaeb616e503a44b760bfd53fe41abfd44a773c772809a1104ce",
+            "verified_at_unix": 1784709077.7570062
+          },
+          {
+            "assertions": [
+              {
+                "name": "returns the reviewed agent-readable error",
+                "passed": true,
+                "type": "expected_http_error"
+              }
+            ],
+            "case": "invalid_input",
+            "cleanup": null,
+            "contract_hash": "d23a9b7be397bf003fb3e8ae140ccb78bbfbd8683441d0da061eca25e2e72cfd",
+            "input_names": [
+              "query"
+            ],
+            "passed": true,
+            "recipe_hash": "e27dcc5ea536baaeb616e503a44b760bfd53fe41abfd44a773c772809a1104ce",
+            "verified_at_unix": 1784709079.326507
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "cases": [
+              "success"
+            ],
+            "name": "returns at least one classification match",
+            "path": "$.data.matches",
+            "type": "non_empty"
+          },
+          {
+            "cases": [
+              "empty_result",
+              "invalid_input"
+            ],
+            "name": "returns an empty bounded match list",
+            "path": "$.data.matches",
+            "type": "equals",
+            "value": []
+          }
+        ],
+        "case_expectations": {
+          "empty_result": {
+            "allow_empty_response": true
+          },
+          "invalid_input": {
+            "error_code": "invalid_classification_query",
+            "http_status": 400
+          }
+        },
+        "required_cases": [
+          "success",
+          "empty_result",
+          "invalid_input"
+        ]
+      },
+      "when_not_to_use": "Do not treat these suggestions as legal classification advice or as a binding statement by GSTN.",
+      "when_to_use": "Use this when the agent already has part or all of an HSN or SAC code and needs the portal's matching descriptions."
+    },
+    "search_hsn_sac_by_description": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "400": "invalid_classification_description",
+          "429": "gst_portal_unavailable",
+          "500": "gst_portal_unavailable",
+          "502": "gst_portal_unavailable",
+          "503": "gst_portal_unavailable",
+          "504": "gst_portal_unavailable"
+        },
+        "include_steps": [
+          "qsearch"
+        ],
+        "output": {
+          "collection": "matches",
+          "item_fields": {
+            "code": "$.c",
+            "description": "$.n"
+          },
+          "source": "$.data"
+        },
+        "recipe_hash": "86320af3719f1f245a25d6bb7e52c6eb981df93f72b10a2ca968c60fa042d8a4",
+        "type": "generated_recipe",
+        "variables": {
+          "category": {
+            "source": "classification_type",
+            "values": {
+              "goods": "P",
+              "services": "S"
+            }
+          },
+          "inputtext": "description",
+          "selectedtype": {
+            "constant": "byDesc"
+          }
+        }
+      },
+      "capabilities": [
+        "search_hsn_goods_by_description",
+        "search_sac_services_by_description"
+      ],
+      "category": "classification",
+      "contract_hash": "5bf402f15812765b58384baba06536b4d5f8802d5679dd640b0a32d4ad1ad87f",
+      "errors": [
+        {
+          "code": "invalid_classification_description",
+          "message": "The description is empty, too long, or not accepted by the GST portal.",
+          "next_operation": "gst.search_hsn_sac_by_description",
+          "retryable": false,
+          "user_action": "Provide a short plain-language goods or services description and call this operation again."
+        },
+        {
+          "code": "gst_portal_unavailable",
+          "message": "The GST portal classification service is temporarily unavailable.",
+          "next_operation": "gst.search_hsn_sac_by_description",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same operation without changing the description."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "classification_type": "goods",
+            "description": "laptop computer"
+          }
+        },
+        {
+          "input": {
+            "classification_type": "services",
+            "description": "software consulting"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "classification_type": {
+            "description": "Whether to search goods HSN classifications or services SAC classifications.",
+            "enum": [
+              "goods",
+              "services"
+            ],
+            "type": "string"
+          },
+          "description": {
+            "description": "A plain-language description of the goods or services to classify.",
+            "maxLength": 40,
+            "minLength": 3,
+            "type": "string"
+          }
+        },
+        "required": [
+          "classification_type",
+          "description"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "search_hsn_sac_by_description",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "matches": {
+            "description": "Candidate classifications returned by the live GST portal in relevance order.",
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "description": "The candidate HSN or SAC classification code.",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "The candidate classification description published by the GST portal.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "code",
+                "description"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "matches"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "The portal returns a small autocomplete result set and does not expose pagination for this lookup.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live from the GST portal for every call.",
+        "max_items": 25,
+        "truncation": "AgentWeb returns at most 25 matches and reports a warning if a larger portal response is truncated."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784709094.7861278,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Find live GST portal HSN goods or SAC services classification candidates from a plain-language description.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns at least one classification candidate",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "5bf402f15812765b58384baba06536b4d5f8802d5679dd640b0a32d4ad1ad87f",
+            "input_names": [
+              "classification_type",
+              "description"
+            ],
+            "passed": true,
+            "recipe_hash": "86320af3719f1f245a25d6bb7e52c6eb981df93f72b10a2ca968c60fa042d8a4",
+            "verified_at_unix": 1784709081.030025
+          },
+          {
+            "assertions": [
+              {
+                "name": "returns at least one classification candidate",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success_services",
+            "cleanup": null,
+            "contract_hash": "5bf402f15812765b58384baba06536b4d5f8802d5679dd640b0a32d4ad1ad87f",
+            "input_names": [
+              "classification_type",
+              "description"
+            ],
+            "passed": true,
+            "recipe_hash": "86320af3719f1f245a25d6bb7e52c6eb981df93f72b10a2ca968c60fa042d8a4",
+            "verified_at_unix": 1784709082.797004
+          },
+          {
+            "assertions": [
+              {
+                "name": "returns an empty bounded candidate list",
+                "passed": true,
+                "type": "equals"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "empty_result",
+            "cleanup": null,
+            "contract_hash": "5bf402f15812765b58384baba06536b4d5f8802d5679dd640b0a32d4ad1ad87f",
+            "input_names": [
+              "classification_type",
+              "description"
+            ],
+            "passed": true,
+            "recipe_hash": "86320af3719f1f245a25d6bb7e52c6eb981df93f72b10a2ca968c60fa042d8a4",
+            "verified_at_unix": 1784709084.459399
+          },
+          {
+            "assertions": [
+              {
+                "name": "returns the reviewed agent-readable error",
+                "passed": true,
+                "type": "expected_http_error"
+              }
+            ],
+            "case": "invalid_input",
+            "cleanup": null,
+            "contract_hash": "5bf402f15812765b58384baba06536b4d5f8802d5679dd640b0a32d4ad1ad87f",
+            "input_names": [
+              "classification_type",
+              "description"
+            ],
+            "passed": true,
+            "recipe_hash": "86320af3719f1f245a25d6bb7e52c6eb981df93f72b10a2ca968c60fa042d8a4",
+            "verified_at_unix": 1784709086.142389
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "cases": [
+              "success",
+              "success_services"
+            ],
+            "name": "returns at least one classification candidate",
+            "path": "$.data.matches",
+            "type": "non_empty"
+          },
+          {
+            "cases": [
+              "empty_result",
+              "invalid_input"
+            ],
+            "name": "returns an empty bounded candidate list",
+            "path": "$.data.matches",
+            "type": "equals",
+            "value": []
+          }
+        ],
+        "case_expectations": {
+          "empty_result": {
+            "allow_empty_response": true
+          },
+          "invalid_input": {
+            "error_code": "invalid_classification_description",
+            "http_status": 400
+          }
+        },
+        "required_cases": [
+          "success",
+          "success_services",
+          "empty_result",
+          "invalid_input"
+        ]
+      },
+      "when_not_to_use": "Do not treat candidate matches as legal classification advice or as a binding statement by GSTN.",
+      "when_to_use": "Use this when the agent has a goods or services description but does not yet know the corresponding HSN or SAC code."
+    }
+  },
+  "release_status": "experimental_incomplete",
+  "release_warning": "This adapter intentionally ships before exhaustive portal coverage. Only listed operations are available; excluded or blocked workflows must not be inferred to work.",
+  "runtime": {
+    "auth_interaction": "not_yet_mapped",
+    "browserless_replay": true
+  },
+  "url_routes": [],
+  "version": "0.1.2"
+}

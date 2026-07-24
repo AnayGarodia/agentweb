@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "flows": [
+    {
+      "command": "batch_products",
+      "status": "passed",
+      "browser_capture": "evidence/amazon-public-2026-07-21.json#flows.batch_products",
+      "direct_recipe": "adapter.py#Adapter.batch_products",
+      "fixture": "evidence/conformance.json#flows.batch_products",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "deals",
+      "status": "passed",
+      "browser_capture": "evidence/amazon-public-2026-07-21.json#flows.deals",
+      "direct_recipe": "adapter.py#Adapter.deals",
+      "fixture": "evidence/conformance.json#flows.deals",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "best_sellers",
+      "status": "passed",
+      "browser_capture": "evidence/amazon-public-2026-07-21.json#flows.best_sellers",
+      "direct_recipe": "adapter.py#Adapter.best_sellers",
+      "fixture": "evidence/conformance.json#flows.best_sellers",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "product",
+      "status": "passed",
+      "browser_capture": "evidence/amazon-public-2026-07-21.json#flows.product",
+      "direct_recipe": "adapter.py#Adapter.product",
+      "fixture": "evidence/conformance.json#flows.product",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "cart",
+      "status": "passed",
+      "browser_capture": "evidence/amazon-public-2026-07-21.json#flows.anonymous_cart",
+      "direct_recipe": "adapter.py#Adapter.cart",
+      "fixture": "evidence/conformance.json#flows.cart",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "add_to_cart",
+      "status": "passed",
+      "browser_capture": "evidence/amazon-public-2026-07-21.json#flows.anonymous_cart",
+      "direct_recipe": "adapter.py#Adapter.add_to_cart",
+      "fixture": "evidence/conformance.json#flows.add_to_cart",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "remove_from_cart",
+      "status": "passed",
+      "browser_capture": "evidence/amazon-public-2026-07-21.json#flows.anonymous_cart",
+      "direct_recipe": "adapter.py#Adapter.remove_from_cart",
+      "fixture": "evidence/conformance.json#flows.remove_from_cart",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "account_status",
+      "status": "passed",
+      "browser_capture": "evidence/amazon-account-2026-07-21.json#flows.account_status",
+      "direct_recipe": "adapter.py#Adapter.account_status",
+      "fixture": "evidence/conformance.json#flows.account_status",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "lists",
+      "status": "passed",
+      "browser_capture": "evidence/amazon-account-2026-07-21.json#flows.lists",
+      "direct_recipe": "adapter.py#Adapter.lists",
+      "fixture": "evidence/conformance.json#flows.lists",
+      "last_verified": "2026-07-21"
+    },
+    {
+      "command": "list",
+      "status": "passed",
+      "browser_capture": "evidence/amazon-account-2026-07-21.json#flows.list",
+      "direct_recipe": "adapter.py#Adapter.list",
+      "fixture": "evidence/conformance.json#flows.list",
+      "last_verified": "2026-07-21"
+    }
+  ]
+}

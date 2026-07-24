@@ -1,0 +1,244 @@
+{
+  "schema_version": 2,
+  "signature": {
+    "algorithm": "ed25519",
+    "key_id": "d3237069b559fa7b",
+    "value": "wA5w8T4bpp660RBw9Mu/eNeE2RbNi4kYX9NrqLsSzrhQoKVDV61tkswiZE2pnQo06sDAwD78btE1nNcETxcdCg=="
+  },
+  "sites": [
+    {
+      "files": {
+        "adapter.py": "aa710d200ad6165e0c4b7eafd9d4867e97802b91d75fa2ed1f870e3501833e61",
+        "evidence.json": "f9e313cc6d6ed21d8864bf3bbd3ecf8d58bf6d5823220d343a6bc8dc3994f388",
+        "evidence/amazon-account-2026-07-21.json": "e723454f1f822c47405006a5f887245ed2b4b01bb4734ef6b9ae49a79b4dd249",
+        "evidence/amazon-public-2026-07-21.json": "c6e6e652d3dad936b0ebd63f543b840d1404fa215c833922eee95540c1645e39",
+        "evidence/conformance.json": "70c53051bacc6ecd62087ebabaa1e043e750d712732f205391854bf4e134fae5",
+        "manifest.json": "f32f5a3ad793069ed483a90eac5e7a97f828ab5a28834736b58744f2ce1850da"
+      },
+      "name": "amazon",
+      "version": "0.9.24"
+    },
+    {
+      "files": {
+        "adapter.py": "88f70ff348b6b90dde019884d7e7e62abd433dced5a26f374f45474ccf11716f",
+        "authoring-report.json": "7d096a4d91402b33ba5edec399bb9344d040153951f70ecaac0edad17129214f",
+        "flows/download_pdf.json": "d4243d91ada8954f23faa48760bf5eb7b501a9259121dfc290f96b81549f9a41",
+        "flows/download_source.json": "3aa0029487d929653acb5688018f531d18fee00ffabf5bc9e1aa3a2819f1dc48",
+        "flows/get_bibtex.json": "e1c65343abbd19e7a21cdb4b40e033034af28f037d2656a9992f331bcb9b752f",
+        "flows/get_category_feed.json": "8b8fa95ef35a891326c50d6745ea363785c2bbe9927f54807afc0cf4316425ae",
+        "flows/get_papers.json": "a5ea8036c7ddb68aaaa49209fcdbe30ae09b4115e7db6976647e01184603dcc1",
+        "flows/list_author_papers.json": "f6a4bbac0fb30d77372e507d902c2ad7c695e2753d6c8221253cf8c920864417",
+        "flows/list_bulk_data_resources.json": "ed34ef1bdd1cc9317291002faf4e76d1c4cd2fe53efc3537f8a2e34c71fc8b6d",
+        "flows/list_categories.json": "fc168f7609a894f7f50efa29fef015482a268efa0afa11b1b1185e48e26d3e8f",
+        "flows/list_category_papers.json": "5b4a0ed3e1ef80f40b5bdb60df9eb5cad3dc6506bf0d88a6480003629f32e097",
+        "flows/list_export_formats.json": "31cfaac50d04495d47a278bd20304848e7bc382a206150f3c6182411d161baeb",
+        "flows/list_site_resources.json": "d917a92d3f691a9cf737689515a8bef70379b2bfca255710d8236056acc17d88",
+        "flows/read_site_resource.json": "48df0b4acac510e7385cdead8fc0dc1199f1e274c3f689992357bc29ff0fe47a",
+        "flows/search_papers.json": "31f79a4b6dea5809316d59443ec610050aa5fe4c1b3a2470a2befdbb6a83f8c3",
+        "manifest.json": "858af82a1663aac32a76a50834f25b90218d138cd8aeb162f5f61e9782b476e1"
+      },
+      "name": "arxiv",
+      "version": "0.1.5"
+    },
+    {
+      "files": {
+        "adapter.py": "da6400c9e7c9ed39fe28f81e3a49c0353112bc029d155784c9680fa2cae3a9b3",
+        "authoring-report.json": "c19c3f8a3699b7d0821e753ca1bb3d711012ef058972248acbc64ab1f29b2f90",
+        "flows/announcements.json": "5e055614d8c387f94eeb332e76f06708f522cec47ff17618786ca0c0611fd96f",
+        "flows/quote.json": "55824ff663cbef80802058bb6afc56416219193a6a8564e27229fc697eeb5f28",
+        "manifest.json": "64f7ce5d17d5c3abf11c1399b64cd77c8d9d700b193023dfada47b251cde877a"
+      },
+      "name": "bse",
+      "version": "0.1.0"
+    },
+    {
+      "files": {
+        "adapter.py": "06e3edf6bf0f433c2d2980a7d7b971fa9eb39a69feb0eba9fee452f28f632211",
+        "evidence.json": "b6a7941462d7636ed3d606e68164ad3953715687e85ca7ce59918936b82675da",
+        "evidence/conformance.json": "6c763fbfafc590a10d83fe276c7749010b29d017eeb21321400021ae24f35570",
+        "evidence/github-public-2026-07-21.json": "a4bca7bb94523c2dca025aa5d5f0b3e5e5511f3188f90107b232fc15523f0f77",
+        "manifest.json": "df266d3d59d493c5dd22458471f5e5c5aa7582bbe01a051fd709cd6bef8aee58"
+      },
+      "name": "github",
+      "version": "0.9.12"
+    },
+    {
+      "files": {
+        "adapter.py": "fd37c8ee429d84472c65396cf8b7ca9779ffd1bc1feebd5556bc3ff88b72a6f1",
+        "authoring-report.json": "1389cecd3abaf0134291efee40d6cbe8c4d396a6efcc6c58d7606b47d7738912",
+        "flows/download_hsn_sac_directory.json": "0be008b1a63ec26cd008a9a5f2b45adb0edb4a931d5e8b7a8d7724f32c90af75",
+        "flows/list_advisories.json": "3159143b85c9c6533983da265eab6375874c76101ab13fc7e0095bcd254f059d",
+        "flows/list_due_dates.json": "de837024a35464dadb8f05db734d65abc0c2ca8702e262800bcc5646afa54349",
+        "flows/list_gst_law_sources.json": "14bde89b1536210350f5f22e5d2a3af31fa8e861c054cb2ce91ff792b14343f1",
+        "flows/list_gst_statistics.json": "ce4a8c0d62f4aa92bdfc4e88e365cf55251d7f4d750b1331bbde19b77a898a76",
+        "flows/list_help_resources.json": "8abdc82221b6355fa47edf234ec9482c069c9d128060879c5d727dabefcbdc07",
+        "flows/list_holidays.json": "c55d493edb7c1ca44fbe0be7a71a30fd7317b2fdddfcfa19f38d809dedc92ff6",
+        "flows/list_offline_tools.json": "aa85b8eb09091a7243c741b4a250590f57231f73f88ba0d5101bbe34ad472069",
+        "flows/list_states.json": "414721eeb9df6a0609952065266c7d9a0794273dc2c2b869a79bd610370be93c",
+        "flows/search_gst_practitioners.json": "bd58f243f50f9743033ce33078b3e947286b0e8ecae10487062119122c03b87c",
+        "flows/search_hsn_sac.json": "0a7739f0b3e17a03522f9cbfd1ddcc59bad7c8e850e48896b05d42e3641f0809",
+        "flows/search_hsn_sac_by_description.json": "86897b0bf26d030a03edefa5c438b67507098e3bd0e77849625d26f8213997db",
+        "manifest.json": "d3f581194c0448a93af6077652163b02d8ca9181d31b68ad1d0d59e0b67d2f51"
+      },
+      "name": "gst",
+      "version": "0.1.2"
+    },
+    {
+      "files": {
+        "adapter.py": "d5213a9a5050529e7905b10d3b1491df8e72698ec19c9c51d3e4f4b513233c87",
+        "evidence.json": "0c040dec91ea90f7c39dafecb55d1add007991d3c0c7bce17fe055425a17826a",
+        "evidence/conformance.json": "d0f5351088c4b77db1e382ce9ca39eb188d712b1a210b47280ba42566178e5b0",
+        "evidence/hn-account-actions-2026-07-21.json": "91bccf9cceabc4146116c7e39a4e60c1435ffddc3e298f5bae7772f416f05f0d",
+        "evidence/hn-public-2026-07-21.json": "7d54e755ebcbe971330c0c9210bfeac3994ba7d7372bc999b7f6b2aaee274c8f",
+        "manifest.json": "3bfeaf22d7c40556039737eb3c2e1bc91ee015f508f08f9d868be5d1cbdc203c"
+      },
+      "name": "hn",
+      "version": "0.8.9"
+    },
+    {
+      "files": {
+        "adapter.py": "e36929074c1af73fdc98ae1395b5c416ddec99c14f90ada7c04adc0a6de01203",
+        "authoring-report.json": "d577434b081175a434b0bdeedf8385e632b38a73bf66157aae02e863ad044c64",
+        "flows/agent_harnesses_list.json": "80b0eac582b6de82303cd6d2b47d822ab668555537bd904f9ab49e3299d3525c",
+        "flows/collection_get.json": "c7110418b0015f08f346675fe5b0f914abad175d06e539346e107e20096c0232",
+        "flows/collections_list.json": "8c0be3d09ad4747675e1128e61a0e313795330800a785700e235f91eed149f8f",
+        "flows/daily_papers_list.json": "9328266e2f9f60d56a348f4d34b52fdc1881f562aff92f9aba711f55b6dd63cb",
+        "flows/dataset_croissant_get.json": "6337d748fad3aeb121a2cb6f9c8c70e95f6cdea2a99940116cede3d24cbb6f9c",
+        "flows/dataset_facets.json": "98e2429908a9e1d39647bd87b9f4b0af29fc916dadcd1d51af1aee7a82804142",
+        "flows/dataset_get.json": "acc70f8d356a0ff9726cf2fabaff8249a6f614df6bb265c5491923fdae191a7a",
+        "flows/dataset_info_get.json": "ad2dbfd0054005a41f5c140f59b36e5ef3d6c8bdc440a1ae7ad8c7816f3ccb52",
+        "flows/dataset_leaderboard_get.json": "c1d37cb76c8344c04befcbbee1058af082460b4bc73ccbaacae1cce64def7470",
+        "flows/dataset_parquet_list.json": "c4a176e46821899993e941b38a2017e1dd94620911a4c5d61ee0373d32361cfb",
+        "flows/dataset_preview_rows.json": "63b79b03c421d810c2be962bc86f9bd6cbf703388be587b413b33c69b44e2e3d",
+        "flows/dataset_rows_filter.json": "1f97b070973001fb5c112455d183d2607bd0d7633815572ef413454d23365976",
+        "flows/dataset_rows_get.json": "2faaf1c8fc2902035c974ccec2d457f7dee00518218a4fedf48a2a4b98c91358",
+        "flows/dataset_rows_search.json": "4a8b161a9e808a96b92dc6969709cab4a27f171e8ff0fe07025f411dd61165c3",
+        "flows/dataset_size_get.json": "08978d97af34c3cc88a4bcd26f9c2735e8ed72ae3f2bbfbc5b83338e3fafdbf4",
+        "flows/dataset_splits_list.json": "20a0ce95259a083305230c9a85e56a249790ac5fa15a170ea5685b0c77a9a7eb",
+        "flows/dataset_statistics_get.json": "0e24836a9d59c4a2a4e7271e4877828cf0112cb88a296311e831e8fd1d5a1602",
+        "flows/dataset_viewer_status.json": "9065dbc423a2df65417bd6e1f53a0d7d9f503fc3f7487c7d498c1531f6117d68",
+        "flows/datasets_list.json": "3a5629cde0606931eba741f9173fb261e297299d55140c3c35182fafaad7bc5f",
+        "flows/discussion_get.json": "1cdcd896e6a9664b0d8365d0c86a64afa7f6fa787cc417253ef67445262f5426",
+        "flows/discussions_list.json": "da3928e5e00ae08c764fce8fa2a20a74c0157ff37e34da4bdb641a8865c2cef2",
+        "flows/docs_list.json": "4a186b97d688c58c6a7a267b7fa0eb5e588dd96a2ddd22bd292767bcd0ae8e17",
+        "flows/docs_search.json": "6e2f9daa9f2bd07bab86e367282a3d522907c56e2b5ba00b76371e7fcbe92c6d",
+        "flows/hub_search.json": "96a2d2024844814613cc1933326831293a6103fa3e59832ed4a134b504b83017",
+        "flows/hub_trending.json": "addac5ec66de984535dee3deb4a14ea3c0872e2e12b27eb299b322be6bc01582",
+        "flows/kernel_get.json": "21b2ecbf7af529b4d654171a4b7d35386951d2f5821391a6ca768871bc5c436e",
+        "flows/kernels_list.json": "bf7f91047a66a1b9a1e918d1dcd98c636501c6d3fcd6c6fa42989dbfe894f4ce",
+        "flows/model_facets.json": "06990531d2e8ecdff61035b824bb404a344b27a9908e6bd09dabea1693cb474e",
+        "flows/model_get.json": "f946daa21e716563ab13cf5b0552a9f36750a2da75c865969b3326406e7b8730",
+        "flows/model_security_get.json": "da83b7ccbe3bdaa25240d846bfc479fa36f452b5176581988c902e1ec3fbf6af",
+        "flows/models_list.json": "96764747a305822d3db6ba037711e32a8749693d85f5256cc60da17b5e22d8d6",
+        "flows/organization_get.json": "b27cbe0d552bbb58ce440a22e42ee8f88e119f7252cd81c750c05fb4ebb0ed91",
+        "flows/paper_get.json": "2e3a01fe188ca3f638cc114faca94ef5a690befcb38974eb0ff0990b8c173138",
+        "flows/paper_read.json": "725eaab1813fbfcee2039a9b3f28ccba32a5e791197176bdc5661ae4c1a3e58a",
+        "flows/papers_search.json": "058c6bb941f1e018e4759ecfe76dc425124801cd884cbd67a247ef7403d4740a",
+        "flows/profile_connections_list.json": "14288c27ced90d0533cbf025d437cf5f64ded935748342a2a1edad1003103c06",
+        "flows/repo_commits_list.json": "9632d2ea68e10a43624a2a1919f71f1c6f1f402b317ec8758449b5736e554d12",
+        "flows/repo_compare.json": "0601797f7dec9c36a020fbf2edf79606e5e4a5b32d48dba0b9fe7691884c343d",
+        "flows/repo_file_metadata.json": "cc35177dd78fb1e1e3f46d614adf9f909613954e8cca05fc3afb704698a89e15",
+        "flows/repo_folder_size.json": "2ed39fbffa24c7e44bfb1aa95f5e7a0d305d34eceab9081f892a0276836da2ca",
+        "flows/repo_paths_get.json": "5076fa40b44a023cb887c2121d9ad517c0c1ae2a41bba480b1461a2692530fc7",
+        "flows/repo_refs_list.json": "167b36dccd11ac73cebb65416a73b35cf0ec5cbfdaa4d4adf9cd407e5d489b91",
+        "flows/repo_text_file_read.json": "6b7a9d4ceba535cbad1d2766c6cbb6a5d99d906f02c7d4823f7332c785184fc3",
+        "flows/repo_tree_list.json": "433298283b8ca8ab7548fad23efe9209bb0d285c96ccfe3f33a97ad7030d7292",
+        "flows/space_api_describe.json": "385005fc3e9141cd2fc01cc20eeef99a532aaa9ad0ee90161e4476255e78d2b8",
+        "flows/space_get.json": "c51cba194ba2351fce81d60c0fbb5c2dd81265a1686005e7dd7099da7a076c69",
+        "flows/space_options_get.json": "76e2edc54d64250d6f9f56d412b21ae09f4066da3bba6f7d708fc9183fa153e3",
+        "flows/space_runtime_get.json": "ef75bf480973d436e264328452eba12980ef5c85277ebfb259be189d21b95b7c",
+        "flows/spaces_list.json": "bc24c046d5055ee5f050f939de9e1eacd79955d25dbbde396cbff1e100b7560a",
+        "flows/spaces_semantic_search.json": "f64e4815d3da557ae0a2fb123e1db133c13bb25ad8a1196c1b4c3c04c7e677d1",
+        "flows/tasks_list.json": "881b43e1a029ae88086e5817165c71a09303855135d95adc0aa59d294cbe3491",
+        "flows/user_get.json": "da9bbe07f78545a61f04cf7426bb3152fe5922efe302b5501a9e8ee3532fe629",
+        "flows/user_likes_list.json": "0f4a260fe1f83292e92eda42cc08c3025254d8dbf85fe42651bac1d206f12653",
+        "manifest.json": "809c8d50b8f1b36eb5fec99316207d6fd73ab9649b97a73bd3963252d0775848"
+      },
+      "name": "huggingface",
+      "version": "0.1.1"
+    },
+    {
+      "files": {
+        "adapter.py": "ea65537051b6e32367f213a3837d72838532099e1c0b4b42532083bb1a629e03",
+        "authoring-report.json": "ee3929c8bd588a5f7ab0b6504d340d265b35085ca9c3653c0652f11907b79f9e",
+        "flows/audit_versions.json": "75c3819f3bcc8961e369acad3c2260862bc2a2b6c0d0afddd08075f0a5457123",
+        "flows/download_tarball.json": "edda7f12f85dfbd544ae1fdc80dd55ebd0687e153d857269feff77bfb0e15c68",
+        "flows/get_download_count.json": "a8382babb08bd1f76ecc42c94cdf63c397c140a3733c9b2672cd9bfe5b8d9856",
+        "flows/get_download_history.json": "0d07c30c06fcb2baef97aa63e5aeda3e79e9e6bab56daefecda08d3614c7002d",
+        "flows/get_package.json": "9b99297a2929d1b770a4d18b4c87f9d1086f09cae224d310ad06294815366f96",
+        "flows/get_provenance.json": "3db398121cb6a37d7ca5ae49f8de8f3a8eccc9ca068ca13ec9e63b912a39ceee",
+        "flows/get_readme.json": "8f9a56197d2919d76d31f8c191da39f1b9df1e75bb2e605475a72e9311111b23",
+        "flows/get_registry_status.json": "a0de75554469495eb57e7fc148565c372bee7c5064e056a5360f0dafc84272e5",
+        "flows/get_version.json": "cd0bf66ed74a718832ff453599367bdf851aed701e0186cd998eb24405ddad8c",
+        "flows/list_dependencies.json": "14aaa20a2c39fe0347fd5994d7e4d8dc96f2731845368ac676e619cac369a624",
+        "flows/list_dependents.json": "e70c6fabb2a689f77d0f05d249e985ad24f1c33f8e17181f7a992d6552665a38",
+        "flows/list_maintainer_packages.json": "5ffb4cc20e23f92609d26d43f0a41d62a8096ebfe27250640f05b6b88f10210a",
+        "flows/list_package_files.json": "62357d4c77d74f9e8a5af15759026ca81c42038ab9d708bb3e03fb3240dc66db",
+        "flows/list_versions.json": "bf2163f490310f56bdf811cf4c162d70f6cd62e5bd053d0841ba6841d0a289c7",
+        "flows/read_package_file.json": "0f2df96641dbf7bc6f319b99e22ef1ea2ac5724fda5fddfff156f0f93de50123",
+        "flows/read_site_resource.json": "42e44fbd7e14cdf3d4a9a16e2d7ea740d208af27ee00fbdef4141df52bfa50c6",
+        "flows/search_packages.json": "892f88032732dae93730d6af173e9a3c3a676791995b5a66586d974b3aea395b",
+        "manifest.json": "7e1e526ee86013861ee972ce8017e427686f5fc6da9116816abc320b281448ac"
+      },
+      "name": "npm",
+      "version": "0.1.1"
+    },
+    {
+      "files": {
+        "adapter.py": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+        "authoring-report.json": "0923340f624834948ec8037d2a9aff406aa8e24763f6518187eacc7c14647103",
+        "flows/download_distribution.json": "2c18c3dc80175746d43bcb9e643915d8ff8aeb818d8259b9e622c0e526ec4cdf",
+        "flows/get_core_metadata.json": "8b8e1389dd30ca8ee884b1123c72e694110628824dd92ab94d8fe35736fe242c",
+        "flows/get_description.json": "7c9a872f98b21d42567f9735da8f2425bfce89afd857d1641b4f798018cbc892",
+        "flows/get_ownership.json": "248ba6706fc09b0ef7bab249fe0610a9815b2e3ffdb7bb08ec909ec089ca04b0",
+        "flows/get_project.json": "f1230f3d9c7c3e41a941207ed3d3f24ba2b3f368ef1fb34ac5e290947f13137a",
+        "flows/get_project_release_feed.json": "1ad5c5981b03eec6ef2f3934c95bf4b7f1ae92f35d93c81ace67cfac9e75c9be",
+        "flows/get_provenance.json": "b518f498b2d95fdf433f001515704612694edf02b53abffb8d719b158488d3de",
+        "flows/get_release.json": "691df573a743a7d6fd209ea0bb99c72831171492e91bb8ed3667e623c6c83034",
+        "flows/get_stats.json": "6497ce58d8063c1cafdae41898894cfa34e9d966431b10e706f4ba7f8b8d3bca",
+        "flows/get_vulnerabilities.json": "75810f4b866657da7af05fadf2d768a5d84d95aa565f870e4910d094b638eb34",
+        "flows/list_all_projects.json": "a73fdbe7dd5c692eab41c09e8e98f9c260adeacec10869f692d47b269f987019",
+        "flows/list_dependencies.json": "2e2fea7d7462d37d1d16487598a6d1f6210af85e474ca56dde450e69f12530b7",
+        "flows/list_files.json": "9a5ee2230c2a5023fe0196c31cdd70e44d90d5382a46afab1c4345b6213ce24e",
+        "flows/list_recent_packages.json": "4df6d887ef174f00d0e1697b8452d386b4f064ea455f8e67e32b264f0105e654",
+        "flows/list_recent_updates.json": "00dc45dfb7ef0066c9902a6cc03acfd077747d5be9104e36e8c43c04d42fc586",
+        "flows/list_releases.json": "861edcd1913ebf999f76343a710cd779f097d8fefa560ad054ebf4f820a4fa32",
+        "flows/list_versions.json": "e66ad72a43d76be60729328e5132ce9deaea00852083fbcd66a90d83169eb0f6",
+        "flows/read_site_resource.json": "c87100566b59934fa38969ba12c5d0ba5bca8cb734160504e58491ca05858e03",
+        "manifest.json": "1ba7377ed34dec86ea8e40116b43c250065ecfa376e5292bad3acd246468bb08"
+      },
+      "name": "pypi",
+      "version": "0.1.0"
+    },
+    {
+      "files": {
+        "adapter.py": "12a409c03fd4573151953bffb5b58286b97b670a1d8f1bcbddcb7303cf0615c5",
+        "evidence.json": "8511ca1aa4f9326ef1ccf0fcb5486c80de98745444daac8a77df0901da449ec3",
+        "evidence/conformance.json": "c969bc7938a9076611f8a7f9698d5682c4704fa5f09eaf0c2e4cdacb06815ec2",
+        "evidence/spotify-web-player-2026-07-21.json": "fab0f61c6a13e7bcee815274c122e3cce3c7a6f2689284aefb216d4d6d63dae5",
+        "manifest.json": "09e62e8e400dd5f98c6cb31d3e861c642b4e2b9bdcd0f52981bc1a71cac69a1a"
+      },
+      "name": "spotify",
+      "version": "0.4.8"
+    },
+    {
+      "files": {
+        "adapter.py": "5d1b268b259f55b4c22e1acbaf181ebed47df706c8fd2ced00c50985c4c20b07",
+        "manifest.json": "f89953a8a68a69e7d3d4baffe3dc47a9633d6c7b127d5ff90dc906b76c3c7a34"
+      },
+      "name": "stackoverflow",
+      "version": "0.8.7"
+    },
+    {
+      "files": {
+        "adapter.py": "b4cedd273cb457500833913107d8932449c6e82e32b6a673f5104b06aef76fc2",
+        "evidence.json": "6cc2e8e863467ff3ca1590fefd5f727bc6465df329fa7d725466636165e9ecab",
+        "evidence/conformance.json": "c5ae80b005ccac2612d8ce3d1aa7f20cf217692d5ece1fe282e2563d02b12f40",
+        "evidence/wikipedia-public-2026-07-21.json": "6d08f768c3319959dc95bab6952189b3e1343c44e8504cfe038d07ba7d693ef7",
+        "manifest.json": "b9486cfa6733280f3499b5b5fb47f9a31e24d8774335c93d41493a10d005803a"
+      },
+      "name": "wikipedia",
+      "version": "0.8.6"
+    }
+  ]
+}

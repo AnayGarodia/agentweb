@@ -1,0 +1,534 @@
+{
+  "browserless_parity": true,
+  "capabilities": {
+    "account_signup_login": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Account creation, login, passkeys, recovery, and two-factor challenges require the user's credentials and human authorization.",
+      "roles": [
+        "account_user",
+        "package_owner",
+        "organization_owner"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_account"
+    },
+    "audit_security": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_registry"
+    },
+    "billing_and_products": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Pro and Teams purchases, invoices, and payment changes are financial human-only boundaries.",
+      "roles": [
+        "account_user",
+        "package_owner",
+        "organization_owner"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_account"
+    },
+    "browse_dependents": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_registry"
+    },
+    "browse_keywords": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_registry"
+    },
+    "browse_maintainer": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_registry"
+    },
+    "browse_package_code": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_registry"
+    },
+    "browse_scopes": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_registry"
+    },
+    "browse_versions": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_registry"
+    },
+    "deprecate_versions": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Deprecating or undeprecating releases changes public install warnings and requires package ownership.",
+      "roles": [
+        "account_user",
+        "package_owner",
+        "organization_owner"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_account"
+    },
+    "download_package": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_registry"
+    },
+    "inspect_collaborators": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_registry"
+    },
+    "inspect_dependencies": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_registry"
+    },
+    "inspect_download_history": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_registry"
+    },
+    "inspect_downloads": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_registry"
+    },
+    "inspect_package": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_registry"
+    },
+    "inspect_provenance": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_registry"
+    },
+    "inspect_version": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_registry"
+    },
+    "manage_access_tokens": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Token creation and revocation expose sensitive credentials and require authenticated human authorization.",
+      "roles": [
+        "account_user",
+        "package_owner",
+        "organization_owner"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_account"
+    },
+    "manage_dist_tags": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Adding or removing distribution tags changes what users install and requires package ownership.",
+      "roles": [
+        "account_user",
+        "package_owner",
+        "organization_owner"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_account"
+    },
+    "manage_organizations": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Organization members, teams, roles, and billing require organization-owner access unavailable to the public matrix.",
+      "roles": [
+        "account_user",
+        "package_owner",
+        "organization_owner"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_account"
+    },
+    "manage_owners": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Changing package owners grants or revokes publication authority and requires privileged account access.",
+      "roles": [
+        "account_user",
+        "package_owner",
+        "organization_owner"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_account"
+    },
+    "manage_package_access": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Package visibility and team access changes require authenticated package or organization administration.",
+      "roles": [
+        "account_user",
+        "package_owner",
+        "organization_owner"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_account"
+    },
+    "manage_profile": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Profile and email changes require an authenticated npm account and may require password or two-factor confirmation.",
+      "roles": [
+        "account_user",
+        "package_owner",
+        "organization_owner"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_account"
+    },
+    "publish_packages": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Publishing changes the public software supply chain and requires package contents, ownership, and narrowly scoped human confirmation.",
+      "roles": [
+        "account_user",
+        "package_owner",
+        "organization_owner"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_account"
+    },
+    "read_documentation": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_registry"
+    },
+    "read_package_code": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_registry"
+    },
+    "read_policies": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_registry"
+    },
+    "read_readme": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_registry"
+    },
+    "registry_status": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_registry"
+    },
+    "search_packages": {
+      "boundary_evidence": 1,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_registry"
+    },
+    "stage_packages": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Staged publication requires an authenticated publisher account and a controlled disposable test package.",
+      "roles": [
+        "account_user",
+        "package_owner",
+        "organization_owner"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_account"
+    },
+    "star_packages": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Starring and unstarring packages changes personalized account state and requires a dedicated signed-in mapping account.",
+      "roles": [
+        "account_user",
+        "package_owner",
+        "organization_owner"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_account"
+    },
+    "support_and_malware_reports": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Submitting support or malware reports sends user-provided information and requires case-specific human approval.",
+      "roles": [
+        "account_user",
+        "package_owner",
+        "organization_owner"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_account"
+    },
+    "unpublish_packages": {
+      "boundary_evidence": 1,
+      "in_matrix": false,
+      "reason": "Unpublishing is destructive, time-limited, and requires package ownership plus explicit human confirmation.",
+      "roles": [
+        "account_user",
+        "package_owner",
+        "organization_owner"
+      ],
+      "state": "blocked",
+      "surface": "authenticated_account"
+    }
+  },
+  "catalog_complete": true,
+  "excluded_operations": {},
+  "exhaustive": true,
+  "generated_at_unix": 1784757911.0,
+  "matrix": {
+    "locales": [
+      "en-US"
+    ],
+    "roles": [
+      "public"
+    ],
+    "surfaces": [
+      "public_registry",
+      "public_website",
+      "downloads",
+      "package_contents",
+      "documentation",
+      "service_health"
+    ]
+  },
+  "matrix_verified": true,
+  "operations": {
+    "audit_versions": {
+      "capabilities": [
+        "audit_security"
+      ],
+      "contract_hash": "7a70df280a21da7f74654af7b2603be6cf8d7c2c0cad19c887dccc97fb281c66",
+      "verification_status": "passed"
+    },
+    "download_tarball": {
+      "capabilities": [
+        "download_package"
+      ],
+      "contract_hash": "4678ad381d522e3b6591889183611783189f065ee0f32fe49779cf85e26a99ae",
+      "verification_status": "passed"
+    },
+    "get_download_count": {
+      "capabilities": [
+        "inspect_downloads"
+      ],
+      "contract_hash": "ce087b0ec64ac1e8bd3cf022189ee50e7a9dfb2e8af87d6a08167b90eda6d030",
+      "verification_status": "passed"
+    },
+    "get_download_history": {
+      "capabilities": [
+        "inspect_download_history"
+      ],
+      "contract_hash": "b17430474897ae55448596554dfbc8ba1345292517be9bf651b12465a6bd32fe",
+      "verification_status": "passed"
+    },
+    "get_package": {
+      "capabilities": [
+        "inspect_package",
+        "inspect_collaborators"
+      ],
+      "contract_hash": "d375287258e32751d506dfd6e49ce3079f0ad4d4d5987871bc7d2b7a5bc9931a",
+      "verification_status": "passed"
+    },
+    "get_provenance": {
+      "capabilities": [
+        "inspect_provenance"
+      ],
+      "contract_hash": "bc49911083201643d1f66b4c405b651aaef187dcfe0bb2ef41add8eb49b6f3fa",
+      "verification_status": "passed"
+    },
+    "get_readme": {
+      "capabilities": [
+        "read_readme"
+      ],
+      "contract_hash": "3cc8bfff867eb312aa0610aa5c38c36fb7e1bc06669c07f12d911e7f557d4d34",
+      "verification_status": "passed"
+    },
+    "get_registry_status": {
+      "capabilities": [
+        "registry_status"
+      ],
+      "contract_hash": "5f92dcda2ff039184d4351c0c7b8cd8089ed06a91adc0e11dce5f78c3bc91a39",
+      "verification_status": "passed"
+    },
+    "get_version": {
+      "capabilities": [
+        "inspect_version"
+      ],
+      "contract_hash": "eb11183f44ed4ce941f0ac03d1da266db15b21b748bf93f5899238800d60c895",
+      "verification_status": "passed"
+    },
+    "list_dependencies": {
+      "capabilities": [
+        "inspect_dependencies"
+      ],
+      "contract_hash": "e51a0c690eee50eae358b76ee2b72661ef2d8a91f927ad2739b63be74644cf7f",
+      "verification_status": "passed"
+    },
+    "list_dependents": {
+      "capabilities": [
+        "browse_dependents"
+      ],
+      "contract_hash": "483aa5c4962bb3c61c080dbb63255bfb9800ec2f55c1dc673abf666b1c4e984f",
+      "verification_status": "passed"
+    },
+    "list_maintainer_packages": {
+      "capabilities": [
+        "browse_maintainer"
+      ],
+      "contract_hash": "4900f26a0efe7563a3b44dce106d909dab2dacd75bd68a1132cad3cdce6d0319",
+      "verification_status": "passed"
+    },
+    "list_package_files": {
+      "capabilities": [
+        "browse_package_code"
+      ],
+      "contract_hash": "74f8e258057571e8f054e851caa53d1f1fd14a217979e428f04e5e46a8c98e05",
+      "verification_status": "passed"
+    },
+    "list_versions": {
+      "capabilities": [
+        "browse_versions"
+      ],
+      "contract_hash": "066a71f1c1f8b590019ff052b945130882503aa82520b28f4cf9f4b4ec6a0a71",
+      "verification_status": "passed"
+    },
+    "read_package_file": {
+      "capabilities": [
+        "read_package_code"
+      ],
+      "contract_hash": "6c8e1abf3b47afe24912001a1e4f4c9cf7ef25dff98d8a62a9ecc31a24ae9850",
+      "verification_status": "passed"
+    },
+    "read_site_resource": {
+      "capabilities": [
+        "read_documentation",
+        "read_policies"
+      ],
+      "contract_hash": "898c49fb0ede16d688d4a60e09759d582df3e8ebd394f1954f0a5f05ba3d47f1",
+      "verification_status": "passed"
+    },
+    "search_packages": {
+      "capabilities": [
+        "search_packages",
+        "browse_scopes",
+        "browse_keywords"
+      ],
+      "contract_hash": "e6787d95c4a8d03c312e92c824f6ed755f4e4c57aff788e2fa1d5b20d0d5438c",
+      "verification_status": "passed"
+    }
+  },
+  "project_hash": "9cc660e88beedc06aa12f69551bde74f84369df6d866929fed288bb05d021c03",
+  "publication_mode": "reviewed",
+  "schema_version": 1,
+  "tool_quality_verified": true,
+  "uncovered_verified_capabilities": []
+}
