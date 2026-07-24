@@ -1,5 +1,5 @@
 {
-  "captured_at_unix": 1784878849.9293077,
+  "captured_at_unix": 1784929541.546881,
   "kind": "agentweb_flow_capsule",
   "observed": {
     "final_response_shape": {},
@@ -10,12 +10,12 @@
     "source": "reviewed_mapping_specification",
     "steps": [
       {
-        "name": "quote",
+        "name": "dividends",
         "status": 200
       }
     ]
   },
-  "operation": "quote",
+  "operation": "dividends",
   "recipe": {
     "dependencies": [],
     "human_inputs": [],
@@ -30,12 +30,10 @@
           "Referer": "https://www.bseindia.com/"
         },
         "method": "GET",
-        "name": "quote",
-        "path": "https://api.bseindia.com/BseIndiaAPI/api/getScripHeaderData/w",
+        "name": "dividends",
+        "path": "https://api.bseindia.com/BseIndiaAPI/api/CorporateAction/w",
         "query": {
-          "Debtflag": "",
-          "scripcode": "{scrip_code}",
-          "seriesid": ""
+          "scripcode": "{scrip_code}"
         }
       }
     ]
@@ -50,7 +48,7 @@
   "verification": {
     "assertions": [
       {
-        "name": "returns the company name for the scrip",
+        "name": "returns dividends",
         "passed": true,
         "type": "non_empty"
       },
@@ -64,9 +62,9 @@
     "cases": [
       "success"
     ],
-    "contract_hash": "49d23b6e872f187ffbb6321622f612da6453f0cdf3194c306ce5f69ae0a230ae",
+    "contract_hash": "24d45722122780234c3730d40f3a0745eba3339cb183edaef6d578fff1bc8ed4",
     "evidence_version": 2,
-    "recipe_hash": "cb8c904b807c0cc1d060fec369c64828a501f81a745a75d9783ad19288d532be",
+    "recipe_hash": "635b713d9055274355232f54115df9243287c1db61869aafb718cd6c1770f58a",
     "review_required": [],
     "reviewed": true,
     "runner": {
@@ -79,6 +77,6 @@
       "version": 1
     },
     "status": "passed",
-    "verified_at_unix": 1784878850.3102508
+    "verified_at_unix": 1784929553.5996861
   }
 }
