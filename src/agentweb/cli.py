@@ -350,15 +350,18 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help=(
             "Reuse your everyday Chrome profile's sign-in state so the login "
-            "window opens already authenticated (only this site's cookies are "
-            "saved). Also settable via AGENTWEB_USE_DEFAULT_BROWSER=1."
+            "window opens already authenticated (default; only this site's "
+            "cookies are saved)."
         ),
     )
     connect_default.add_argument(
         "--isolated",
         dest="use_default_browser",
         action="store_false",
-        help="Force a blank, isolated login window (ignore your default browser).",
+        help=(
+            "Force a blank, isolated login window instead of reusing your "
+            "default browser (also AGENTWEB_USE_DEFAULT_BROWSER=0)."
+        ),
     )
 
     agent = subparsers.add_parser("install-agent", help="Connect AgentWeb to an agent")

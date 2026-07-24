@@ -16,9 +16,13 @@ from agentweb.connector import (
 
 def test_use_default_browser_enabled_precedence(monkeypatch) -> None:
     monkeypatch.delenv("AGENTWEB_USE_DEFAULT_BROWSER", raising=False)
-    assert use_default_browser_enabled(None) is False
+    # Enabled by default now.
+    assert use_default_browser_enabled(None) is True
     assert use_default_browser_enabled(True) is True
     assert use_default_browser_enabled(False) is False
+    # The environment can force it off, or explicitly on.
+    monkeypatch.setenv("AGENTWEB_USE_DEFAULT_BROWSER", "0")
+    assert use_default_browser_enabled(None) is False
     monkeypatch.setenv("AGENTWEB_USE_DEFAULT_BROWSER", "1")
     assert use_default_browser_enabled(None) is True
     # An explicit flag always overrides the environment toggle.

@@ -142,14 +142,18 @@ def default_chrome_user_data_dir() -> Path | None:
 def use_default_browser_enabled(explicit: bool | None = None) -> bool:
     """Whether login should reuse the user's everyday browser session.
 
-    Opt-in: ``explicit`` (the ``--use-default-browser`` flag) wins when set,
-    otherwise the ``AGENTWEB_USE_DEFAULT_BROWSER`` environment toggle applies.
-    Defaults to isolated (blank-profile) login when neither is set.
+    Enabled by default so the login window opens already signed in. ``explicit``
+    (``--use-default-browser`` / ``--isolated``) wins when set; otherwise the
+    ``AGENTWEB_USE_DEFAULT_BROWSER`` environment toggle can force it off
+    (``0``/``false``/``no``/``off``) or on. Seeding degrades gracefully to an
+    isolated window when no default Chrome profile is found.
     """
     if explicit is not None:
         return explicit
     raw = os.environ.get("AGENTWEB_USE_DEFAULT_BROWSER", "").strip().lower()
-    return raw in {"1", "true", "yes", "on"}
+    if raw in {"0", "false", "no", "off"}:
+        return False
+    return True
 
 
 # Minimal set of files that carry a signed-in Chrome session. Copying only

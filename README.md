@@ -301,19 +301,14 @@ AgentWeb returns `authentication_required`. Then the user runs:
 agentweb connect example.com
 ```
 
-By default this opens a fresh, isolated Chrome window, so you sign in from
-scratch. To open it **already signed in** using the sessions in your everyday
-browser, add `--use-default-browser` (or set `AGENTWEB_USE_DEFAULT_BROWSER=1`):
-
-```bash
-agentweb connect example.com --use-default-browser
-```
-
-This copies only the signed-in session files (cookies, login data, `Local State`)
-from your default Chrome profile into that site's login profile — never your
-history or extensions — and only the target site's cookies are kept, so profiles
-still never share cookies across sites. It seeds once per site and never
-overwrites a captured session; use `--isolated` to force a blank window.
+By default this opens **already signed in**, reusing the sessions in your everyday
+Chrome, so you rarely have to log in from scratch. It copies only the signed-in
+session files (cookies, login data, `Local State`) from your default Chrome
+profile into that site's login profile — never your history or extensions — and
+only the target site's cookies are kept, so profiles still never share cookies
+across sites. It seeds once per site, never overwrites a captured session, and
+falls back to a blank window when no default Chrome profile is found. Pass
+`--isolated` (or `AGENTWEB_USE_DEFAULT_BROWSER=0`) to force a blank window.
 
 Sessions stay on that user's device under `~/.agentweb`. They are not bundled into
 an adapter or shared with other users. Read [security and trust](docs/SECURITY.md)
