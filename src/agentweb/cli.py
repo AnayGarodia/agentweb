@@ -352,7 +352,12 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Remove installed adapters absent from this registry (off by default)",
     )
-    subparsers.add_parser("sites", help="List websites available to AgentWeb")
+    sites = subparsers.add_parser("sites", help="List websites available to AgentWeb")
+    sites.add_argument(
+        "--full",
+        action="store_true",
+        help="Include allowed domains, aliases, and the full command list per site",
+    )
     subparsers.add_parser("profiles", help="List local named account profiles")
     capabilities = subparsers.add_parser(
         "capabilities",
@@ -1187,7 +1192,7 @@ def main(argv: list[str] | None = None) -> int:
                 prune=args.prune,
             )
         elif args.command == "sites":
-            result = runtime.sites()
+            result = runtime.sites(full=args.full)
         elif args.command == "profiles":
             result = runtime.profiles()
         elif args.command == "capabilities":

@@ -348,22 +348,34 @@ class Runtime:
                 config["last_sync_error"] = str(exc)
                 write_json(self.paths.registry_config, config)
 
-    def sites(self) -> list[dict[str, Any]]:
+    def sites(self, full: bool = False) -> list[dict[str, Any]]:
+        """List installed sites; compact rows by default, full manifests with full=True."""
         self.ensure_registry()
         result = []
         for name, entry in sorted(self.registry.installed().items()):
             manifest = self.describe(name)
-            result.append(
-                {
-                    "name": name,
-                    "domain": canonical_domain(manifest),
-                    "domains": manifest.get("allowed_domains") or [],
-                    "aliases": sorted(set(manifest.get("aliases") or []) | {name}),
-                    "version": entry["version"],
-                    "description": manifest.get("description"),
-                    "commands": sorted(manifest.get("commands", {})),
-                }
-            )
+            if full:
+                result.append(
+                    {
+                        "name": name,
+                        "domain": canonical_domain(manifest),
+                        "domains": manifest.get("allowed_domains") or [],
+                        "aliases": sorted(set(manifest.get("aliases") or []) | {name}),
+                        "version": entry["version"],
+                        "description": manifest.get("description"),
+                        "commands": sorted(manifest.get("commands", {})),
+                    }
+                )
+            else:
+                result.append(
+                    {
+                        "name": name,
+                        "domain": canonical_domain(manifest),
+                        "version": entry["version"],
+                        "operations": len(manifest.get("commands", {})),
+                        "description": manifest.get("description"),
+                    }
+                )
         return result
 
     def resolve(self, target: str) -> ResolvedTarget:

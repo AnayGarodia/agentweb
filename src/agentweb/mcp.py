@@ -17,8 +17,16 @@ from .sdk import AgentWebError, AuthenticationRequired, ConfigurationRequired
 TOOLS: list[dict[str, Any]] = [
     {
         "name": "sites_list",
-        "description": "List website adapters and their canonical domains currently available through AgentWeb.",
-        "inputSchema": {"type": "object", "properties": {}},
+        "description": "List website adapters and their canonical domains currently available through AgentWeb. Returns compact rows; pass full=true for domains, aliases, and command names.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "full": {
+                    "type": "boolean",
+                    "description": "Include allowed domains, aliases, and the full command list per site",
+                }
+            },
+        },
     },
     {
         "name": "site_describe",
@@ -168,7 +176,7 @@ def dispatch(
         try:
             value: Any
             if name == "sites_list":
-                value = runtime.sites()
+                value = runtime.sites(full=bool(arguments.pop("full", False)))
             elif name == "site_describe":
                 site = arguments.pop("site")
                 value = runtime.discover(site, **arguments)
