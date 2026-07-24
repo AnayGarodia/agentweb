@@ -168,6 +168,7 @@ an operation that needs it (`agentweb connect DOMAIN`).
 | --- | --- | --- |
 | npm | `npmjs.com` | Search packages, versions, downloads, dependencies, provenance, and files |
 | arXiv | `arxiv.org` | Search papers, metadata, authors, categories, BibTeX, PDFs, and source |
+| BSE | `bseindia.com` | Corporate announcements and live stock quotes for companies listed on the Bombay Stock Exchange |
 | Wikipedia | `wikipedia.org` | Search, pages, links, categories, revisions, images, and pageviews |
 | PyPI | `pypi.org` | Search projects and inspect releases, files, dependencies, metadata, stats, and vulnerabilities |
 | GitHub | `github.com` | Repositories, files, commits, branches, releases, issues, pull requests, users, and authenticated API requests |

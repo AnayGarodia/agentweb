@@ -19,6 +19,7 @@ def test_only_reference_adapters_are_bundled() -> None:
     assert {path.name for path in sites.iterdir() if path.is_dir()} == {
         "amazon",
         "arxiv",
+        "bse",
         "github",
         "gst",
         "hn",

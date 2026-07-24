@@ -1,0 +1,764 @@
+{
+  "aliases": [
+    "bse"
+  ],
+  "allowed_domains": [
+    "api.bseindia.com",
+    "bseindia.com",
+    "www.bseindia.com"
+  ],
+  "auth": {
+    "interaction": "not_required",
+    "strategy": "none"
+  },
+  "authoring": {
+    "browserless_parity": true,
+    "catalog_complete": true,
+    "exhaustive": true,
+    "matrix_verified": true,
+    "tool_quality_verified": true
+  },
+  "base_url": "https://www.bseindia.com",
+  "canonical_domain": "bseindia.com",
+  "commands": {
+    "announcements": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "disclosures",
+      "description": "List a company's regulatory corporate announcements filed with BSE, newest first, with attachment metadata.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "from_date": "",
+            "page": 1,
+            "scrip_code": "500325",
+            "to_date": ""
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "from_date": {
+            "default": "",
+            "description": "Earliest announcement date as YYYYMMDD; empty means no lower bound.",
+            "maxLength": 8,
+            "pattern": "^([0-9]{8})?$",
+            "type": "string"
+          },
+          "page": {
+            "default": 1,
+            "description": "One-based results page from BSE's own pagination.",
+            "maximum": 200,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "scrip_code": {
+            "description": "Exact numeric BSE scrip code such as 500325 for Reliance Industries.",
+            "maxLength": 8,
+            "minLength": 1,
+            "pattern": "^[0-9]{1,8}$",
+            "type": "string"
+          },
+          "to_date": {
+            "default": "",
+            "description": "Latest announcement date as YYYYMMDD; empty means no upper bound.",
+            "maxLength": 8,
+            "pattern": "^([0-9]{8})?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scrip_code"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Announcements, newest first, as BSE returns them.",
+            "items": {
+              "properties": {
+                "announced_at": {
+                  "description": "Announcement timestamp as BSE reports it.",
+                  "type": "string"
+                },
+                "attachment_pdf": {
+                  "description": "Attachment file name under bseindia.com's AttachLive directory, when a PDF exists.",
+                  "type": "string"
+                },
+                "attachment_size_bytes": {
+                  "description": "Attachment size in bytes when BSE reports it.",
+                  "type": "number"
+                },
+                "category": {
+                  "description": "BSE announcement category such as AGM/EGM or Result.",
+                  "type": "string"
+                },
+                "company": {
+                  "description": "Filer's long company name.",
+                  "type": "string"
+                },
+                "company_page_url": {
+                  "description": "The company's public bseindia.com page.",
+                  "type": "string"
+                },
+                "headline": {
+                  "description": "BSE headline text, when present.",
+                  "type": "string"
+                },
+                "news_id": {
+                  "description": "BSE's unique announcement identifier.",
+                  "type": "string"
+                },
+                "scrip_code": {
+                  "description": "Numeric BSE scrip code of the filer.",
+                  "type": "integer"
+                },
+                "subcategory": {
+                  "description": "BSE announcement subcategory, when present.",
+                  "type": "string"
+                },
+                "subject": {
+                  "description": "Announcement subject line.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Increase page until BSE returns an empty Table.",
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this for live share prices or company identity; use quote for those.",
+      "when_to_use": "Use this when an agent needs a listed company's recent BSE filings such as board meeting outcomes, AGM notices, or regulation disclosures."
+    },
+    "quote": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "market_data",
+      "description": "Read a listed company's identity, live price, and market header data from BSE by scrip code.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "scrip_code": "500325"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "scrip_code": {
+            "description": "Exact numeric BSE scrip code such as 500325 for Reliance Industries.",
+            "maxLength": 8,
+            "minLength": 1,
+            "pattern": "^[0-9]{1,8}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scrip_code"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "change": {
+            "description": "Absolute price change for the day.",
+            "type": "string"
+          },
+          "change_percent": {
+            "description": "Percentage price change for the day.",
+            "type": "string"
+          },
+          "company": {
+            "description": "Full listed company name.",
+            "type": "string"
+          },
+          "price": {
+            "description": "Last traded price in rupees as BSE reports it.",
+            "type": "string"
+          },
+          "short_name": {
+            "description": "BSE short name for the company.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "company",
+          "price"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Single record per scrip code.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this for regulatory filings; use announcements for those.",
+      "when_to_use": "Use this when an agent needs a company's current BSE price, change, group, or index membership from its scrip code."
+    }
+  },
+  "cookie_domain": ".www.bseindia.com",
+  "coverage": {
+    "constraints": [
+      "Site permissions, rate limits, and anti-automation rules still apply"
+    ],
+    "human_boundaries": [
+      "Broker, member, and listing-centre services require BSE member credentials that this mapping does not hold."
+    ],
+    "not_mapped": [],
+    "protocol_fallback": null,
+    "typed_fast_paths": [
+      "announcements",
+      "quote"
+    ],
+    "website_parity": "Mapping mode can inspect the remaining website while direct request recipes are compiled. Browser commands are never counted as runtime parity."
+  },
+  "description": "Complete agent interface for www.bseindia.com",
+  "entrypoint": "adapter.py",
+  "evidence_capsules": {},
+  "flow_capsules": {
+    "announcements": {
+      "contract": "announcements",
+      "path": "flows/announcements.json"
+    },
+    "quote": {
+      "contract": "quote",
+      "path": "flows/quote.json"
+    }
+  },
+  "name": "bse",
+  "operation_contracts": {
+    "announcements": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "announced_at": {
+              "path": "$.NEWS_DT"
+            },
+            "attachment_pdf": {
+              "path": "$.ATTACHMENTNAME"
+            },
+            "attachment_size_bytes": {
+              "path": "$.Fld_Attachsize"
+            },
+            "category": {
+              "path": "$.CATEGORYNAME"
+            },
+            "company": {
+              "path": "$.SLONGNAME"
+            },
+            "company_page_url": {
+              "path": "$.NSURL"
+            },
+            "headline": {
+              "path": "$.HEADLINE"
+            },
+            "news_id": {
+              "path": "$.NEWSID"
+            },
+            "scrip_code": {
+              "path": "$.SCRIP_CD"
+            },
+            "subcategory": {
+              "path": "$.SUBCATNAME"
+            },
+            "subject": {
+              "path": "$.NEWSSUB"
+            }
+          },
+          "source": "$.Table"
+        },
+        "recipe_hash": "802d23a233c454ce7c1e200a3039f144b273536a611b3318571f064656456732",
+        "type": "generated_recipe",
+        "variables": {
+          "from_date": "from_date",
+          "page": "page",
+          "scrip_code": "scrip_code",
+          "to_date": "to_date"
+        }
+      },
+      "capabilities": [
+        "public_announcements"
+      ],
+      "category": "disclosures",
+      "contract_hash": "efcb731c4fa04008de3038d6d16e9c901daadcc82af74f4b4a3d897c29163c98",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "from_date": "",
+            "page": 1,
+            "scrip_code": "500325",
+            "to_date": ""
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "from_date": {
+            "default": "",
+            "description": "Earliest announcement date as YYYYMMDD; empty means no lower bound.",
+            "maxLength": 8,
+            "pattern": "^([0-9]{8})?$",
+            "type": "string"
+          },
+          "page": {
+            "default": 1,
+            "description": "One-based results page from BSE's own pagination.",
+            "maximum": 200,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "scrip_code": {
+            "description": "Exact numeric BSE scrip code such as 500325 for Reliance Industries.",
+            "maxLength": 8,
+            "minLength": 1,
+            "pattern": "^[0-9]{1,8}$",
+            "type": "string"
+          },
+          "to_date": {
+            "default": "",
+            "description": "Latest announcement date as YYYYMMDD; empty means no upper bound.",
+            "maxLength": 8,
+            "pattern": "^([0-9]{8})?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scrip_code"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "announcements",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Announcements, newest first, as BSE returns them.",
+            "items": {
+              "properties": {
+                "announced_at": {
+                  "description": "Announcement timestamp as BSE reports it.",
+                  "type": "string"
+                },
+                "attachment_pdf": {
+                  "description": "Attachment file name under bseindia.com's AttachLive directory, when a PDF exists.",
+                  "type": "string"
+                },
+                "attachment_size_bytes": {
+                  "description": "Attachment size in bytes when BSE reports it.",
+                  "type": "number"
+                },
+                "category": {
+                  "description": "BSE announcement category such as AGM/EGM or Result.",
+                  "type": "string"
+                },
+                "company": {
+                  "description": "Filer's long company name.",
+                  "type": "string"
+                },
+                "company_page_url": {
+                  "description": "The company's public bseindia.com page.",
+                  "type": "string"
+                },
+                "headline": {
+                  "description": "BSE headline text, when present.",
+                  "type": "string"
+                },
+                "news_id": {
+                  "description": "BSE's unique announcement identifier.",
+                  "type": "string"
+                },
+                "scrip_code": {
+                  "description": "Numeric BSE scrip code of the filer.",
+                  "type": "integer"
+                },
+                "subcategory": {
+                  "description": "BSE announcement subcategory, when present.",
+                  "type": "string"
+                },
+                "subject": {
+                  "description": "Announcement subject line.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Increase page until BSE returns an empty Table.",
+        "supported": true
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784878857.8296466,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "List a company's regulatory corporate announcements filed with BSE, newest first, with attachment metadata.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns announcements for the requested company",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "efcb731c4fa04008de3038d6d16e9c901daadcc82af74f4b4a3d897c29163c98",
+            "input_names": [
+              "from_date",
+              "page",
+              "scrip_code",
+              "to_date"
+            ],
+            "passed": true,
+            "recipe_hash": "802d23a233c454ce7c1e200a3039f144b273536a611b3318571f064656456732",
+            "verified_at_unix": 1784878857.8235745
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns announcements for the requested company",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for live share prices or company identity; use quote for those.",
+      "when_to_use": "Use this when an agent needs a listed company's recent BSE filings such as board meeting outcomes, AGM notices, or regulation disclosures."
+    },
+    "quote": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "fields": {
+            "change": {
+              "path": "$.CurrRate.Chg"
+            },
+            "change_percent": {
+              "path": "$.CurrRate.PcChg"
+            },
+            "company": {
+              "path": "$.Cmpname.FullN"
+            },
+            "price": {
+              "path": "$.CurrRate.LTP"
+            },
+            "short_name": {
+              "path": "$.Cmpname.ShortN"
+            }
+          },
+          "source": "$"
+        },
+        "recipe_hash": "cb8c904b807c0cc1d060fec369c64828a501f81a745a75d9783ad19288d532be",
+        "type": "generated_recipe",
+        "variables": {
+          "scrip_code": "scrip_code"
+        }
+      },
+      "capabilities": [
+        "public_quote"
+      ],
+      "category": "market_data",
+      "contract_hash": "49d23b6e872f187ffbb6321622f612da6453f0cdf3194c306ce5f69ae0a230ae",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "scrip_code": "500325"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "scrip_code": {
+            "description": "Exact numeric BSE scrip code such as 500325 for Reliance Industries.",
+            "maxLength": 8,
+            "minLength": 1,
+            "pattern": "^[0-9]{1,8}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scrip_code"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "quote",
+      "output_schema": {
+        "properties": {
+          "change": {
+            "description": "Absolute price change for the day.",
+            "type": "string"
+          },
+          "change_percent": {
+            "description": "Percentage price change for the day.",
+            "type": "string"
+          },
+          "company": {
+            "description": "Full listed company name.",
+            "type": "string"
+          },
+          "price": {
+            "description": "Last traded price in rupees as BSE reports it.",
+            "type": "string"
+          },
+          "short_name": {
+            "description": "BSE short name for the company.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "company",
+          "price"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Single record per scrip code.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784878857.8331647,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Read a listed company's identity, live price, and market header data from BSE by scrip code.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns the company name for the scrip",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "49d23b6e872f187ffbb6321622f612da6453f0cdf3194c306ce5f69ae0a230ae",
+            "input_names": [
+              "scrip_code"
+            ],
+            "passed": true,
+            "recipe_hash": "cb8c904b807c0cc1d060fec369c64828a501f81a745a75d9783ad19288d532be",
+            "verified_at_unix": 1784878850.3102508
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns the company name for the scrip",
+            "path": "$.data.company",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for regulatory filings; use announcements for those.",
+      "when_to_use": "Use this when an agent needs a company's current BSE price, change, group, or index membership from its scrip code."
+    }
+  },
+  "runtime": {
+    "auth_interaction": "not_yet_mapped",
+    "browserless_replay": true
+  },
+  "url_routes": [],
+  "version": "0.1.0"
+}
