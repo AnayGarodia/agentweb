@@ -347,11 +347,7 @@
             "items": {
               "properties": {
                 "high": {
-                  "description": "Day high; null outside sessions.",
-                  "type": [
-                    "number",
-                    "null"
-                  ]
+                  "description": "Day high; null outside sessions."
                 },
                 "index": {
                   "description": "Index name, such as NIFTY 50.",
@@ -362,47 +358,27 @@
                   "type": "number"
                 },
                 "low": {
-                  "description": "Day low; null outside sessions.",
-                  "type": [
-                    "number",
-                    "null"
-                  ]
+                  "description": "Day low; null outside sessions."
                 },
                 "open": {
-                  "description": "Opening value today; null outside sessions.",
-                  "type": [
-                    "number",
-                    "null"
-                  ]
+                  "description": "Opening value today; null outside sessions."
                 },
                 "percent_change": {
                   "description": "Percent change versus the previous close.",
                   "type": "number"
                 },
                 "previous_close": {
-                  "description": "Previous session close.",
-                  "type": [
-                    "number",
-                    "null"
-                  ]
+                  "description": "Previous session close."
                 },
                 "variation": {
                   "description": "Point change versus the previous close.",
                   "type": "number"
                 },
                 "year_high": {
-                  "description": "52-week high of the index.",
-                  "type": [
-                    "number",
-                    "null"
-                  ]
+                  "description": "52-week high of the index."
                 },
                 "year_low": {
-                  "description": "52-week low of the index.",
-                  "type": [
-                    "number",
-                    "null"
-                  ]
+                  "description": "52-week low of the index."
                 }
               },
               "type": "object"
@@ -748,7 +724,7 @@
         "truncation": "Declared result bounds and pagination are reported explicitly."
       },
       "reviewed": true,
-      "reviewed_at_unix": 1784930080.8441293,
+      "reviewed_at_unix": 1784930439.470491,
       "risk": {
         "confirmation": "never",
         "idempotent": true,
@@ -781,7 +757,7 @@
             ],
             "passed": true,
             "recipe_hash": "9ab9c4b42ffd0f415c4f7c69f55988e8267a59ff9ac53183ca2698d377b6de60",
-            "verified_at_unix": 1784930079.8912783
+            "verified_at_unix": 1784930438.5206904
           }
         ],
         "status": "passed"
@@ -1017,7 +993,7 @@
         "truncation": "Declared result bounds and pagination are reported explicitly."
       },
       "reviewed": true,
-      "reviewed_at_unix": 1784930080.8487241,
+      "reviewed_at_unix": 1784930439.476531,
       "risk": {
         "confirmation": "never",
         "idempotent": true,
@@ -1051,7 +1027,7 @@
             ],
             "passed": true,
             "recipe_hash": "1eff5b36ba9a5e0840f9b8f0b0fa0fe6417d7e8b15e8fc642d3194fe97ea2e1c",
-            "verified_at_unix": 1784930080.226091
+            "verified_at_unix": 1784930438.8596487
           }
         ],
         "status": "passed"
@@ -1129,7 +1105,7 @@
         "indices"
       ],
       "category": "monitoring",
-      "contract_hash": "7b060102ec02dd7e4882a625c31b935eff7dcce52f1e5ff96c8b77694a2c4927",
+      "contract_hash": "d526d35bd529fbeefbaa4237e5c1115dcd033924719a310ed65ce793fc67533b",
       "errors": [
         {
           "code": "invalid_input",
@@ -1176,11 +1152,7 @@
             "items": {
               "properties": {
                 "high": {
-                  "description": "Day high; null outside sessions.",
-                  "type": [
-                    "number",
-                    "null"
-                  ]
+                  "description": "Day high; null outside sessions."
                 },
                 "index": {
                   "description": "Index name, such as NIFTY 50.",
@@ -1191,47 +1163,27 @@
                   "type": "number"
                 },
                 "low": {
-                  "description": "Day low; null outside sessions.",
-                  "type": [
-                    "number",
-                    "null"
-                  ]
+                  "description": "Day low; null outside sessions."
                 },
                 "open": {
-                  "description": "Opening value today; null outside sessions.",
-                  "type": [
-                    "number",
-                    "null"
-                  ]
+                  "description": "Opening value today; null outside sessions."
                 },
                 "percent_change": {
                   "description": "Percent change versus the previous close.",
                   "type": "number"
                 },
                 "previous_close": {
-                  "description": "Previous session close.",
-                  "type": [
-                    "number",
-                    "null"
-                  ]
+                  "description": "Previous session close."
                 },
                 "variation": {
                   "description": "Point change versus the previous close.",
                   "type": "number"
                 },
                 "year_high": {
-                  "description": "52-week high of the index.",
-                  "type": [
-                    "number",
-                    "null"
-                  ]
+                  "description": "52-week high of the index."
                 },
                 "year_low": {
-                  "description": "52-week low of the index.",
-                  "type": [
-                    "number",
-                    "null"
-                  ]
+                  "description": "52-week low of the index."
                 }
               },
               "type": "object"
@@ -1254,7 +1206,7 @@
         "truncation": "Declared result bounds and pagination are reported explicitly."
       },
       "reviewed": true,
-      "reviewed_at_unix": 1784930080.8585987,
+      "reviewed_at_unix": 1784930439.480479,
       "risk": {
         "confirmation": "never",
         "idempotent": true,
@@ -1281,11 +1233,11 @@
             ],
             "case": "success",
             "cleanup": null,
-            "contract_hash": "7b060102ec02dd7e4882a625c31b935eff7dcce52f1e5ff96c8b77694a2c4927",
+            "contract_hash": "d526d35bd529fbeefbaa4237e5c1115dcd033924719a310ed65ce793fc67533b",
             "input_names": [],
             "passed": true,
             "recipe_hash": "fa96fc647da8694c16f28b10e54d8ac7f3bdc3174e599d94cf90469c8cfb4b07",
-            "verified_at_unix": 1784930080.4930305
+            "verified_at_unix": 1784930439.143908
           }
         ],
         "status": "passed"
@@ -1471,7 +1423,7 @@
         "truncation": "Declared result bounds and pagination are reported explicitly."
       },
       "reviewed": true,
-      "reviewed_at_unix": 1784930080.867092,
+      "reviewed_at_unix": 1784930439.4844496,
       "risk": {
         "confirmation": "never",
         "idempotent": true,
@@ -1505,7 +1457,7 @@
             ],
             "passed": true,
             "recipe_hash": "2bbfbdc49dcf7a931618f42f462a81dbcf5c5759ee646a4b6147fda3547e2a10",
-            "verified_at_unix": 1784930080.8350701
+            "verified_at_unix": 1784930439.466458
           }
         ],
         "status": "passed"

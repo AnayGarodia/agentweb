@@ -1,5 +1,5 @@
 {
-  "captured_at_unix": 1784930047.0173512,
+  "captured_at_unix": 1784930437.1569731,
   "kind": "agentweb_flow_capsule",
   "observed": {
     "final_response_shape": {},
@@ -58,7 +58,7 @@
     "cases": [
       "success"
     ],
-    "contract_hash": "7b060102ec02dd7e4882a625c31b935eff7dcce52f1e5ff96c8b77694a2c4927",
+    "contract_hash": "d526d35bd529fbeefbaa4237e5c1115dcd033924719a310ed65ce793fc67533b",
     "evidence_version": 2,
     "recipe_hash": "fa96fc647da8694c16f28b10e54d8ac7f3bdc3174e599d94cf90469c8cfb4b07",
     "review_required": [],
@@ -73,6 +73,6 @@
       "version": 1
     },
     "status": "passed",
-    "verified_at_unix": 1784930080.4930305
+    "verified_at_unix": 1784930439.143908
   }
 }

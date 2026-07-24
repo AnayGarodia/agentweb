@@ -55,7 +55,7 @@
   "catalog_complete": true,
   "excluded_operations": {},
   "exhaustive": true,
-  "generated_at_unix": 1784930077.2087429,
+  "generated_at_unix": 1784930434.3747828,
   "matrix": {
     "locales": [
       "en-US"
@@ -81,7 +81,7 @@
       "capabilities": [
         "isbn"
       ],
-      "contract_hash": "691211cd8edbc48cf03cf69f101950e949ecf319b250251a74b674c7eb8453c0",
+      "contract_hash": "34d9b7c3d28bd98c418c950c3ce83951a941e996f5b695bfca9da0f86954c24c",
       "implementation_artifact_sha256": null,
       "verification_status": "passed"
     },
@@ -102,7 +102,7 @@
       "verification_status": "passed"
     }
   },
-  "project_hash": "31e3364378b0e4bb820bf02701e92331fe4028c51b8ef423e9760e592975b8b9",
+  "project_hash": "84c639dc27df3adca05956bb71541dec4ee1ba337fe7b99c0806c9c3d00ee322",
   "publication_mode": "reviewed",
   "schema_version": 1,
   "tool_quality_verified": true,

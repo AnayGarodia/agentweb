@@ -3,7 +3,7 @@
   "signature": {
     "algorithm": "ed25519",
     "key_id": "d3237069b559fa7b",
-    "value": "5o5h+nBeSrVpzElPBOx2Up4HRWUZiWoVUAhSz9OZ/M8Xa7WtIWCKO4MfMQ3ZqxiRhBlBLxY+7glXNDfyRwP+CQ=="
+    "value": "BV5YWfl5pIsst7hSSUXRJa6Ws/LPEpMSWdN3fO9Sg9jX8wqETHHqsshOlQfZofuMCAGCbd+uCtExxa11SonZDg=="
   },
   "sites": [
     {
@@ -256,12 +256,12 @@
     {
       "files": {
         "adapter.py": "23946e8b74c1e2bedc88ff7132be7ffb040977f39d14ba7b35aa000dd17912f9",
-        "authoring-report.json": "117e4919015a22808c588bf83fa7443077feda08881af6b2b4037b2296c44794",
-        "flows/announcements.json": "c3689bd36fa11ad710029cb0d71d106fcc51d578704b8e74ac2e502394d8f1b0",
-        "flows/corporate_actions.json": "85b13d909b0d4dd2c87a9208fdaff179fbb4ac4dbc5df36dd6111da1bd1b21c7",
-        "flows/indices.json": "6fb9d591540104c87fec7f4bce3c41ef061620584b9673141f10a6d016f8e761",
-        "flows/shareholding.json": "3023d53afcae865ae78c892c77c82307f61318189b3d96f1d309b35c1ef57289",
-        "manifest.json": "bc205c787c2042d38e42e18cf86048de986d63dadd7e0a2806839fd693071aea"
+        "authoring-report.json": "569075f14099ef729d1900b8c8e974801b9e553fa846a04a9a0ced5029860fc8",
+        "flows/announcements.json": "6c8023f02e0aa706f31488642a9f05b6cb6e67f80b3a6db81eee4173541c511a",
+        "flows/corporate_actions.json": "3aa15db30df605853fe18f4be7068f1844d5a4a453a37103d084e44d3c43407a",
+        "flows/indices.json": "21a229a56f6a0a6f86fa96a66263be84c55dcc6cb9622f669be11c6777b8ea36",
+        "flows/shareholding.json": "3cf66a44d7bb3e869216f86a54dcd8f0820a15d075e7b6a7844d183cfdfe09b2",
+        "manifest.json": "2c96765f1eaf8c6714a1bd6ce9ffe5163eafdaf7d8e11b3ddf44f95e1ad355fa"
       },
       "name": "nse",
       "version": "0.3.0"
@@ -283,12 +283,12 @@
     {
       "files": {
         "adapter.py": "33c8ad9244aac8033fe5ddad08a18a362521b508a82b533410e8ce86e9637c0f",
-        "authoring-report.json": "dffddaced6f6f7bc4d19cb5cb0c4b39426c43b2fb2352d158533b187dc990f58",
-        "flows/author_get.json": "f3aa0aee4d04876067fe15f4eae766501cc42a968308ee8c8bc4f0927c911f44",
-        "flows/isbn.json": "a2959109107593ca47b2c88acf09ba38c5049c9876adfe9ac051ffd824aaf32d",
-        "flows/search.json": "2cc9bb696997c2de69abd744f33f48935c39a030908e58d380be5cb55edf5097",
-        "flows/work_get.json": "42b6a311d1e2d9c39366c6d1d208593cd24962c2c6162b62ca27b964e46b6132",
-        "manifest.json": "6d293f01f4be890f1c7aa1069e9839c1e2ceaea94072242458f360c281510350"
+        "authoring-report.json": "b4ba4d66d84da2da6212e23b0b7992672809604972c46c0841d5c726214b6297",
+        "flows/author_get.json": "12383b14ca0df8ce39194d1d892598c810f00ac717de8c083597fc31fb1690bd",
+        "flows/isbn.json": "8df35e70142d032a7fc8b35070a498362cce3a8a41f04f8229786f60a284a79c",
+        "flows/search.json": "cd2cb704ef2506d1e272937bed67e8b8bcb04714705a2677c00d7d949542b99b",
+        "flows/work_get.json": "296ae865dcb86593501a2da9ab680f0459bbed9df5a057280891f12a8eafc920",
+        "manifest.json": "5784a2808f0456ce11507045b016430f04d5ba804899a7a5976f9eb5120f0860"
       },
       "name": "openlibrary",
       "version": "0.2.0"
@@ -358,12 +358,12 @@
     {
       "files": {
         "adapter.py": "59fff0145e03a4583c317a8164a03cb998f34ab954bc706e80cba887ac593093",
-        "authoring-report.json": "3558596a45e86a72a79759fe8bc0d3e4c37a2b723beb37c2acd53f11457d5946",
-        "flows/company_concept.json": "78e63270a0a5183ec626c14d4555db12b1d446e00e14337ecbb7931910a5d95e",
-        "flows/company_profile.json": "0fc18981efecd746050cf6f93e5cc373693bc1cca6a5336202f2876cee8431f0",
-        "flows/filings.json": "0cc3913301ad153ce55ff4a670c1277673391e488d8c644c72911ddc5257a11f",
-        "flows/full_text_search.json": "efecee7d935133ae0480f9486804ce82063e8953ae6022abdd729862e63dd9d8",
-        "manifest.json": "af670a87414ca9ac862c807d2f7b406e6ef36b2e22a763d159fcef936d0f43ab"
+        "authoring-report.json": "c7bc4dc9bccf89b4ac8d09de348344e238dabd35744cac184827b9ec11844985",
+        "flows/company_concept.json": "7b6beb6e1843ae1b74ce990abac9db826ee853c442b391cd3fc10938f71a27eb",
+        "flows/company_profile.json": "ae01fe388ef18ebaf31bc62b1a3a35846fda54e68cbd6bf74ee013f0451bd01b",
+        "flows/filings.json": "f56ce36d781624fa68e119dc41df09da9135caa5f3e58cc35cd04cc0f9a2ff87",
+        "flows/full_text_search.json": "6938e188d54ad201eea82c7960b3fecc1f9ddca8785b9c0a3263197992aa8e77",
+        "manifest.json": "adb93ea2372be62c6142a3024261708e3488c3fedf68b11a31a99621b5663626"
       },
       "name": "secedgar",
       "version": "0.2.0"

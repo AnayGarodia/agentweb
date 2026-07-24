@@ -1,5 +1,5 @@
 {
-  "captured_at_unix": 1784930046.7553265,
+  "captured_at_unix": 1784930432.3404112,
   "kind": "agentweb_flow_capsule",
   "observed": {
     "final_response_shape": {},
@@ -72,6 +72,6 @@
       "version": 1
     },
     "status": "passed",
-    "verified_at_unix": 1784930076.178521
+    "verified_at_unix": 1784930432.7485394
   }
 }

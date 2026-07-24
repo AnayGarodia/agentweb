@@ -55,7 +55,7 @@
   "catalog_complete": true,
   "excluded_operations": {},
   "exhaustive": true,
-  "generated_at_unix": 1784930080.8902512,
+  "generated_at_unix": 1784930439.5022516,
   "matrix": {
     "locales": [
       "en-US"
@@ -89,7 +89,7 @@
       "capabilities": [
         "indices"
       ],
-      "contract_hash": "7b060102ec02dd7e4882a625c31b935eff7dcce52f1e5ff96c8b77694a2c4927",
+      "contract_hash": "d526d35bd529fbeefbaa4237e5c1115dcd033924719a310ed65ce793fc67533b",
       "implementation_artifact_sha256": null,
       "verification_status": "passed"
     },
@@ -102,7 +102,7 @@
       "verification_status": "passed"
     }
   },
-  "project_hash": "5eedc772870dc10a346256a4d24184cff85a86fb70b9a45e3d2e9bb3dc0968ab",
+  "project_hash": "f0b3bd17e62126fde4212339b2faf93321dbbcbddaea3dfe43544b6f00788cd4",
   "publication_mode": "reviewed",
   "schema_version": 1,
   "tool_quality_verified": true,
