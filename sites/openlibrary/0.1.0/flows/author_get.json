@@ -1,0 +1,76 @@
+{
+  "captured_at_unix": 1784879822.2675579,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://openlibrary.org",
+      "before": "https://openlibrary.org"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "author_get",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "author_get",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "author_id"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "author_get",
+        "path": "https://openlibrary.org/authors/{author_id}.json"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "openlibrary",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns the author name",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "457809b006e74ead6ba479f85ec3f4a6d168d96aff09911fae11fb7000218b7b",
+    "evidence_version": 2,
+    "recipe_hash": "6ae5cae88a9f0282e1fec4282eae5fbc76e242bb75d6c51cdae22e1565192ecb",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784879822.6400976
+  }
+}

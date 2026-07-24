@@ -1,41 +1,41 @@
 {
-  "captured_at_unix": 1784878849.9293077,
+  "captured_at_unix": 1784884632.520858,
   "kind": "agentweb_flow_capsule",
   "observed": {
     "final_response_shape": {},
     "page_transition": {
-      "after": "https://www.bseindia.com",
-      "before": "https://www.bseindia.com"
+      "after": "https://www.nseindia.com",
+      "before": "https://www.nseindia.com"
     },
     "source": "reviewed_mapping_specification",
     "steps": [
       {
-        "name": "quote",
+        "name": "corporate_actions",
         "status": 200
       }
     ]
   },
-  "operation": "quote",
+  "operation": "corporate_actions",
   "recipe": {
     "dependencies": [],
     "human_inputs": [],
     "required_inputs": [
-      "scrip_code"
+      "index",
+      "symbol"
     ],
     "session_cookies": false,
     "steps": [
       {
         "classification": "read",
         "headers": {
-          "Referer": "https://www.bseindia.com/"
+          "Referer": "https://www.nseindia.com/"
         },
         "method": "GET",
-        "name": "quote",
-        "path": "https://api.bseindia.com/BseIndiaAPI/api/getScripHeaderData/w",
+        "name": "corporate_actions",
+        "path": "https://www.nseindia.com/api/corporates-corporateActions",
         "query": {
-          "Debtflag": "",
-          "scripcode": "{scrip_code}",
-          "seriesid": ""
+          "index": "{index}",
+          "symbol": "{symbol}"
         }
       }
     ]
@@ -46,11 +46,11 @@
     "uses_session_cookies": false
   },
   "schema_version": 1,
-  "site": "bse",
+  "site": "nse",
   "verification": {
     "assertions": [
       {
-        "name": "returns the company name for the scrip",
+        "name": "returns corporate actions",
         "passed": true,
         "type": "non_empty"
       },
@@ -64,9 +64,9 @@
     "cases": [
       "success"
     ],
-    "contract_hash": "49d23b6e872f187ffbb6321622f612da6453f0cdf3194c306ce5f69ae0a230ae",
+    "contract_hash": "0edda948a150339df4369791d0c52abc7b6b0b08cf389707c201d668a045f620",
     "evidence_version": 2,
-    "recipe_hash": "cb8c904b807c0cc1d060fec369c64828a501f81a745a75d9783ad19288d532be",
+    "recipe_hash": "9368e96f5a0ee9beacfc0b5014cc424b5f474b1af8dd97442b4eb34e2c33d2d3",
     "review_required": [],
     "reviewed": true,
     "runner": {
@@ -79,6 +79,6 @@
       "version": 1
     },
     "status": "passed",
-    "verified_at_unix": 1784878850.3102508
+    "verified_at_unix": 1784919747.501056
   }
 }

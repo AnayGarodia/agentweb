@@ -1,0 +1,56 @@
+{
+  "browserless_parity": true,
+  "capabilities": {
+    "archive_search": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "SEBI's search and historical archives are not mapped; this covers the live RSS feed.",
+      "roles": [
+        "public"
+      ],
+      "state": "blocked",
+      "surface": "public_api"
+    },
+    "public_rss_updates": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    }
+  },
+  "catalog_complete": true,
+  "excluded_operations": {},
+  "exhaustive": true,
+  "generated_at_unix": 1784880628.370077,
+  "matrix": {
+    "locales": [
+      "en-US"
+    ],
+    "roles": [
+      "public"
+    ],
+    "surfaces": [
+      "public_api"
+    ]
+  },
+  "matrix_verified": true,
+  "operations": {
+    "rss_updates": {
+      "capabilities": [
+        "public_rss_updates"
+      ],
+      "contract_hash": "beb407b5c797fa68afd08ab9184d6a12e9d1f389cb1ef3a6c108330babb44cb4",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    }
+  },
+  "project_hash": "131825d8f66af472ec9f1636d048cfed2e48bbf30ab19f5555043d93a05e06aa",
+  "publication_mode": "reviewed",
+  "schema_version": 1,
+  "tool_quality_verified": true,
+  "uncovered_verified_capabilities": []
+}

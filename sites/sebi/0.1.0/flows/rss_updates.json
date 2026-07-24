@@ -1,0 +1,75 @@
+{
+  "captured_at_unix": 1784880602.8260286,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://www.sebi.gov.in",
+      "before": "https://www.sebi.gov.in"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "rss_updates",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "rss_updates",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "rss_updates",
+        "path": "https://www.sebi.gov.in/sebirss.xml",
+        "response_mode": "xml_feed"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "sebi",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns feed entries",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "beb407b5c797fa68afd08ab9184d6a12e9d1f389cb1ef3a6c108330babb44cb4",
+    "evidence_version": 2,
+    "recipe_hash": "76217db10f07468d10d47f78914bc42994e94cf21654b022db974bd82f2a8928",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784880628.3491945
+  }
+}

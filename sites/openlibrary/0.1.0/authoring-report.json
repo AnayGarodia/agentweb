@@ -1,0 +1,92 @@
+{
+  "browserless_parity": true,
+  "capabilities": {
+    "account_services": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "Lists, reading logs, and edits require an Open Library account login that this mapping does not hold.",
+      "roles": [
+        "account_holder"
+      ],
+      "state": "blocked",
+      "surface": "public_api"
+    },
+    "public_author_get": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_search": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_work_get": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    }
+  },
+  "catalog_complete": true,
+  "excluded_operations": {},
+  "exhaustive": true,
+  "generated_at_unix": 1784879822.833653,
+  "matrix": {
+    "locales": [
+      "en-US"
+    ],
+    "roles": [
+      "public"
+    ],
+    "surfaces": [
+      "public_api"
+    ]
+  },
+  "matrix_verified": true,
+  "operations": {
+    "author_get": {
+      "capabilities": [
+        "public_author_get"
+      ],
+      "contract_hash": "457809b006e74ead6ba479f85ec3f4a6d168d96aff09911fae11fb7000218b7b",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "search": {
+      "capabilities": [
+        "public_search"
+      ],
+      "contract_hash": "656c314c9336f2da3172e32cf3921d2855930a00967e1aaebb3f8f71994a4ff2",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "work_get": {
+      "capabilities": [
+        "public_work_get"
+      ],
+      "contract_hash": "fbedeca1a41e8dd850c41ccd1aeecc4af2c75c6ae5faa34112cbe6569da525c2",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    }
+  },
+  "project_hash": "1494514dabed38a140bce3beb6a377d8f5f8e218c2cfc01e6d5b807d70d65af0",
+  "publication_mode": "reviewed",
+  "schema_version": 1,
+  "tool_quality_verified": true,
+  "uncovered_verified_capabilities": []
+}

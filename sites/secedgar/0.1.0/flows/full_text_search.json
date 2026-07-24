@@ -1,0 +1,84 @@
+{
+  "captured_at_unix": 1784884302.3960204,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://www.sec.gov",
+      "before": "https://www.sec.gov"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "full_text_search",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "full_text_search",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "forms",
+      "q"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "headers": {
+          "User-Agent": "AgentWeb research (ag5250@columbia.edu)"
+        },
+        "method": "GET",
+        "name": "full_text_search",
+        "path": "https://efts.sec.gov/LATEST/search-index",
+        "query": {
+          "forms": "{forms}",
+          "q": "{q}"
+        }
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "secedgar",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns matching filings",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "4123855a24cee871085eeada8e527d5ecee6a22b1b5401463370b65b9e7945dc",
+    "evidence_version": 2,
+    "recipe_hash": "13e33640581c885e36ebc5a65d82bae5c41c0413b52d25c027ffc1cd72252eeb",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784919726.4175649
+  }
+}

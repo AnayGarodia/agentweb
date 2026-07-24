@@ -1,0 +1,1026 @@
+{
+  "aliases": [
+    "secedgar"
+  ],
+  "allowed_domains": [
+    "data.sec.gov",
+    "efts.sec.gov",
+    "sec.gov",
+    "www.sec.gov"
+  ],
+  "auth": {
+    "interaction": "not_required",
+    "strategy": "none"
+  },
+  "authoring": {
+    "browserless_parity": true,
+    "catalog_complete": true,
+    "exhaustive": true,
+    "matrix_verified": true,
+    "tool_quality_verified": true
+  },
+  "base_url": "https://www.sec.gov",
+  "canonical_domain": "sec.gov",
+  "commands": {
+    "company_concept": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "monitoring",
+      "description": "Fetch every reported value of one US-GAAP concept for a company, such as Revenues, from SEC XBRL data.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "cik": "0000320193",
+            "tag": "Revenues"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cik": {
+            "description": "Ten-digit zero-padded CIK number, such as 0000320193 for Apple.",
+            "pattern": "^[0-9]{10}$",
+            "type": "string"
+          },
+          "tag": {
+            "description": "USD-denominated US-GAAP concept tag such as Revenues or Assets. Concepts reported in other units (shares, USD/shares) are not mapped and will fail.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "cik",
+          "tag"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Reported values for the concept, one per period and filing.",
+            "items": {
+              "properties": {
+                "accn": {
+                  "description": "Accession number.",
+                  "type": "string"
+                },
+                "end": {
+                  "description": "Period end date.",
+                  "type": "string"
+                },
+                "filed": {
+                  "description": "Filing date.",
+                  "type": "string"
+                },
+                "form": {
+                  "description": "Source form.",
+                  "type": "string"
+                },
+                "fp": {
+                  "description": "Fiscal period.",
+                  "type": "string"
+                },
+                "frame": {
+                  "description": "XBRL frame when assigned.",
+                  "type": "string"
+                },
+                "fy": {
+                  "description": "Fiscal year.",
+                  "type": "integer"
+                },
+                "start": {
+                  "description": "Period start date.",
+                  "type": "string"
+                },
+                "val": {
+                  "description": "Reported value in USD.",
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns all periods EDGAR holds for the concept.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this for filing text or company profiles. Do not use it for non-USD concepts such as share counts or per-share figures; only the USD unit series is mapped.",
+      "when_to_use": "Use this for a company's reported financial line items across periods."
+    },
+    "company_profile": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "monitoring",
+      "description": "Fetch a company's SEC registration profile (name, tickers, exchanges, industry) by CIK number.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "cik": "0000320193"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cik": {
+            "description": "Ten-digit zero-padded CIK number, such as 0000320193 for Apple.",
+            "pattern": "^[0-9]{10}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "cik"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "cik": {
+            "description": "CIK number."
+          },
+          "exchanges": {
+            "description": "Listing exchanges."
+          },
+          "name": {
+            "description": "Registered company name.",
+            "type": "string"
+          },
+          "sicdescription": {
+            "description": "Industry classification."
+          },
+          "state_of_incorporation": {
+            "description": "State or country of incorporation."
+          },
+          "tickers": {
+            "description": "Listed ticker symbols."
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns the registration profile; the filing index inside this payload is not mapped, use full_text_search for filings.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this for filing text or filing lists; use full_text_search.",
+      "when_to_use": "Use this to identify a company registered with the SEC: name, ticker symbols, exchanges, and industry."
+    },
+    "full_text_search": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "discovery",
+      "description": "Search the full text of SEC EDGAR filings and return matching documents with companies, forms, and dates.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "forms": "10-K",
+            "q": "climate risk"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "forms": {
+            "default": "",
+            "description": "Comma-separated SEC form types such as 10-K, 8-K, or DEF 14A.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          },
+          "q": {
+            "description": "Search words matched against filing text.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Matching filings, most relevant first.",
+            "items": {
+              "properties": {
+                "accession": {
+                  "description": "Accession id and document name.",
+                  "type": "string"
+                },
+                "ciks": {
+                  "description": "Filer CIK numbers."
+                },
+                "companies": {
+                  "description": "Filer display names."
+                },
+                "description": {
+                  "description": "Document description when given."
+                },
+                "filed": {
+                  "description": "Filing date."
+                },
+                "form": {
+                  "description": "SEC form type."
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "EDGAR full-text search returns the most relevant filings; refine q or forms to narrow.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this for a known company's filing history; use company_submissions.",
+      "when_to_use": "Use this when an agent needs SEC filings mentioning given words, optionally restricted to a form type such as 10-K or 8-K."
+    }
+  },
+  "cookie_domain": ".www.sec.gov",
+  "coverage": {
+    "constraints": [
+      "Site permissions, rate limits, and anti-automation rules still apply"
+    ],
+    "human_boundaries": [
+      "Downloading full filing documents from Archives is not mapped yet; results carry accession numbers to locate them.",
+      "SEC fair-access policy asks for a declared User-Agent and at most 10 requests per second; the recorded header declares this client.",
+      "The recent-filings index inside the submissions payload is large and unmapped; full_text_search covers filing discovery."
+    ],
+    "not_mapped": [],
+    "protocol_fallback": null,
+    "typed_fast_paths": [
+      "company_concept",
+      "company_profile",
+      "full_text_search"
+    ],
+    "website_parity": "Mapping mode can inspect the remaining website while direct request recipes are compiled. Browser commands are never counted as runtime parity."
+  },
+  "description": "Complete agent interface for www.sec.gov",
+  "entrypoint": "adapter.py",
+  "evidence_capsules": {},
+  "flow_capsules": {
+    "company_concept": {
+      "contract": "company_concept",
+      "path": "flows/company_concept.json"
+    },
+    "company_profile": {
+      "contract": "company_profile",
+      "path": "flows/company_profile.json"
+    },
+    "full_text_search": {
+      "contract": "full_text_search",
+      "path": "flows/full_text_search.json"
+    }
+  },
+  "name": "secedgar",
+  "operation_contracts": {
+    "company_concept": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "accn": {
+              "path": "$.accn"
+            },
+            "end": {
+              "path": "$.end"
+            },
+            "filed": {
+              "path": "$.filed"
+            },
+            "form": {
+              "path": "$.form"
+            },
+            "fp": {
+              "path": "$.fp"
+            },
+            "frame": {
+              "path": "$.frame"
+            },
+            "fy": {
+              "path": "$.fy"
+            },
+            "start": {
+              "path": "$.start"
+            },
+            "val": {
+              "path": "$.val"
+            }
+          },
+          "source": "$.units.USD"
+        },
+        "recipe_hash": "9b8f5465eac88fe87de24f6a5507771db8c6cea967eaa5919eff53c5ad782f82",
+        "type": "generated_recipe",
+        "variables": {
+          "cik": "cik",
+          "tag": "tag"
+        }
+      },
+      "capabilities": [
+        "public_company_concept"
+      ],
+      "category": "monitoring",
+      "contract_hash": "1f2f180be2224762aad520369641a924a161b1eca8472b5777de81b38438ff2d",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "cik": "0000320193",
+            "tag": "Revenues"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cik": {
+            "description": "Ten-digit zero-padded CIK number, such as 0000320193 for Apple.",
+            "pattern": "^[0-9]{10}$",
+            "type": "string"
+          },
+          "tag": {
+            "description": "USD-denominated US-GAAP concept tag such as Revenues or Assets. Concepts reported in other units (shares, USD/shares) are not mapped and will fail.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "cik",
+          "tag"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "company_concept",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Reported values for the concept, one per period and filing.",
+            "items": {
+              "properties": {
+                "accn": {
+                  "description": "Accession number.",
+                  "type": "string"
+                },
+                "end": {
+                  "description": "Period end date.",
+                  "type": "string"
+                },
+                "filed": {
+                  "description": "Filing date.",
+                  "type": "string"
+                },
+                "form": {
+                  "description": "Source form.",
+                  "type": "string"
+                },
+                "fp": {
+                  "description": "Fiscal period.",
+                  "type": "string"
+                },
+                "frame": {
+                  "description": "XBRL frame when assigned.",
+                  "type": "string"
+                },
+                "fy": {
+                  "description": "Fiscal year.",
+                  "type": "integer"
+                },
+                "start": {
+                  "description": "Period start date.",
+                  "type": "string"
+                },
+                "val": {
+                  "description": "Reported value in USD.",
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns all periods EDGAR holds for the concept.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784919726.4225943,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Fetch every reported value of one US-GAAP concept for a company, such as Revenues, from SEC XBRL data.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns reported values",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "1f2f180be2224762aad520369641a924a161b1eca8472b5777de81b38438ff2d",
+            "input_names": [
+              "cik",
+              "tag"
+            ],
+            "passed": true,
+            "recipe_hash": "9b8f5465eac88fe87de24f6a5507771db8c6cea967eaa5919eff53c5ad782f82",
+            "verified_at_unix": 1784919725.9369
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns reported values",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for filing text or company profiles. Do not use it for non-USD concepts such as share counts or per-share figures; only the USD unit series is mapped.",
+      "when_to_use": "Use this for a company's reported financial line items across periods."
+    },
+    "company_profile": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "fields": {
+            "cik": {
+              "path": "$.cik"
+            },
+            "exchanges": {
+              "default": [],
+              "path": "$.exchanges"
+            },
+            "name": {
+              "path": "$.name"
+            },
+            "sicdescription": {
+              "path": "$.sicDescription"
+            },
+            "state_of_incorporation": {
+              "default": null,
+              "path": "$.stateOfIncorporation"
+            },
+            "tickers": {
+              "default": [],
+              "path": "$.tickers"
+            }
+          },
+          "source": "$"
+        },
+        "recipe_hash": "2eda89aeec18b1f49ee0a94304c499cc448416a5c86e3a8d62d70f3a9c5da030",
+        "type": "generated_recipe",
+        "variables": {
+          "cik": "cik"
+        }
+      },
+      "capabilities": [
+        "company_profile"
+      ],
+      "category": "monitoring",
+      "contract_hash": "3fa93dbd6d432a42186dba04db225ae177509ba3cd40b65b755c2e0a2fa35df8",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "cik": "0000320193"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cik": {
+            "description": "Ten-digit zero-padded CIK number, such as 0000320193 for Apple.",
+            "pattern": "^[0-9]{10}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "cik"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "company_profile",
+      "output_schema": {
+        "properties": {
+          "cik": {
+            "description": "CIK number."
+          },
+          "exchanges": {
+            "description": "Listing exchanges."
+          },
+          "name": {
+            "description": "Registered company name.",
+            "type": "string"
+          },
+          "sicdescription": {
+            "description": "Industry classification."
+          },
+          "state_of_incorporation": {
+            "description": "State or country of incorporation."
+          },
+          "tickers": {
+            "description": "Listed ticker symbols."
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns the registration profile; the filing index inside this payload is not mapped, use full_text_search for filings.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784919726.430264,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Fetch a company's SEC registration profile (name, tickers, exchanges, industry) by CIK number.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns the company profile",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "3fa93dbd6d432a42186dba04db225ae177509ba3cd40b65b755c2e0a2fa35df8",
+            "input_names": [
+              "cik"
+            ],
+            "passed": true,
+            "recipe_hash": "2eda89aeec18b1f49ee0a94304c499cc448416a5c86e3a8d62d70f3a9c5da030",
+            "verified_at_unix": 1784919726.056097
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns the company profile",
+            "path": "$.data.name",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for filing text or filing lists; use full_text_search.",
+      "when_to_use": "Use this to identify a company registered with the SEC: name, ticker symbols, exchanges, and industry."
+    },
+    "full_text_search": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "accession": {
+              "path": "$._id"
+            },
+            "ciks": {
+              "default": [],
+              "path": "$._source.ciks"
+            },
+            "companies": {
+              "default": [],
+              "path": "$._source.display_names"
+            },
+            "description": {
+              "default": null,
+              "path": "$._source.file_description"
+            },
+            "filed": {
+              "default": null,
+              "path": "$._source.file_date"
+            },
+            "form": {
+              "default": null,
+              "path": "$._source.form"
+            }
+          },
+          "source": "$.hits.hits"
+        },
+        "recipe_hash": "13e33640581c885e36ebc5a65d82bae5c41c0413b52d25c027ffc1cd72252eeb",
+        "type": "generated_recipe",
+        "variables": {
+          "forms": {
+            "default": "",
+            "source": "forms"
+          },
+          "q": "q"
+        }
+      },
+      "capabilities": [
+        "public_full_text_search"
+      ],
+      "category": "discovery",
+      "contract_hash": "4123855a24cee871085eeada8e527d5ecee6a22b1b5401463370b65b9e7945dc",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "forms": "10-K",
+            "q": "climate risk"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "forms": {
+            "default": "",
+            "description": "Comma-separated SEC form types such as 10-K, 8-K, or DEF 14A.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          },
+          "q": {
+            "description": "Search words matched against filing text.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "full_text_search",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Matching filings, most relevant first.",
+            "items": {
+              "properties": {
+                "accession": {
+                  "description": "Accession id and document name.",
+                  "type": "string"
+                },
+                "ciks": {
+                  "description": "Filer CIK numbers."
+                },
+                "companies": {
+                  "description": "Filer display names."
+                },
+                "description": {
+                  "description": "Document description when given."
+                },
+                "filed": {
+                  "description": "Filing date."
+                },
+                "form": {
+                  "description": "SEC form type."
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "EDGAR full-text search returns the most relevant filings; refine q or forms to narrow.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784919726.4350302,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Search the full text of SEC EDGAR filings and return matching documents with companies, forms, and dates.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns matching filings",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "4123855a24cee871085eeada8e527d5ecee6a22b1b5401463370b65b9e7945dc",
+            "input_names": [
+              "forms",
+              "q"
+            ],
+            "passed": true,
+            "recipe_hash": "13e33640581c885e36ebc5a65d82bae5c41c0413b52d25c027ffc1cd72252eeb",
+            "verified_at_unix": 1784919726.4175649
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns matching filings",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for a known company's filing history; use company_submissions.",
+      "when_to_use": "Use this when an agent needs SEC filings mentioning given words, optionally restricted to a form type such as 10-K or 8-K."
+    }
+  },
+  "runtime": {
+    "auth_interaction": "not_yet_mapped",
+    "browserless_replay": true
+  },
+  "url_routes": [],
+  "version": "0.1.0"
+}

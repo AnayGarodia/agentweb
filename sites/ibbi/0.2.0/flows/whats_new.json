@@ -1,0 +1,81 @@
+{
+  "captured_at_unix": 1784884464.2867005,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://ibbi.gov.in",
+      "before": "https://ibbi.gov.in"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "whats_new",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "whats_new",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "page"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "whats_new",
+        "path": "https://ibbi.gov.in/en/whats-new",
+        "query": {
+          "page": "{page}"
+        },
+        "response_mode": "html_links",
+        "selector": "td a[href]"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "ibbi",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns listed links",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "f68e359baf858496882b8a6c56687de0823de084f2d3e2ed508d6a86c72e9392",
+    "evidence_version": 2,
+    "recipe_hash": "47a9005ae7d1d56c1afe02e72c0db0d7e7a7c24600dbca10de55a0baf3837575",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784919703.5216978
+  }
+}

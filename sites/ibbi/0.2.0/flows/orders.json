@@ -1,0 +1,81 @@
+{
+  "captured_at_unix": 1784884464.296352,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://ibbi.gov.in",
+      "before": "https://ibbi.gov.in"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "orders",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "orders",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "page"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "orders",
+        "path": "https://ibbi.gov.in/en/orders/ibbi",
+        "query": {
+          "page": "{page}"
+        },
+        "response_mode": "html_links",
+        "selector": "td a[href]"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "ibbi",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns listed links",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "19cea1457f278dd23f6a052a4a139604dee799d1f9f1cbed674a804107b95d9f",
+    "evidence_version": 2,
+    "recipe_hash": "7ef81ed0521868338fe75609b66727d0dffd0d9c6dfebba5db94a6de8bbd32ad",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784919699.7500386
+  }
+}

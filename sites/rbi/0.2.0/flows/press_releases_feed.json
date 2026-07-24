@@ -1,0 +1,75 @@
+{
+  "captured_at_unix": 1784884417.0942857,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://www.rbi.org.in",
+      "before": "https://www.rbi.org.in"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "press_releases_feed",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "press_releases_feed",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "press_releases_feed",
+        "path": "https://www.rbi.org.in/pressreleases_rss.xml",
+        "response_mode": "xml_feed"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "rbi",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns feed entries",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "4cb1ba630601a8ddc7324f9e8b293b2b452a51ade295125347161a6352595549",
+    "evidence_version": 2,
+    "recipe_hash": "c7bd82d2fcc66a841d71689c7d531d38181d46bc0f66fc6791645ead73d7d496",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784919722.4396853
+  }
+}

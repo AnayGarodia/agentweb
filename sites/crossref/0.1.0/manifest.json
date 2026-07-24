@@ -1,0 +1,668 @@
+{
+  "aliases": [
+    "crossref"
+  ],
+  "allowed_domains": [
+    "api.crossref.org",
+    "crossref.org"
+  ],
+  "auth": {
+    "interaction": "not_required",
+    "strategy": "none"
+  },
+  "authoring": {
+    "browserless_parity": true,
+    "catalog_complete": true,
+    "exhaustive": true,
+    "matrix_verified": true,
+    "tool_quality_verified": true
+  },
+  "base_url": "https://api.crossref.org",
+  "canonical_domain": "crossref.org",
+  "commands": {
+    "search_journals": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "discovery",
+      "description": "Search Crossref's public journal directory and return matching journal titles and publishers.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "query": "nature",
+            "rows": 5
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Journal name words.",
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "rows": {
+            "default": 5,
+            "description": "Maximum matches to return.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Matching journals, most relevant first.",
+            "items": {
+              "properties": {
+                "publisher": {
+                  "description": "Publisher name.",
+                  "type": "string"
+                },
+                "title": {
+                  "description": "Journal title.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Lower rows or refine the query; Crossref returns the most relevant journals first.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this to find individual papers; use search_works.",
+      "when_to_use": "Use this when an agent needs to find journals by name and learn their publisher."
+    },
+    "search_works": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "discovery",
+      "description": "Search Crossref's public scholarly metadata for works and return bounded matches with DOIs, titles, and citation counts.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "query": "machine learning",
+            "rows": 5
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Search words such as a title, topic, or author.",
+            "maxLength": 300,
+            "minLength": 1,
+            "type": "string"
+          },
+          "rows": {
+            "default": 5,
+            "description": "Maximum matches to return.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Matching works, most relevant first.",
+            "items": {
+              "properties": {
+                "doi": {
+                  "description": "The work's DOI.",
+                  "type": "string"
+                },
+                "is_referenced_by_count": {
+                  "description": "How many works cite this one.",
+                  "type": "integer"
+                },
+                "publisher": {
+                  "description": "Publisher name.",
+                  "type": "string"
+                },
+                "title": {
+                  "description": "Work title strings."
+                },
+                "type": {
+                  "description": "Crossref work type such as journal-article.",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "The doi.org resolution URL.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Lower rows or refine the query; Crossref returns the most relevant works first.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this to search journals; use search_journals.",
+      "when_to_use": "Use this when an agent needs to find papers, books, or other scholarly works and their DOIs from topic or title words."
+    }
+  },
+  "cookie_domain": ".api.crossref.org",
+  "coverage": {
+    "constraints": [
+      "Site permissions, rate limits, and anti-automation rules still apply"
+    ],
+    "human_boundaries": [
+      "Crossref member deposit and reporting services require member credentials that this mapping does not hold."
+    ],
+    "not_mapped": [],
+    "protocol_fallback": null,
+    "typed_fast_paths": [
+      "search_journals",
+      "search_works"
+    ],
+    "website_parity": "Mapping mode can inspect the remaining website while direct request recipes are compiled. Browser commands are never counted as runtime parity."
+  },
+  "description": "Complete agent interface for api.crossref.org",
+  "entrypoint": "adapter.py",
+  "evidence_capsules": {},
+  "flow_capsules": {
+    "search_journals": {
+      "contract": "search_journals",
+      "path": "flows/search_journals.json"
+    },
+    "search_works": {
+      "contract": "search_works",
+      "path": "flows/search_works.json"
+    }
+  },
+  "name": "crossref",
+  "operation_contracts": {
+    "search_journals": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "publisher": {
+              "path": "$.publisher"
+            },
+            "title": {
+              "path": "$.title"
+            }
+          },
+          "source": "$.message.items"
+        },
+        "recipe_hash": "e8e42751115792a1e542e1ba5ea909c333d054d3204ccf3b1536b2fcec3933bc",
+        "type": "generated_recipe",
+        "variables": {
+          "query": "query",
+          "rows": "rows"
+        }
+      },
+      "capabilities": [
+        "public_search_journals"
+      ],
+      "category": "discovery",
+      "contract_hash": "e81135fef60c0f736be55182e99aeae6af66dc09f2a358f70d49fae8d8e7fdfe",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "query": "nature",
+            "rows": 5
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Journal name words.",
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "rows": {
+            "default": 5,
+            "description": "Maximum matches to return.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "search_journals",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Matching journals, most relevant first.",
+            "items": {
+              "properties": {
+                "publisher": {
+                  "description": "Publisher name.",
+                  "type": "string"
+                },
+                "title": {
+                  "description": "Journal title.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Lower rows or refine the query; Crossref returns the most relevant journals first.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784879930.4706633,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Search Crossref's public journal directory and return matching journal titles and publishers.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns matching records",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "e81135fef60c0f736be55182e99aeae6af66dc09f2a358f70d49fae8d8e7fdfe",
+            "input_names": [
+              "query",
+              "rows"
+            ],
+            "passed": true,
+            "recipe_hash": "e8e42751115792a1e542e1ba5ea909c333d054d3204ccf3b1536b2fcec3933bc",
+            "verified_at_unix": 1784879876.9407651
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns matching records",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this to find individual papers; use search_works.",
+      "when_to_use": "Use this when an agent needs to find journals by name and learn their publisher."
+    },
+    "search_works": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "doi": {
+              "path": "$.DOI"
+            },
+            "is_referenced_by_count": {
+              "path": "$.is-referenced-by-count"
+            },
+            "publisher": {
+              "path": "$.publisher"
+            },
+            "title": {
+              "path": "$.title"
+            },
+            "type": {
+              "path": "$.type"
+            },
+            "url": {
+              "path": "$.URL"
+            }
+          },
+          "source": "$.message.items"
+        },
+        "recipe_hash": "adc5056608f691ead45d998780a474e03dc523f169cfcb61d747ea119959e6d1",
+        "type": "generated_recipe",
+        "variables": {
+          "query": "query",
+          "rows": "rows"
+        }
+      },
+      "capabilities": [
+        "public_search_works"
+      ],
+      "category": "discovery",
+      "contract_hash": "48c959514dd408be77c7b413749658dc3b3bd9c18384fab49e6377fcd72aa0c9",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "query": "machine learning",
+            "rows": 5
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "description": "Search words such as a title, topic, or author.",
+            "maxLength": 300,
+            "minLength": 1,
+            "type": "string"
+          },
+          "rows": {
+            "default": 5,
+            "description": "Maximum matches to return.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "search_works",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Matching works, most relevant first.",
+            "items": {
+              "properties": {
+                "doi": {
+                  "description": "The work's DOI.",
+                  "type": "string"
+                },
+                "is_referenced_by_count": {
+                  "description": "How many works cite this one.",
+                  "type": "integer"
+                },
+                "publisher": {
+                  "description": "Publisher name.",
+                  "type": "string"
+                },
+                "title": {
+                  "description": "Work title strings."
+                },
+                "type": {
+                  "description": "Crossref work type such as journal-article.",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "The doi.org resolution URL.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Lower rows or refine the query; Crossref returns the most relevant works first.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784879930.477522,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Search Crossref's public scholarly metadata for works and return bounded matches with DOIs, titles, and citation counts.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns matching records",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "48c959514dd408be77c7b413749658dc3b3bd9c18384fab49e6377fcd72aa0c9",
+            "input_names": [
+              "query",
+              "rows"
+            ],
+            "passed": true,
+            "recipe_hash": "adc5056608f691ead45d998780a474e03dc523f169cfcb61d747ea119959e6d1",
+            "verified_at_unix": 1784879877.0938609
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns matching records",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this to search journals; use search_journals.",
+      "when_to_use": "Use this when an agent needs to find papers, books, or other scholarly works and their DOIs from topic or title words."
+    }
+  },
+  "runtime": {
+    "auth_interaction": "not_yet_mapped",
+    "browserless_replay": true
+  },
+  "url_routes": [],
+  "version": "0.1.0"
+}

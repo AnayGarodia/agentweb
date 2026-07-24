@@ -1,0 +1,83 @@
+{
+  "captured_at_unix": 1784884417.108517,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://www.rbi.org.in",
+      "before": "https://www.rbi.org.in"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "press_releases_by_year",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "press_releases_by_year",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "mode",
+      "yr"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "press_releases_by_year",
+        "path": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx",
+        "query": {
+          "Mode": "{mode}",
+          "Yr": "{yr}"
+        },
+        "response_mode": "html_links",
+        "selector": "a.link2[href]"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "rbi",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns archive links",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "ef080847063f8f6f03bf3215ac5a73ad5e48cd5ea31d3a842512892f76d2c316",
+    "evidence_version": 2,
+    "recipe_hash": "6cbcdae4221b54991862810c06be50a77430f021793ad7ad7f7c1452e6d56b8e",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784919721.64566
+  }
+}

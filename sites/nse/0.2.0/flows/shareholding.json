@@ -1,0 +1,84 @@
+{
+  "captured_at_unix": 1784884632.5295827,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://www.nseindia.com",
+      "before": "https://www.nseindia.com"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "shareholding",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "shareholding",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "index",
+      "symbol"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "headers": {
+          "Referer": "https://www.nseindia.com/"
+        },
+        "method": "GET",
+        "name": "shareholding",
+        "path": "https://www.nseindia.com/api/corporate-share-holdings-master",
+        "query": {
+          "index": "{index}",
+          "symbol": "{symbol}"
+        }
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "nse",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns disclosures",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "63f806f1f4583ca321936c77823cce34e62e040b2c75786967df5c62c7c05cc8",
+    "evidence_version": 2,
+    "recipe_hash": "78ee51403edf71e55fa3c6d4da860f152be41e494950384c0006ae63d57dedad",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784919747.8673158
+  }
+}

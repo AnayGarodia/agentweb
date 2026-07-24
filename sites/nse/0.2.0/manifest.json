@@ -1,0 +1,1162 @@
+{
+  "aliases": [
+    "nse"
+  ],
+  "allowed_domains": [
+    "nseindia.com",
+    "www.nseindia.com"
+  ],
+  "auth": {
+    "interaction": "not_required",
+    "strategy": "none"
+  },
+  "authoring": {
+    "browserless_parity": true,
+    "catalog_complete": true,
+    "exhaustive": true,
+    "matrix_verified": true,
+    "tool_quality_verified": true
+  },
+  "base_url": "https://www.nseindia.com",
+  "canonical_domain": "nseindia.com",
+  "commands": {
+    "announcements": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "monitoring",
+      "description": "List the latest corporate announcements filed with NSE by listed companies, with subjects, timestamps, and attachment links.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "index": "equities"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "index": {
+            "description": "Announcement index; equities covers listed companies.",
+            "enum": [
+              "equities",
+              "sme",
+              "debt",
+              "mf"
+            ],
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "index"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Newest NSE announcements, newest first.",
+            "items": {
+              "properties": {
+                "an_dt": {
+                  "description": "Announcement timestamp.",
+                  "type": "string"
+                },
+                "attchmntfile": {
+                  "description": "Attachment PDF URL.",
+                  "type": "string"
+                },
+                "attchmnttext": {
+                  "description": "Announcement text summary.",
+                  "type": "string"
+                },
+                "desc": {
+                  "description": "Announcement subject.",
+                  "type": "string"
+                },
+                "sm_name": {
+                  "description": "Company name.",
+                  "type": "string"
+                },
+                "smindustry": {
+                  "description": "Company industry when given."
+                },
+                "symbol": {
+                  "description": "NSE trading symbol.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "NSE returns the newest announcements for the chosen index.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this for BSE filings; use the bse adapter.",
+      "when_to_use": "Use this when an agent needs the newest NSE corporate filings and disclosures."
+    },
+    "corporate_actions": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "monitoring",
+      "description": "List an NSE-listed company's corporate actions (dividends, splits, bonuses) with ex-dates and record dates.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "index": "equities",
+            "symbol": "RELIANCE"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "index": {
+            "default": "equities",
+            "description": "NSE market segment.",
+            "enum": [
+              "equities",
+              "sme",
+              "debt",
+              "mf"
+            ],
+            "type": "string"
+          },
+          "symbol": {
+            "description": "NSE trading symbol, such as RELIANCE.",
+            "maxLength": 20,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "symbol"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Corporate actions announced for the symbol: subject, ex-date, record date, and book-closure window.",
+            "items": {
+              "properties": {
+                "bcenddate": {
+                  "description": "Field as reported by NSE.",
+                  "type": "string"
+                },
+                "bcstartdate": {
+                  "description": "Field as reported by NSE.",
+                  "type": "string"
+                },
+                "cabroadcastdate": {
+                  "description": "Field as reported by NSE."
+                },
+                "comp": {
+                  "description": "Company name.",
+                  "type": "string"
+                },
+                "exdate": {
+                  "description": "Ex-date.",
+                  "type": "string"
+                },
+                "faceval": {
+                  "description": "Face value.",
+                  "type": "string"
+                },
+                "ind": {
+                  "description": "Field as reported by NSE.",
+                  "type": "string"
+                },
+                "isin": {
+                  "description": "ISIN.",
+                  "type": "string"
+                },
+                "ndenddate": {
+                  "description": "Field as reported by NSE.",
+                  "type": "string"
+                },
+                "ndstartdate": {
+                  "description": "Field as reported by NSE.",
+                  "type": "string"
+                },
+                "recdate": {
+                  "description": "Record date.",
+                  "type": "string"
+                },
+                "series": {
+                  "description": "Security series.",
+                  "type": "string"
+                },
+                "subject": {
+                  "description": "Action purpose.",
+                  "type": "string"
+                },
+                "symbol": {
+                  "description": "NSE symbol.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns every action NSE holds for the symbol.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this for announcements or shareholding; use announcements or shareholding.",
+      "when_to_use": "Use this for a company's corporate-action history on NSE."
+    },
+    "shareholding": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "monitoring",
+      "description": "List an NSE-listed company's shareholding-pattern disclosures (promoter and public holdings by quarter).",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "index": "equities",
+            "symbol": "RELIANCE"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "index": {
+            "default": "equities",
+            "description": "NSE market segment.",
+            "enum": [
+              "equities",
+              "sme",
+              "debt",
+              "mf"
+            ],
+            "type": "string"
+          },
+          "symbol": {
+            "description": "NSE trading symbol, such as RELIANCE.",
+            "maxLength": 20,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "symbol"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Quarterly shareholding-pattern disclosures, newest first.",
+            "items": {
+              "properties": {
+                "date": {
+                  "description": "Quarter end date."
+                },
+                "name": {
+                  "description": "Company name.",
+                  "type": "string"
+                },
+                "promoter_percent": {
+                  "description": "Promoter and promoter-group holding percent."
+                },
+                "public_percent": {
+                  "description": "Public holding percent."
+                },
+                "submission_date": {
+                  "description": "Disclosure date."
+                },
+                "symbol": {
+                  "description": "NSE symbol."
+                },
+                "xbrl": {
+                  "description": "Link to the full XBRL disclosure."
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns every quarterly disclosure NSE holds for the symbol.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this for prices or corporate actions.",
+      "when_to_use": "Use this to track promoter versus public holdings for a company across quarters."
+    }
+  },
+  "cookie_domain": ".www.nseindia.com",
+  "coverage": {
+    "constraints": [
+      "Site permissions, rate limits, and anti-automation rules still apply"
+    ],
+    "human_boundaries": [
+      "NSE's dated historical announcement search is not mapped; this covers the live feed."
+    ],
+    "not_mapped": [],
+    "protocol_fallback": null,
+    "typed_fast_paths": [
+      "announcements",
+      "corporate_actions",
+      "shareholding"
+    ],
+    "website_parity": "Mapping mode can inspect the remaining website while direct request recipes are compiled. Browser commands are never counted as runtime parity."
+  },
+  "description": "Complete agent interface for www.nseindia.com",
+  "entrypoint": "adapter.py",
+  "evidence_capsules": {},
+  "flow_capsules": {
+    "announcements": {
+      "contract": "announcements",
+      "path": "flows/announcements.json"
+    },
+    "corporate_actions": {
+      "contract": "corporate_actions",
+      "path": "flows/corporate_actions.json"
+    },
+    "shareholding": {
+      "contract": "shareholding",
+      "path": "flows/shareholding.json"
+    }
+  },
+  "name": "nse",
+  "operation_contracts": {
+    "announcements": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "an_dt": {
+              "path": "$.an_dt"
+            },
+            "attchmntfile": {
+              "path": "$.attchmntFile"
+            },
+            "attchmnttext": {
+              "path": "$.attchmntText"
+            },
+            "desc": {
+              "path": "$.desc"
+            },
+            "sm_name": {
+              "path": "$.sm_name"
+            },
+            "smindustry": {
+              "default": null,
+              "path": "$.smIndustry"
+            },
+            "symbol": {
+              "path": "$.symbol"
+            }
+          },
+          "source": "$"
+        },
+        "recipe_hash": "c395a183c40746ca44dc75f9eb7db48a04bc995f061016bd23d9284e30632736",
+        "type": "generated_recipe",
+        "variables": {
+          "index": "index"
+        }
+      },
+      "capabilities": [
+        "public_announcements"
+      ],
+      "category": "monitoring",
+      "contract_hash": "bcc23020d30af351206aebbe92b113866a3cec77a9f1307cb7c14df1ed4c97f6",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "index": "equities"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "index": {
+            "description": "Announcement index; equities covers listed companies.",
+            "enum": [
+              "equities",
+              "sme",
+              "debt",
+              "mf"
+            ],
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "index"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "announcements",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Newest NSE announcements, newest first.",
+            "items": {
+              "properties": {
+                "an_dt": {
+                  "description": "Announcement timestamp.",
+                  "type": "string"
+                },
+                "attchmntfile": {
+                  "description": "Attachment PDF URL.",
+                  "type": "string"
+                },
+                "attchmnttext": {
+                  "description": "Announcement text summary.",
+                  "type": "string"
+                },
+                "desc": {
+                  "description": "Announcement subject.",
+                  "type": "string"
+                },
+                "sm_name": {
+                  "description": "Company name.",
+                  "type": "string"
+                },
+                "smindustry": {
+                  "description": "Company industry when given."
+                },
+                "symbol": {
+                  "description": "NSE trading symbol.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "NSE returns the newest announcements for the chosen index.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784919747.874852,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "List the latest corporate announcements filed with NSE by listed companies, with subjects, timestamps, and attachment links.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns matching records",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "bcc23020d30af351206aebbe92b113866a3cec77a9f1307cb7c14df1ed4c97f6",
+            "input_names": [
+              "index"
+            ],
+            "passed": true,
+            "recipe_hash": "c395a183c40746ca44dc75f9eb7db48a04bc995f061016bd23d9284e30632736",
+            "verified_at_unix": 1784919747.1319783
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns matching records",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for BSE filings; use the bse adapter.",
+      "when_to_use": "Use this when an agent needs the newest NSE corporate filings and disclosures."
+    },
+    "corporate_actions": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "bcenddate": {
+              "path": "$.bcEndDate"
+            },
+            "bcstartdate": {
+              "path": "$.bcStartDate"
+            },
+            "cabroadcastdate": {
+              "default": null,
+              "path": "$.caBroadcastDate"
+            },
+            "comp": {
+              "path": "$.comp"
+            },
+            "exdate": {
+              "path": "$.exDate"
+            },
+            "faceval": {
+              "path": "$.faceVal"
+            },
+            "ind": {
+              "path": "$.ind"
+            },
+            "isin": {
+              "path": "$.isin"
+            },
+            "ndenddate": {
+              "path": "$.ndEndDate"
+            },
+            "ndstartdate": {
+              "path": "$.ndStartDate"
+            },
+            "recdate": {
+              "path": "$.recDate"
+            },
+            "series": {
+              "path": "$.series"
+            },
+            "subject": {
+              "path": "$.subject"
+            },
+            "symbol": {
+              "path": "$.symbol"
+            }
+          },
+          "source": "$"
+        },
+        "recipe_hash": "9368e96f5a0ee9beacfc0b5014cc424b5f474b1af8dd97442b4eb34e2c33d2d3",
+        "type": "generated_recipe",
+        "variables": {
+          "index": {
+            "default": "equities",
+            "source": "index"
+          },
+          "symbol": "symbol"
+        }
+      },
+      "capabilities": [
+        "public_corporate_actions"
+      ],
+      "category": "monitoring",
+      "contract_hash": "0edda948a150339df4369791d0c52abc7b6b0b08cf389707c201d668a045f620",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "index": "equities",
+            "symbol": "RELIANCE"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "index": {
+            "default": "equities",
+            "description": "NSE market segment.",
+            "enum": [
+              "equities",
+              "sme",
+              "debt",
+              "mf"
+            ],
+            "type": "string"
+          },
+          "symbol": {
+            "description": "NSE trading symbol, such as RELIANCE.",
+            "maxLength": 20,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "symbol"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "corporate_actions",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Corporate actions announced for the symbol: subject, ex-date, record date, and book-closure window.",
+            "items": {
+              "properties": {
+                "bcenddate": {
+                  "description": "Field as reported by NSE.",
+                  "type": "string"
+                },
+                "bcstartdate": {
+                  "description": "Field as reported by NSE.",
+                  "type": "string"
+                },
+                "cabroadcastdate": {
+                  "description": "Field as reported by NSE."
+                },
+                "comp": {
+                  "description": "Company name.",
+                  "type": "string"
+                },
+                "exdate": {
+                  "description": "Ex-date.",
+                  "type": "string"
+                },
+                "faceval": {
+                  "description": "Face value.",
+                  "type": "string"
+                },
+                "ind": {
+                  "description": "Field as reported by NSE.",
+                  "type": "string"
+                },
+                "isin": {
+                  "description": "ISIN.",
+                  "type": "string"
+                },
+                "ndenddate": {
+                  "description": "Field as reported by NSE.",
+                  "type": "string"
+                },
+                "ndstartdate": {
+                  "description": "Field as reported by NSE.",
+                  "type": "string"
+                },
+                "recdate": {
+                  "description": "Record date.",
+                  "type": "string"
+                },
+                "series": {
+                  "description": "Security series.",
+                  "type": "string"
+                },
+                "subject": {
+                  "description": "Action purpose.",
+                  "type": "string"
+                },
+                "symbol": {
+                  "description": "NSE symbol.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns every action NSE holds for the symbol.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784919747.880415,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "List an NSE-listed company's corporate actions (dividends, splits, bonuses) with ex-dates and record dates.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns corporate actions",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "0edda948a150339df4369791d0c52abc7b6b0b08cf389707c201d668a045f620",
+            "input_names": [
+              "index",
+              "symbol"
+            ],
+            "passed": true,
+            "recipe_hash": "9368e96f5a0ee9beacfc0b5014cc424b5f474b1af8dd97442b4eb34e2c33d2d3",
+            "verified_at_unix": 1784919747.501056
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns corporate actions",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for announcements or shareholding; use announcements or shareholding.",
+      "when_to_use": "Use this for a company's corporate-action history on NSE."
+    },
+    "shareholding": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "date": {
+              "default": null,
+              "path": "$.date"
+            },
+            "name": {
+              "path": "$.name"
+            },
+            "promoter_percent": {
+              "default": null,
+              "path": "$.pr_and_prgrp"
+            },
+            "public_percent": {
+              "default": null,
+              "path": "$.public_val"
+            },
+            "submission_date": {
+              "default": null,
+              "path": "$.submissionDate"
+            },
+            "symbol": {
+              "path": "$.symbol"
+            },
+            "xbrl": {
+              "default": null,
+              "path": "$.xbrl"
+            }
+          },
+          "source": "$"
+        },
+        "recipe_hash": "78ee51403edf71e55fa3c6d4da860f152be41e494950384c0006ae63d57dedad",
+        "type": "generated_recipe",
+        "variables": {
+          "index": {
+            "default": "equities",
+            "source": "index"
+          },
+          "symbol": "symbol"
+        }
+      },
+      "capabilities": [
+        "public_shareholding"
+      ],
+      "category": "monitoring",
+      "contract_hash": "63f806f1f4583ca321936c77823cce34e62e040b2c75786967df5c62c7c05cc8",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "index": "equities",
+            "symbol": "RELIANCE"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "index": {
+            "default": "equities",
+            "description": "NSE market segment.",
+            "enum": [
+              "equities",
+              "sme",
+              "debt",
+              "mf"
+            ],
+            "type": "string"
+          },
+          "symbol": {
+            "description": "NSE trading symbol, such as RELIANCE.",
+            "maxLength": 20,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "symbol"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "shareholding",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Quarterly shareholding-pattern disclosures, newest first.",
+            "items": {
+              "properties": {
+                "date": {
+                  "description": "Quarter end date."
+                },
+                "name": {
+                  "description": "Company name.",
+                  "type": "string"
+                },
+                "promoter_percent": {
+                  "description": "Promoter and promoter-group holding percent."
+                },
+                "public_percent": {
+                  "description": "Public holding percent."
+                },
+                "submission_date": {
+                  "description": "Disclosure date."
+                },
+                "symbol": {
+                  "description": "NSE symbol."
+                },
+                "xbrl": {
+                  "description": "Link to the full XBRL disclosure."
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns every quarterly disclosure NSE holds for the symbol.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784919747.8848183,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "List an NSE-listed company's shareholding-pattern disclosures (promoter and public holdings by quarter).",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns disclosures",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "63f806f1f4583ca321936c77823cce34e62e040b2c75786967df5c62c7c05cc8",
+            "input_names": [
+              "index",
+              "symbol"
+            ],
+            "passed": true,
+            "recipe_hash": "78ee51403edf71e55fa3c6d4da860f152be41e494950384c0006ae63d57dedad",
+            "verified_at_unix": 1784919747.8673158
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns disclosures",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for prices or corporate actions.",
+      "when_to_use": "Use this to track promoter versus public holdings for a company across quarters."
+    }
+  },
+  "runtime": {
+    "auth_interaction": "not_yet_mapped",
+    "browserless_replay": true
+  },
+  "url_routes": [],
+  "version": "0.2.0"
+}

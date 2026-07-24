@@ -21,6 +21,26 @@
       "state": "verified",
       "surface": "public_api"
     },
+    "public_corporate_actions": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_dividends": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
     "public_quote": {
       "boundary_evidence": 0,
       "in_matrix": true,
@@ -35,7 +55,7 @@
   "catalog_complete": true,
   "excluded_operations": {},
   "exhaustive": true,
-  "generated_at_unix": 1784878857.8458424,
+  "generated_at_unix": 1784919746.113866,
   "matrix": {
     "locales": [
       "en-IN"
@@ -53,7 +73,23 @@
       "capabilities": [
         "public_announcements"
       ],
-      "contract_hash": "efcb731c4fa04008de3038d6d16e9c901daadcc82af74f4b4a3d897c29163c98",
+      "contract_hash": "4d846309c836ff45597ead5db26ce1e3077495a04e427308db3448ace7082817",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "corporate_actions": {
+      "capabilities": [
+        "public_corporate_actions"
+      ],
+      "contract_hash": "b75f82d614159cbb8cb82fac51249d0a1ec66e1bae4ba6918b2bc088f7970235",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "dividends": {
+      "capabilities": [
+        "public_dividends"
+      ],
+      "contract_hash": "a28e3779400ed6b5d4bd5594749807a98de21e1f21aa8592c00d4b4807214c58",
       "implementation_artifact_sha256": null,
       "verification_status": "passed"
     },
@@ -66,7 +102,7 @@
       "verification_status": "passed"
     }
   },
-  "project_hash": "284d161b8eb46d6b463eef3bbf2e01a11aab8565c7f69baa6b0c0d9d18feea04",
+  "project_hash": "66254ae250e390a98d20e91e876d9e5826fdb8f18eb26806eeab157189ff8f5f",
   "publication_mode": "reviewed",
   "schema_version": 1,
   "tool_quality_verified": true,

@@ -1,0 +1,92 @@
+{
+  "captured_at_unix": 1784884346.5336523,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://www.bseindia.com",
+      "before": "https://www.bseindia.com"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "announcements",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "announcements",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "from_date",
+      "page",
+      "scrip_code",
+      "to_date"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "headers": {
+          "Referer": "https://www.bseindia.com/"
+        },
+        "method": "GET",
+        "name": "announcements",
+        "path": "https://api.bseindia.com/BseIndiaAPI/api/AnnSubCategoryGetData/w",
+        "query": {
+          "pageno": "{page}",
+          "strCat": "-1",
+          "strPrevDate": "{from_date}",
+          "strScrip": "{scrip_code}",
+          "strSearch": "P",
+          "strToDate": "{to_date}",
+          "strType": "C",
+          "subcategory": "-1"
+        }
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "bse",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns announcements for the requested company",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "4d846309c836ff45597ead5db26ce1e3077495a04e427308db3448ace7082817",
+    "evidence_version": 2,
+    "recipe_hash": "802d23a233c454ce7c1e200a3039f144b273536a611b3318571f064656456732",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784919745.2373354
+  }
+}
