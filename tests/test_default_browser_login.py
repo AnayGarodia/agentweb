@@ -127,6 +127,32 @@ def test_seed_profile_uses_explicit_source(monkeypatch, tmp_path) -> None:
     assert (profile_dir / "Default" / "Cookies").read_text() == "arc-cookies"
 
 
+def test_seed_profile_copies_all_profiles(monkeypatch, tmp_path) -> None:
+    # A user with several Chrome profiles (Default + Profile 1) must get all of
+    # them seeded so every "Continue with Google" account and the profile
+    # switcher are available -- not just an often-empty Default.
+    monkeypatch.delenv("AGENTWEB_CHROME_USER_DATA_DIR", raising=False)
+    monkeypatch.delenv("AGENTWEB_CHROME_PROFILE_DIRECTORY", raising=False)
+    source = tmp_path / "User Data"
+    (source / "Default").mkdir(parents=True)
+    (source / "Profile 1").mkdir(parents=True)
+    (source / "Local State").write_text(
+        '{"profile": {"info_cache": {"Default": {}, "Profile 1": {}}}}',
+        encoding="utf-8",
+    )
+    (source / "Default" / "Cookies").write_text("default-cookies", encoding="utf-8")
+    (source / "Profile 1" / "Cookies").write_text("p1-cookies", encoding="utf-8")
+
+    profile_dir = tmp_path / "site-profile"
+    result = seed_profile_from_default_browser(
+        profile_dir, source_dir=source, source_name="Chrome", progress=lambda _m: None
+    )
+    assert result["seeded"] is True
+    assert set(result["profiles"]) == {"Default", "Profile 1"}
+    assert (profile_dir / "Default" / "Cookies").read_text() == "default-cookies"
+    assert (profile_dir / "Profile 1" / "Cookies").read_text() == "p1-cookies"
+
+
 def _profile(name: str, tmp_path: Path) -> BrowserProfile:
     data_dir = tmp_path / name
     data_dir.mkdir(exist_ok=True)

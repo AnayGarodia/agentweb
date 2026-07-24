@@ -468,6 +468,32 @@ _SEED_PROFILE_FILES = (
 )
 
 
+def _source_profile_dirs(source: Path) -> list[str]:
+    """Every Chrome profile directory in ``source`` that should be seeded.
+
+    A user can have several profiles (``Default``, ``Profile 1``, ...), each
+    with its own signed-in accounts. Copying *all* of them -- plus the shared
+    ``Local State`` -- means the launched browser shows the profile switcher and
+    every "Continue with Google" account, instead of a single (often empty)
+    ``Default``. Reads ``Local State``'s ``profile.info_cache`` (the
+    authoritative profile list) and falls back to the conventional
+    ``Default`` / ``Profile N`` names when it can't be parsed.
+    """
+    names: list[str] = []
+    local_state = source / "Local State"
+    if local_state.is_file():
+        try:
+            data = json.loads(local_state.read_text(encoding="utf-8"))
+            info_cache = data.get("profile", {}).get("info_cache", {})
+            names = [name for name in info_cache if (source / name).is_dir()]
+        except (OSError, ValueError):
+            names = []
+    if not names:
+        candidates = ["Default"] + [f"Profile {index}" for index in range(1, 50)]
+        names = [name for name in candidates if (source / name).is_dir()]
+    return names
+
+
 def seed_profile_from_default_browser(
     profile_dir: Path,
     *,
@@ -504,11 +530,12 @@ def seed_profile_from_default_browser(
     source = source_dir if source_dir is not None else default_chrome_user_data_dir()
     if source is None:
         return {"seeded": False, "reason": "no_default_browser_profile"}
-    profile_directory = (
-        os.environ.get("AGENTWEB_CHROME_PROFILE_DIRECTORY") or "Default"
-    )
-    source_profile = source / profile_directory
-    if not source_profile.is_dir():
+    override_profile = os.environ.get("AGENTWEB_CHROME_PROFILE_DIRECTORY")
+    if override_profile:
+        profile_names = [override_profile] if (source / override_profile).is_dir() else []
+    else:
+        profile_names = _source_profile_dirs(source)
+    if not profile_names:
         return {"seeded": False, "reason": "default_profile_directory_missing"}
 
     def _copy(src: Path, dst: Path) -> bool:
@@ -535,22 +562,36 @@ def seed_profile_from_default_browser(
     for name in _SEED_TOP_LEVEL_FILES:
         if _copy(source / name, profile_dir / name):
             copied += 1
-    dest_profile = profile_dir / "Default"
-    for relative in _SEED_PROFILE_FILES:
-        if _copy(source_profile / relative, dest_profile / relative):
-            copied += 1
+    seeded_profiles: list[str] = []
+    for profile_name in profile_names:
+        source_profile = source / profile_name
+        if not source_profile.is_dir():
+            continue
+        dest_profile = profile_dir / profile_name
+        profile_copied = 0
+        for relative in _SEED_PROFILE_FILES:
+            if _copy(source_profile / relative, dest_profile / relative):
+                profile_copied += 1
+        if profile_copied:
+            copied += profile_copied
+            seeded_profiles.append(profile_name)
     if not copied:
         return {"seeded": False, "reason": "no_session_files_found"}
     marker.write_text("1", encoding="utf-8")
+    accounts = (
+        "all your signed-in accounts are available"
+        if len(seeded_profiles) > 1
+        else "your signed-in accounts are available"
+    )
     progress(
         f"Reusing your {source_name or 'default browser'} sign-in for this login "
-        "(only this site's cookies are saved)."
+        f"({accounts}; only this site's cookies are saved)."
     )
     return {
         "seeded": True,
         "source": str(source),
         "source_name": source_name,
-        "profile_directory": profile_directory,
+        "profiles": seeded_profiles,
         "files_copied": copied,
     }
 
