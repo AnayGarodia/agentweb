@@ -173,19 +173,29 @@ _SEED_PROFILE_FILES = (
 def seed_profile_from_default_browser(
     profile_dir: Path,
     *,
+    reseed: bool = False,
     progress: Progress = stderr_progress,
 ) -> dict[str, Any]:
     """Seed a per-site login profile from the user's everyday Chrome profile.
 
     Copies only the files that carry a signed-in session so the managed login
     window opens already authenticated to whatever the user is signed into,
-    instead of a blank browser. Runs once per site profile (guarded by a
-    marker) and never overwrites a profile that has already captured a session.
-    Cookies are still filtered to the target site before anything is persisted
-    to the browserless session jar, so cross-site cookies are not retained.
+    instead of a blank browser. Cookies are still filtered to the target site
+    before anything is persisted to the browserless session jar, so cross-site
+    cookies are not retained.
+
+    ``reseed`` refreshes the copy even when the managed profile already holds
+    cookies. The login flow passes it because it only reaches seeding once the
+    existing session has failed to validate, so an old (logged-out) copy left by
+    a previous connect must not permanently block reuse of the everyday
+    session -- the bug behind "it opens a logged-out window even though I'm
+    signed in in my normal browser". Seed-once callers (e.g. browser transport)
+    leave it ``False`` so a live captured session is never overwritten.
     """
     marker = profile_dir / ".agentweb-seeded"
-    if marker.exists() or (profile_dir / "Default" / "Cookies").exists():
+    if not reseed and (
+        marker.exists() or (profile_dir / "Default" / "Cookies").exists()
+    ):
         return {"seeded": False, "reason": "profile_already_initialized"}
     source = default_chrome_user_data_dir()
     if source is None:
@@ -204,8 +214,16 @@ def seed_profile_from_default_browser(
         shutil.copy2(src, dst)
         for suffix in ("-wal", "-journal"):
             sibling = src.with_name(src.name + suffix)
+            dst_sibling = dst.with_name(dst.name + suffix)
             if sibling.is_file():
-                shutil.copy2(sibling, dst.with_name(dst.name + suffix))
+                shutil.copy2(sibling, dst_sibling)
+            elif dst_sibling.exists():
+                # A leftover WAL/journal from a previous seed would be replayed
+                # against the freshly-copied database and corrupt it, so drop it.
+                try:
+                    dst_sibling.unlink()
+                except OSError:
+                    pass
         return True
 
     copied = 0
@@ -1268,8 +1286,12 @@ def connect_site(
     profile_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
     seed_result: dict[str, Any] = {"seeded": False, "reason": "disabled"}
     if use_default_browser_enabled(use_default_browser):
+        # Reseed on every login attempt: control only reaches here once the
+        # existing session failed to validate, so a stale logged-out copy from
+        # an earlier connect must be refreshed rather than left to force a
+        # blank window forever.
         seed_result = seed_profile_from_default_browser(
-            profile_dir, progress=progress
+            profile_dir, reseed=True, progress=progress
         )
     browser_impersonation = manifest.get("browser_impersonation") or {}
     progress(

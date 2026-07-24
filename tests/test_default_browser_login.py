@@ -64,6 +64,34 @@ def test_seed_profile_copies_only_session_files(monkeypatch, tmp_path) -> None:
     assert again["reason"] == "profile_already_initialized"
 
 
+def test_seed_profile_reseeds_stale_logged_out_copy(monkeypatch, tmp_path) -> None:
+    # Regression: a per-site profile left by an earlier connect (its own
+    # Cookies file present) used to block default-browser reuse forever, so the
+    # login window kept opening logged out. The login path reseeds instead.
+    source = tmp_path / "User Data"
+    (source / "Default").mkdir(parents=True)
+    (source / "Local State").write_text("state", encoding="utf-8")
+    (source / "Default" / "Cookies").write_text("fresh-cookies", encoding="utf-8")
+    monkeypatch.setenv("AGENTWEB_CHROME_USER_DATA_DIR", str(source))
+    monkeypatch.delenv("AGENTWEB_CHROME_PROFILE_DIRECTORY", raising=False)
+
+    profile_dir = tmp_path / "site-profile"
+    (profile_dir / "Default").mkdir(parents=True)
+    (profile_dir / "Default" / "Cookies").write_text("stale", encoding="utf-8")
+    (profile_dir / "Default" / "Cookies-wal").write_text("stale-wal", encoding="utf-8")
+
+    blocked = seed_profile_from_default_browser(profile_dir, progress=lambda _m: None)
+    assert blocked == {"seeded": False, "reason": "profile_already_initialized"}
+
+    result = seed_profile_from_default_browser(
+        profile_dir, reseed=True, progress=lambda _m: None
+    )
+    assert result["seeded"] is True
+    assert (profile_dir / "Default" / "Cookies").read_text() == "fresh-cookies"
+    # A leftover WAL from the stale copy must be dropped, not replayed.
+    assert not (profile_dir / "Default" / "Cookies-wal").exists()
+
+
 def test_seed_profile_no_default_browser(monkeypatch, tmp_path) -> None:
     monkeypatch.setenv("AGENTWEB_CHROME_USER_DATA_DIR", str(tmp_path / "nope"))
     result = seed_profile_from_default_browser(
