@@ -3,6 +3,14 @@
   "sites": [
     {
       "files": {
+        "adapter.py": "9f517fce90ff61863c8624e275b8b41c8f6de4ae8de227c986dc1403151f6d2c",
+        "manifest.json": "4f7b46ef8e2e9b7415f0493205a885cade43ff35176e6d4a915de7bd8b87a47a"
+      },
+      "name": "amazon",
+      "version": "0.9.22"
+    },
+    {
+      "files": {
         "adapter.py": "88f70ff348b6b90dde019884d7e7e62abd433dced5a26f374f45474ccf11716f",
         "authoring-report.json": "7d096a4d91402b33ba5edec399bb9344d040153951f70ecaac0edad17129214f",
         "flows/download_pdf.json": "d4243d91ada8954f23faa48760bf5eb7b501a9259121dfc290f96b81549f9a41",
@@ -124,6 +132,14 @@
     },
     {
       "files": {
+        "adapter.py": "ed8d553414bcdc64ac1a914ee37b023aea74e96849db4baa4fce1b94b793a9a9",
+        "manifest.json": "e3a6aa074037cb0b35f282bd9db3650e8cae12a456543d6acaf5d6cf10eadd95"
+      },
+      "name": "linkedin",
+      "version": "0.2.2"
+    },
+    {
+      "files": {
         "adapter.py": "d6052c15698dcd4839c3bbd7e17f8e452dbb0b3dc73ff9821783c20aeac94d29",
         "authoring-report.json": "ee3929c8bd588a5f7ab0b6504d340d265b35085ca9c3653c0652f11907b79f9e",
         "flows/audit_versions.json": "75c3819f3bcc8961e369acad3c2260862bc2a2b6c0d0afddd08075f0a5457123",
@@ -174,6 +190,22 @@
       },
       "name": "pypi",
       "version": "0.1.0"
+    },
+    {
+      "files": {
+        "adapter.py": "9bf0206d7833e93570694fbaa591b62c580a7632c0cf18e5f57be8a8000458d8",
+        "manifest.json": "19c46fcf3f77b6fe59726b35e78cb3fce143c765a3da0e194861c53f9086dedb"
+      },
+      "name": "spotify",
+      "version": "0.4.6"
+    },
+    {
+      "files": {
+        "adapter.py": "5d1b268b259f55b4c22e1acbaf181ebed47df706c8fd2ced00c50985c4c20b07",
+        "manifest.json": "f89953a8a68a69e7d3d4baffe3dc47a9633d6c7b127d5ff90dc906b76c3c7a34"
+      },
+      "name": "stackoverflow",
+      "version": "0.8.7"
     },
     {
       "files": {

@@ -159,8 +159,10 @@ are JSON, so agents do not need site-specific parsing code.
 
 ## What is included today?
 
-This installer bundles **eight fully open adapters**, and `agentweb setup` (run for
-you by the one-line installer) registers exactly those eight on first run:
+This installer bundles **twelve adapters**, and `agentweb setup` (run for you by
+the one-line installer) registers all of them on first run. Public operations work
+immediately; the login-required sites request a browser sign-in only when you use
+an operation that needs it (`agentweb connect DOMAIN`).
 
 | Adapter | Domain | Examples |
 | --- | --- | --- |
@@ -172,30 +174,24 @@ you by the one-line installer) registers exactly those eight on first run:
 | Hacker News | `news.ycombinator.com` | Read and search stories, comments, users, and activity; submit, edit, vote, flag, and favorite when signed in |
 | Hugging Face | `huggingface.co` | Explore models, datasets, Spaces, repositories, files, papers, documentation, collections, and discussions |
 | GST | `gst.gov.in` | Search HSN/SAC data and browse practitioners, advisories, due dates, holidays, laws, statistics, and tools |
+| Amazon | `amazon.com` | Search and compare products, inspect reviews and deals, manage a cart and addresses, read orders, and complete a confirmed checkout |
+| LinkedIn | `linkedin.com` | Search public jobs, inspect jobs and companies, keep a normal website login, and call approved official API endpoints |
+| Spotify | `open.spotify.com` | Search and play music, control the desktop player, and manage playback, devices, queues, libraries, and playlists after login |
+| Stack Overflow | `stackoverflow.com` | Search and read questions, answers, comments, users, and tags; ask, answer, comment, and vote when signed in |
 
 Run `agentweb sites` to see exactly what is installed and `agentweb capabilities
 DOMAIN` for a site's operation list and any declared gaps.
 
 This repository is the open core: the command-line tool, runtime, login/session
 system, adapter format, signed updater, tests, and the adapters above. The
-automatic system used to map and repair the official catalog is **not** in this
-repository.
+automatic system used to map and repair the catalog is **not** in this repository.
 
-### Login-required sites (distributed separately)
+> **Note on terms of service.** Some sites (notably Amazon and LinkedIn) restrict
+> automated access in their terms of service. You are responsible for using these
+> adapters in a way that complies with each site's terms and applicable law.
 
-A few sites depend on a signed-in browser session and/or interact with a site in
-ways governed by that site's terms of service, so they are **not** bundled in this
-installer and are distributed separately as signed adapters:
-
-| Website | Domain | What an agent can do |
-| --- | --- | --- |
-| Amazon | `amazon.com` | Search and compare products, inspect reviews and deals, manage a cart and addresses, read orders, and complete a confirmed checkout |
-| LinkedIn | `linkedin.com` | Search public jobs, inspect jobs and companies, keep a normal website login, and call approved official API endpoints |
-| Spotify | `open.spotify.com` | Search and play music, control the desktop player, and manage playback, devices, queues, libraries, and playlists after login |
-| Stack Overflow | `stackoverflow.com` | Search and read questions, answers, comments, users, and tags; ask, answer, comment, and vote when signed in |
-
-Once that catalog is configured, `agentweb sync` pulls the latest signed adapters
-and `agentweb sites` shows what is currently installed.
+`agentweb sync` pulls the latest signed adapters and `agentweb sites` shows what is
+currently installed.
 
 ## How it works
 

@@ -12,13 +12,17 @@ PRIVATE_MODULES = {
     "agentweb/workbench.py",
 }
 PUBLIC_ADAPTERS = {
+    "amazon",
     "arxiv",
     "github",
     "gst",
     "hn",
     "huggingface",
+    "linkedin",
     "npm",
     "pypi",
+    "spotify",
+    "stackoverflow",
     "wikipedia",
 }
 FORBIDDEN_PARTS = {

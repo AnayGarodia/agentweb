@@ -44,13 +44,17 @@ def test_npm_manifest_is_a_public_reference_adapter(tmp_path: Path) -> None:
     evidence = json.loads((bundle / "flows" / "get_package.json").read_text())
 
     assert {entry["name"] for entry in index["sites"]} == {
+        "amazon",
         "arxiv",
         "github",
         "gst",
         "hn",
         "huggingface",
+        "linkedin",
         "npm",
         "pypi",
+        "spotify",
+        "stackoverflow",
         "wikipedia",
     }
     assert audit["exhaustive"] is True

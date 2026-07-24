@@ -54,23 +54,31 @@ def test_reference_registry_contains_only_public_adapters(tmp_path: Path) -> Non
     result = Registry(paths).sync(str(bundled_registry()))
 
     assert result["available"] == [
+        "amazon",
         "arxiv",
         "github",
         "gst",
         "hn",
         "huggingface",
+        "linkedin",
         "npm",
         "pypi",
+        "spotify",
+        "stackoverflow",
         "wikipedia",
     ]
     assert {item["name"] for item in Runtime(paths).sites()} == {
+        "amazon",
         "arxiv",
         "github",
         "gst",
         "hn",
         "huggingface",
+        "linkedin",
         "npm",
         "pypi",
+        "spotify",
+        "stackoverflow",
         "wikipedia",
     }
 
@@ -88,14 +96,18 @@ def test_sync_preserves_adapters_from_other_registries(tmp_path: Path) -> None:
 
     assert result["removed"] == []
     assert set(result["available"]) == {
+        "amazon",
         "arxiv",
         "example",
         "github",
         "gst",
         "hn",
         "huggingface",
+        "linkedin",
         "npm",
         "pypi",
+        "spotify",
+        "stackoverflow",
         "wikipedia",
     }
     assert "example" in {item["name"] for item in Runtime(paths).sites()}
@@ -114,13 +126,17 @@ def test_sync_prune_explicitly_removes_adapters_not_in_source(tmp_path: Path) ->
 
     assert result["removed"] == ["example"]
     assert set(result["available"]) == {
+        "amazon",
         "arxiv",
         "github",
         "gst",
         "hn",
         "huggingface",
+        "linkedin",
         "npm",
         "pypi",
+        "spotify",
+        "stackoverflow",
         "wikipedia",
     }
 
@@ -496,13 +512,17 @@ def test_public_registry_audit_reports_real_state() -> None:
     sites = {item["name"]: item for item in audit["sites"]}
 
     assert set(sites) == {
+        "amazon",
         "arxiv",
         "github",
         "gst",
         "hn",
         "huggingface",
+        "linkedin",
         "npm",
         "pypi",
+        "spotify",
+        "stackoverflow",
         "wikipedia",
     }
     assert sites["arxiv"]["exhaustive"] is True

@@ -1,0 +1,2171 @@
+{
+  "name": "stackoverflow",
+  "version": "0.8.7",
+  "description": "Broad public Stack Overflow access for questions, answers, comments, users, tags, related content, and discovery.",
+  "canonical_domain": "stackoverflow.com",
+  "aliases": [
+    "stackoverflow",
+    "stack-overflow"
+  ],
+  "url_routes": [
+    {
+      "path_regex": "/(?:questions|q)/(?P<question_id>[0-9]+)(?:/.*)?",
+      "operation": "question",
+      "arguments": {
+        "question_id": {
+          "group": "question_id",
+          "transform": "integer"
+        }
+      }
+    }
+  ],
+  "base_url": "https://stackoverflow.com",
+  "login_url": "https://stackoverflow.com/users/login",
+  "signup_url": "https://stackoverflow.com/users/signup",
+  "auth": {
+    "strategy": "cookie_session",
+    "interaction": "one_time_browser_authorization"
+  },
+  "cookie_domain": ".stackoverflow.com",
+  "allowed_domains": [
+    "stackoverflow.com",
+    "stackauth.com",
+    "stackexchange.com"
+  ],
+  "runtime": {
+    "browserless_replay": true,
+    "auth_interaction": "one normal Stack Overflow login when an account action first needs it"
+  },
+  "auth_cookie_names": [
+    "acct",
+    "usr",
+    ".ASPXAUTH"
+  ],
+  "entrypoint": "adapter.py",
+  "coverage": {
+    "typed_fast_paths": [
+      "advanced search and feeds",
+      "questions, answers, and timelines",
+      "post comments",
+      "users, user questions, and user answers",
+      "unanswered, related, and similar questions",
+      "tag discovery and tag metadata",
+      "quota and backoff metadata",
+      "asking, answering, commenting, and voting with retained-session fkey handling",
+      "generic current-form submission",
+      "bounded read-only access to other public Stack Exchange API endpoints"
+    ],
+    "website_parity": "Public API reads are browserless. After one normal login or signup authorization, typed writes obtain the current fkey automatically. submit_form and the fixed-host direct workflow cover edits, flags, saves, moderation, and newly introduced same-site forms without a browser.",
+    "protocol_fallback": "direct_workflow",
+    "not_mapped": [],
+    "human_boundaries": [
+      "password, CAPTCHA, OTP, email verification, and consent during account authorization",
+      "site privilege requirements for voting and moderation"
+    ],
+    "constraints": [
+      "Privileges and rate limits are enforced by Stack Overflow",
+      "other Stack Exchange domains need to be added to the adapter allowlist before agent navigation"
+    ],
+    "capability": {
+      "schema_version": 1,
+      "discovered_route_count": 32,
+      "mapped_count": 20,
+      "excluded_count": 2,
+      "open_count": 10,
+      "exhaustive": false,
+      "coverage_ratio": 0.625,
+      "remaining": [
+        {
+          "route": "GET /collectives",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /election",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /help/articles",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /questions/{id}/bounty",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /review",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /users/{id}/badges",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /users/{id}/inbox",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /users/{id}/privileges",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /users/{id}/reputation",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        },
+        {
+          "route": "GET /users/{id}/saves",
+          "status": "unmapped",
+          "reason": "Discovered route with no operation, exclusion, or review entry."
+        }
+      ],
+      "read": {
+        "discovered_route_count": 28,
+        "mapped_count": 16,
+        "excluded_count": 2,
+        "open_count": 10,
+        "coverage_ratio": 0.5714
+      },
+      "write": {
+        "discovered_route_count": 4,
+        "mapped_count": 4,
+        "excluded_count": 0,
+        "open_count": 0,
+        "coverage_ratio": 1.0
+      }
+    }
+  },
+  "commands": {
+    "search": {
+      "description": "Search Stack Overflow questions with optional tags and accepted-answer filtering.",
+      "category": "discovery",
+      "when_to_use": "Use this to search questions by keywords, with optional required tags and accepted-answer filtering.",
+      "when_not_to_use": "Do not use this to read one question's answers; call question.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 120,
+      "cli": {
+        "positionals": [
+          "query"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Full-text query"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 10,
+            "description": "Maximum questions",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "sort": {
+            "type": "string",
+            "enum": [
+              "relevance",
+              "votes",
+              "creation",
+              "activity"
+            ],
+            "default": "relevance",
+            "description": "Question ordering"
+          },
+          "tagged": {
+            "type": "array",
+            "description": "Required tags; repeat --tagged in the CLI"
+          },
+          "accepted_only": {
+            "type": "boolean",
+            "default": false,
+            "description": "Only return questions with an accepted answer"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "query": "asyncio gather",
+            "tagged": [
+              "python"
+            ],
+            "limit": 10
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "stackoverflow_rate_limited",
+          "message": "Stack Exchange applied a rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 30,
+          "user_action": "Wait for the window to reset, then retry the same request unchanged."
+        },
+        {
+          "code": "stackoverflow_backoff",
+          "message": "The Stack Exchange API returned a backoff instruction.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Honor the backoff by waiting the requested seconds before retrying."
+        },
+        {
+          "code": "stackoverflow_unavailable",
+          "message": "Stack Overflow or the Stack Exchange API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "questions": {
+      "description": "List Stack Overflow questions. The hot option reads and parses the website's current Trending page directly, preserving its order without consuming or depending on the shared Stack Exchange API quota.",
+      "category": "discovery",
+      "when_to_use": "Use this to list questions by feed ordering such as hot, votes, or activity.",
+      "when_not_to_use": "Do not use this to search by keyword; call search.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 60,
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "default": 10,
+            "description": "Maximum questions",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "sort": {
+            "type": "string",
+            "enum": [
+              "hot",
+              "votes",
+              "creation",
+              "activity"
+            ],
+            "default": "hot",
+            "description": "Question ordering"
+          },
+          "tagged": {
+            "type": "array",
+            "description": "Required tags; repeat --tagged in the CLI"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "sort": "hot",
+            "limit": 10
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "stackoverflow_rate_limited",
+          "message": "Stack Exchange applied a rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 30,
+          "user_action": "Wait for the window to reset, then retry the same request unchanged."
+        },
+        {
+          "code": "stackoverflow_backoff",
+          "message": "The Stack Exchange API returned a backoff instruction.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Honor the backoff by waiting the requested seconds before retrying."
+        },
+        {
+          "code": "stackoverflow_unavailable",
+          "message": "Stack Overflow or the Stack Exchange API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "question": {
+      "description": "Fetch one question and its highest-voted answers as bounded plain text.",
+      "category": "reading",
+      "when_to_use": "Use this to read one question and its highest-voted answers as bounded plain text.",
+      "when_not_to_use": "Do not use this to list many answers; call answers.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "question_id"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "question_id"
+        ],
+        "properties": {
+          "question_id": {
+            "type": "integer",
+            "description": "Numeric Stack Overflow question ID"
+          },
+          "answers_limit": {
+            "type": "integer",
+            "default": 10,
+            "description": "Maximum answers"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "question_id": 11227809
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "Stack Overflow has no public resource with that ID, tag, or title.",
+          "retryable": false,
+          "user_action": "Confirm the identifier with search or a list command and retry."
+        },
+        {
+          "code": "stackoverflow_rate_limited",
+          "message": "Stack Exchange applied a rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 30,
+          "user_action": "Wait for the window to reset, then retry the same request unchanged."
+        },
+        {
+          "code": "stackoverflow_backoff",
+          "message": "The Stack Exchange API returned a backoff instruction.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Honor the backoff by waiting the requested seconds before retrying."
+        },
+        {
+          "code": "stackoverflow_unavailable",
+          "message": "Stack Overflow or the Stack Exchange API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "tags": {
+      "description": "List popular Stack Overflow tags, optionally filtered by name.",
+      "category": "tags",
+      "when_to_use": "Use this to list popular tags, optionally filtered by a name substring.",
+      "when_not_to_use": "Do not use this to read one tag's metadata; call tag_info.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Optional tag-name substring"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "description": "Maximum tags",
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "limit": 20
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "stackoverflow_rate_limited",
+          "message": "Stack Exchange applied a rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 30,
+          "user_action": "Wait for the window to reset, then retry the same request unchanged."
+        },
+        {
+          "code": "stackoverflow_backoff",
+          "message": "The Stack Exchange API returned a backoff instruction.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Honor the backoff by waiting the requested seconds before retrying."
+        },
+        {
+          "code": "stackoverflow_unavailable",
+          "message": "Stack Overflow or the Stack Exchange API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "answers": {
+      "description": "List bounded answers for a question.",
+      "category": "reading",
+      "when_to_use": "Use this to list a question's answers with bounded bodies by votes or activity.",
+      "when_not_to_use": "Do not use this to read the question body; call question.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "question_id"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "question_id"
+        ],
+        "properties": {
+          "question_id": {
+            "type": "integer",
+            "description": "Question ID"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "description": "Maximum answers",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "sort": {
+            "type": "string",
+            "enum": [
+              "votes",
+              "creation",
+              "activity"
+            ],
+            "default": "votes",
+            "description": "Ordering"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "question_id": 11227809,
+            "limit": 20
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "Stack Overflow has no public resource with that ID, tag, or title.",
+          "retryable": false,
+          "user_action": "Confirm the identifier with search or a list command and retry."
+        },
+        {
+          "code": "stackoverflow_rate_limited",
+          "message": "Stack Exchange applied a rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 30,
+          "user_action": "Wait for the window to reset, then retry the same request unchanged."
+        },
+        {
+          "code": "stackoverflow_backoff",
+          "message": "The Stack Exchange API returned a backoff instruction.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Honor the backoff by waiting the requested seconds before retrying."
+        },
+        {
+          "code": "stackoverflow_unavailable",
+          "message": "Stack Overflow or the Stack Exchange API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "users": {
+      "description": "Search or list public Stack Overflow users.",
+      "category": "profile",
+      "when_to_use": "Use this to search or list public users, ordered by reputation by default.",
+      "when_not_to_use": "Do not use this to read one profile; call user.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Optional display-name filter"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "description": "Maximum users",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "sort": {
+            "type": "string",
+            "enum": [
+              "reputation",
+              "creation",
+              "name",
+              "modified"
+            ],
+            "default": "reputation",
+            "description": "Ordering"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "query": "jon skeet",
+            "limit": 20
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "stackoverflow_rate_limited",
+          "message": "Stack Exchange applied a rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 30,
+          "user_action": "Wait for the window to reset, then retry the same request unchanged."
+        },
+        {
+          "code": "stackoverflow_backoff",
+          "message": "The Stack Exchange API returned a backoff instruction.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Honor the backoff by waiting the requested seconds before retrying."
+        },
+        {
+          "code": "stackoverflow_unavailable",
+          "message": "Stack Overflow or the Stack Exchange API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "user": {
+      "description": "Fetch one public Stack Overflow profile.",
+      "category": "profile",
+      "when_to_use": "Use this to read one public user profile.",
+      "when_not_to_use": "Do not use this to list the user's questions or answers; call user_questions or user_answers.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "user_id"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "user_id"
+        ],
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "description": "Numeric user ID"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "user_id": 22656
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "Stack Overflow has no public resource with that ID, tag, or title.",
+          "retryable": false,
+          "user_action": "Confirm the identifier with search or a list command and retry."
+        },
+        {
+          "code": "stackoverflow_rate_limited",
+          "message": "Stack Exchange applied a rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 30,
+          "user_action": "Wait for the window to reset, then retry the same request unchanged."
+        },
+        {
+          "code": "stackoverflow_backoff",
+          "message": "The Stack Exchange API returned a backoff instruction.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Honor the backoff by waiting the requested seconds before retrying."
+        },
+        {
+          "code": "stackoverflow_unavailable",
+          "message": "Stack Overflow or the Stack Exchange API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "user_questions": {
+      "description": "List questions created by a public user.",
+      "category": "profile",
+      "when_to_use": "Use this to list questions created by a public user.",
+      "when_not_to_use": "Do not use this to list their answers; call user_answers.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 180,
+      "cli": {
+        "positionals": [
+          "user_id"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "user_id"
+        ],
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "description": "Numeric user ID"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "description": "Maximum questions",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "sort": {
+            "type": "string",
+            "enum": [
+              "activity",
+              "votes",
+              "creation"
+            ],
+            "default": "activity",
+            "description": "Ordering"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "user_id": 22656,
+            "limit": 20
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "Stack Overflow has no public resource with that ID, tag, or title.",
+          "retryable": false,
+          "user_action": "Confirm the identifier with search or a list command and retry."
+        },
+        {
+          "code": "stackoverflow_rate_limited",
+          "message": "Stack Exchange applied a rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 30,
+          "user_action": "Wait for the window to reset, then retry the same request unchanged."
+        },
+        {
+          "code": "stackoverflow_backoff",
+          "message": "The Stack Exchange API returned a backoff instruction.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Honor the backoff by waiting the requested seconds before retrying."
+        },
+        {
+          "code": "stackoverflow_unavailable",
+          "message": "Stack Overflow or the Stack Exchange API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "unanswered": {
+      "description": "List unanswered questions with optional tag filters.",
+      "category": "discovery",
+      "when_to_use": "Use this to find unanswered questions, optionally filtered by tags.",
+      "when_not_to_use": "Do not use this for general search; call search.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 120,
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "description": "Maximum questions",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "tagged": {
+            "type": "array",
+            "description": "Required tags"
+          },
+          "sort": {
+            "type": "string",
+            "enum": [
+              "votes",
+              "creation",
+              "activity"
+            ],
+            "default": "votes",
+            "description": "Ordering"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "tagged": [
+              "python"
+            ],
+            "limit": 20
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "stackoverflow_rate_limited",
+          "message": "Stack Exchange applied a rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 30,
+          "user_action": "Wait for the window to reset, then retry the same request unchanged."
+        },
+        {
+          "code": "stackoverflow_backoff",
+          "message": "The Stack Exchange API returned a backoff instruction.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Honor the backoff by waiting the requested seconds before retrying."
+        },
+        {
+          "code": "stackoverflow_unavailable",
+          "message": "Stack Overflow or the Stack Exchange API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "related": {
+      "description": "Find questions related to an existing question.",
+      "category": "discovery",
+      "when_to_use": "Use this to find questions related to an existing question ID.",
+      "when_not_to_use": "Do not use this for title-based lookup; call similar.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "question_id"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "question_id"
+        ],
+        "properties": {
+          "question_id": {
+            "type": "integer",
+            "description": "Question ID"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "description": "Maximum questions",
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "question_id": 11227809,
+            "limit": 20
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "Stack Overflow has no public resource with that ID, tag, or title.",
+          "retryable": false,
+          "user_action": "Confirm the identifier with search or a list command and retry."
+        },
+        {
+          "code": "stackoverflow_rate_limited",
+          "message": "Stack Exchange applied a rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 30,
+          "user_action": "Wait for the window to reset, then retry the same request unchanged."
+        },
+        {
+          "code": "stackoverflow_backoff",
+          "message": "The Stack Exchange API returned a backoff instruction.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Honor the backoff by waiting the requested seconds before retrying."
+        },
+        {
+          "code": "stackoverflow_unavailable",
+          "message": "Stack Overflow or the Stack Exchange API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "similar": {
+      "description": "Find questions with a similar title and optional tags.",
+      "category": "discovery",
+      "when_to_use": "Use this to find questions with a similar title and optional tags before asking a new one.",
+      "when_not_to_use": "Do not use this when you already have a question ID; call related.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 300,
+      "cli": {
+        "positionals": [
+          "title"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Question title"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "description": "Maximum questions",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "tagged": {
+            "type": "array",
+            "description": "Required tags"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "title": "How to sort a dictionary by value",
+            "limit": 20
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "stackoverflow_rate_limited",
+          "message": "Stack Exchange applied a rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 30,
+          "user_action": "Wait for the window to reset, then retry the same request unchanged."
+        },
+        {
+          "code": "stackoverflow_backoff",
+          "message": "The Stack Exchange API returned a backoff instruction.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Honor the backoff by waiting the requested seconds before retrying."
+        },
+        {
+          "code": "stackoverflow_unavailable",
+          "message": "Stack Overflow or the Stack Exchange API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "comments": {
+      "description": "List bounded comments on a question or answer.",
+      "category": "reading",
+      "when_to_use": "Use this to list bounded comments on a question or answer.",
+      "when_not_to_use": "Do not use this to read answer bodies; call answers.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 180,
+      "cli": {
+        "positionals": [
+          "post_id"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "post_id"
+        ],
+        "properties": {
+          "post_id": {
+            "type": "integer",
+            "description": "Question or answer ID"
+          },
+          "post_type": {
+            "type": "string",
+            "enum": [
+              "question",
+              "answer"
+            ],
+            "default": "question",
+            "description": "Post kind"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "description": "Maximum comments",
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "post_id": 11227809,
+            "post_type": "question",
+            "limit": 20
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "Stack Overflow has no public resource with that ID, tag, or title.",
+          "retryable": false,
+          "user_action": "Confirm the identifier with search or a list command and retry."
+        },
+        {
+          "code": "stackoverflow_rate_limited",
+          "message": "Stack Exchange applied a rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 30,
+          "user_action": "Wait for the window to reset, then retry the same request unchanged."
+        },
+        {
+          "code": "stackoverflow_backoff",
+          "message": "The Stack Exchange API returned a backoff instruction.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Honor the backoff by waiting the requested seconds before retrying."
+        },
+        {
+          "code": "stackoverflow_unavailable",
+          "message": "Stack Overflow or the Stack Exchange API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "tag_info": {
+      "description": "Fetch public metadata for one tag.",
+      "category": "tags",
+      "when_to_use": "Use this to read public metadata for one tag.",
+      "when_not_to_use": "Do not use this to browse tags; call tags.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 600,
+      "cli": {
+        "positionals": [
+          "tag"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "tag"
+        ],
+        "properties": {
+          "tag": {
+            "type": "string",
+            "description": "Tag name"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "tag": "python"
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "Stack Overflow has no public resource with that ID, tag, or title.",
+          "retryable": false,
+          "user_action": "Confirm the identifier with search or a list command and retry."
+        },
+        {
+          "code": "stackoverflow_rate_limited",
+          "message": "Stack Exchange applied a rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 30,
+          "user_action": "Wait for the window to reset, then retry the same request unchanged."
+        },
+        {
+          "code": "stackoverflow_backoff",
+          "message": "The Stack Exchange API returned a backoff instruction.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Honor the backoff by waiting the requested seconds before retrying."
+        },
+        {
+          "code": "stackoverflow_unavailable",
+          "message": "Stack Overflow or the Stack Exchange API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "user_answers": {
+      "description": "List a user's public answers with bounded bodies.",
+      "category": "profile",
+      "when_to_use": "Use this to list a user's public answers with bounded bodies.",
+      "when_not_to_use": "Do not use this to list their questions; call user_questions.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 180,
+      "cli": {
+        "positionals": [
+          "user_id"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "user_id"
+        ],
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "description": "Numeric user ID"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 20,
+            "minimum": 1,
+            "maximum": 100,
+            "description": "Maximum answers"
+          },
+          "sort": {
+            "type": "string",
+            "enum": [
+              "votes",
+              "creation",
+              "activity"
+            ],
+            "default": "votes",
+            "description": "Ordering: votes or activity"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "user_id": 22656,
+            "limit": 20
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "Stack Overflow has no public resource with that ID, tag, or title.",
+          "retryable": false,
+          "user_action": "Confirm the identifier with search or a list command and retry."
+        },
+        {
+          "code": "stackoverflow_rate_limited",
+          "message": "Stack Exchange applied a rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 30,
+          "user_action": "Wait for the window to reset, then retry the same request unchanged."
+        },
+        {
+          "code": "stackoverflow_backoff",
+          "message": "The Stack Exchange API returned a backoff instruction.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Honor the backoff by waiting the requested seconds before retrying."
+        },
+        {
+          "code": "stackoverflow_unavailable",
+          "message": "Stack Overflow or the Stack Exchange API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "question_timeline": {
+      "description": "List public timeline events for a question and explicitly identify vote aggregates whose direction and count are withheld by the public API.",
+      "category": "reading",
+      "when_to_use": "Use this to list a question's public timeline events, noting vote aggregates whose direction is hidden.",
+      "when_not_to_use": "Do not use this to read current answers; call answers.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 180,
+      "cli": {
+        "positionals": [
+          "question_id"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "question_id"
+        ],
+        "properties": {
+          "question_id": {
+            "type": "integer",
+            "description": "Numeric question ID"
+          },
+          "limit": {
+            "type": "integer",
+            "default": 50,
+            "minimum": 1,
+            "maximum": 100,
+            "description": "Maximum timeline events"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "question_id": 11227809,
+            "limit": 50
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "Stack Overflow has no public resource with that ID, tag, or title.",
+          "retryable": false,
+          "user_action": "Confirm the identifier with search or a list command and retry."
+        },
+        {
+          "code": "stackoverflow_rate_limited",
+          "message": "Stack Exchange applied a rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 30,
+          "user_action": "Wait for the window to reset, then retry the same request unchanged."
+        },
+        {
+          "code": "stackoverflow_backoff",
+          "message": "The Stack Exchange API returned a backoff instruction.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Honor the backoff by waiting the requested seconds before retrying."
+        },
+        {
+          "code": "stackoverflow_unavailable",
+          "message": "Stack Overflow or the Stack Exchange API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "api_get": {
+      "description": "Bounded read-only escape hatch for public Stack Exchange API endpoints not yet represented by a typed command. Paths stay fixed to api.stackexchange.com and only GET is allowed.",
+      "category": "api",
+      "when_to_use": "Use this read-only escape hatch for public Stack Exchange endpoints without a typed command.",
+      "when_not_to_use": "Do not use this for mutations; it is read-only.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cache_ttl_seconds": 60,
+      "cli": {
+        "positionals": [
+          "path"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "path"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Stack Exchange API path beginning with /"
+          },
+          "query": {
+            "type": "array",
+            "description": "Repeatable key=value query parameters"
+          },
+          "max_items": {
+            "type": "integer",
+            "default": 50,
+            "minimum": 1,
+            "maximum": 200,
+            "description": "Maximum list items retained in the response"
+          },
+          "max_string": {
+            "type": "integer",
+            "default": 4000,
+            "minimum": 100,
+            "maximum": 20000,
+            "description": "Maximum characters kept per string value"
+          },
+          "max_total_chars": {
+            "type": "integer",
+            "default": 20000,
+            "description": "Hard ceiling for the complete nested JSON response",
+            "minimum": 1000,
+            "maximum": 100000
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "path": "/questions",
+            "query": [
+              "site=stackoverflow",
+              "tagged=python"
+            ]
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "not_found",
+          "message": "Stack Overflow has no public resource with that ID, tag, or title.",
+          "retryable": false,
+          "user_action": "Confirm the identifier with search or a list command and retry."
+        },
+        {
+          "code": "stackoverflow_rate_limited",
+          "message": "Stack Exchange applied a rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 30,
+          "user_action": "Wait for the window to reset, then retry the same request unchanged."
+        },
+        {
+          "code": "stackoverflow_backoff",
+          "message": "The Stack Exchange API returned a backoff instruction.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Honor the backoff by waiting the requested seconds before retrying."
+        },
+        {
+          "code": "stackoverflow_unavailable",
+          "message": "Stack Overflow or the Stack Exchange API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "account_status": {
+      "description": "Verify the retained Stack Overflow session and return its profile URL without exposing cookies.",
+      "category": "account",
+      "when_to_use": "Use this to verify the retained session and return its profile URL without exposing cookies.",
+      "when_not_to_use": "Do not use this to read another user; call user.",
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public",
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "read",
+        "reversible": true,
+        "idempotent": true,
+        "confirmation": "never"
+      },
+      "cli": {
+        "positionals": []
+      },
+      "input_schema": {
+        "type": "object",
+        "properties": {}
+      },
+      "examples": [
+        {
+          "input": {}
+        }
+      ],
+      "errors": [
+        {
+          "code": "stackoverflow_rate_limited",
+          "message": "Stack Exchange applied a rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 30,
+          "user_action": "Wait for the window to reset, then retry the same request unchanged."
+        },
+        {
+          "code": "stackoverflow_unavailable",
+          "message": "Stack Overflow or the Stack Exchange API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        }
+      ]
+    },
+    "ask": {
+      "description": "Ask a question through Stack Overflow's current authenticated form protocol. AgentWeb obtains fkey automatically; confirm is mandatory.",
+      "category": "posting",
+      "when_to_use": "Use this to ask a question via the authenticated form protocol; confirm is mandatory.",
+      "when_not_to_use": "Do not use this without confirm=true; posted questions are public and hard to remove.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "title",
+          "body"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "title",
+          "body",
+          "tags"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Question title"
+          },
+          "body": {
+            "type": "string",
+            "description": "Question body markdown"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Tag names for the question"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to post the question"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "title": "How do I stream rows from a large query?",
+            "body": "I need to...",
+            "tags": [
+              "python",
+              "sql"
+            ],
+            "confirm": true
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs an authenticated Stack Overflow session.",
+          "retryable": false,
+          "next_operation": "stackoverflow.account_status",
+          "user_action": "Run agentweb connect stackoverflow to authorize a session once, then retry."
+        },
+        {
+          "code": "human_verification_required",
+          "message": "Stack Overflow requires a human verification step (CAPTCHA or challenge) to proceed.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "insufficient_privilege",
+          "message": "The account lacks the site reputation privilege required for this action.",
+          "retryable": false,
+          "user_action": "This action needs more reputation; it cannot be completed by this account."
+        },
+        {
+          "code": "stackoverflow_rate_limited",
+          "message": "Stack Exchange applied a rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 30,
+          "user_action": "Wait for the window to reset, then retry the same request unchanged."
+        },
+        {
+          "code": "stackoverflow_backoff",
+          "message": "The Stack Exchange API returned a backoff instruction.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Honor the backoff by waiting the requested seconds before retrying."
+        },
+        {
+          "code": "stackoverflow_unavailable",
+          "message": "Stack Overflow or the Stack Exchange API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "answer": {
+      "description": "Post an answer with automatic fkey handling. Requires confirm.",
+      "category": "posting",
+      "when_to_use": "Use this to post an answer with automatic fkey handling; confirm is mandatory.",
+      "when_not_to_use": "Do not use this without confirm=true; posted answers are public.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "question_id",
+          "body"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "question_id",
+          "body"
+        ],
+        "properties": {
+          "question_id": {
+            "type": "integer",
+            "description": "Numeric question ID to answer"
+          },
+          "body": {
+            "type": "string",
+            "description": "Answer body markdown"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to post the answer"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "question_id": 11227809,
+            "body": "You can use...",
+            "confirm": true
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs an authenticated Stack Overflow session.",
+          "retryable": false,
+          "next_operation": "stackoverflow.account_status",
+          "user_action": "Run agentweb connect stackoverflow to authorize a session once, then retry."
+        },
+        {
+          "code": "human_verification_required",
+          "message": "Stack Overflow requires a human verification step (CAPTCHA or challenge) to proceed.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "insufficient_privilege",
+          "message": "The account lacks the site reputation privilege required for this action.",
+          "retryable": false,
+          "user_action": "This action needs more reputation; it cannot be completed by this account."
+        },
+        {
+          "code": "stackoverflow_rate_limited",
+          "message": "Stack Exchange applied a rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 30,
+          "user_action": "Wait for the window to reset, then retry the same request unchanged."
+        },
+        {
+          "code": "stackoverflow_backoff",
+          "message": "The Stack Exchange API returned a backoff instruction.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Honor the backoff by waiting the requested seconds before retrying."
+        },
+        {
+          "code": "stackoverflow_unavailable",
+          "message": "Stack Overflow or the Stack Exchange API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "add_comment": {
+      "description": "Add a comment to a question or answer with automatic fkey handling. Requires confirm.",
+      "category": "posting",
+      "when_to_use": "Use this to add a comment to a question or answer; confirm is mandatory.",
+      "when_not_to_use": "Do not use this without confirm=true; comments require reputation and are public.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "post_id",
+          "text"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "post_id",
+          "text"
+        ],
+        "properties": {
+          "post_id": {
+            "type": "integer",
+            "description": "Question or answer ID to comment on"
+          },
+          "text": {
+            "type": "string",
+            "description": "Comment text"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to post the comment"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "post_id": 11227809,
+            "text": "Thanks, this clarified it.",
+            "confirm": true
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs an authenticated Stack Overflow session.",
+          "retryable": false,
+          "next_operation": "stackoverflow.account_status",
+          "user_action": "Run agentweb connect stackoverflow to authorize a session once, then retry."
+        },
+        {
+          "code": "human_verification_required",
+          "message": "Stack Overflow requires a human verification step (CAPTCHA or challenge) to proceed.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "insufficient_privilege",
+          "message": "The account lacks the site reputation privilege required for this action.",
+          "retryable": false,
+          "user_action": "This action needs more reputation; it cannot be completed by this account."
+        },
+        {
+          "code": "stackoverflow_rate_limited",
+          "message": "Stack Exchange applied a rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 30,
+          "user_action": "Wait for the window to reset, then retry the same request unchanged."
+        },
+        {
+          "code": "stackoverflow_backoff",
+          "message": "The Stack Exchange API returned a backoff instruction.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Honor the backoff by waiting the requested seconds before retrying."
+        },
+        {
+          "code": "stackoverflow_unavailable",
+          "message": "Stack Overflow or the Stack Exchange API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "vote": {
+      "description": "Upvote, downvote, accept, unaccept, or undo a vote with automatic fkey handling. Site privileges still apply; confirm is mandatory.",
+      "category": "voting",
+      "when_to_use": "Use this to upvote, downvote, accept, unaccept, or undo a vote; confirm is mandatory.",
+      "when_not_to_use": "Do not use this without confirm=true or without the required site privilege.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": true,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "post_id",
+          "vote"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "post_id",
+          "vote"
+        ],
+        "properties": {
+          "post_id": {
+            "type": "integer",
+            "description": "Question or answer ID"
+          },
+          "vote": {
+            "type": "string",
+            "enum": [
+              "undo",
+              "up",
+              "down",
+              "accept",
+              "unaccept"
+            ],
+            "description": "Action: up, down, accept, unaccept, or undo"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to cast the vote"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "post_id": 11227809,
+            "vote": "up",
+            "confirm": true
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs an authenticated Stack Overflow session.",
+          "retryable": false,
+          "next_operation": "stackoverflow.account_status",
+          "user_action": "Run agentweb connect stackoverflow to authorize a session once, then retry."
+        },
+        {
+          "code": "insufficient_privilege",
+          "message": "The account lacks the site reputation privilege required for this action.",
+          "retryable": false,
+          "user_action": "This action needs more reputation; it cannot be completed by this account."
+        },
+        {
+          "code": "human_verification_required",
+          "message": "Stack Overflow requires a human verification step (CAPTCHA or challenge) to proceed.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "stackoverflow_rate_limited",
+          "message": "Stack Exchange applied a rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 30,
+          "user_action": "Wait for the window to reset, then retry the same request unchanged."
+        },
+        {
+          "code": "stackoverflow_backoff",
+          "message": "The Stack Exchange API returned a backoff instruction.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Honor the backoff by waiting the requested seconds before retrying."
+        },
+        {
+          "code": "stackoverflow_unavailable",
+          "message": "Stack Overflow or the Stack Exchange API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    },
+    "submit_form": {
+      "description": "Submit any current same-site HTML form, including edit, save, flag, and moderation forms, by selector. Hidden anti-CSRF fields are copied automatically and never returned; confirm is mandatory.",
+      "category": "moderation",
+      "when_to_use": "Use this to submit any current same-site form (edit, save, flag, moderation) by selector; confirm is mandatory.",
+      "when_not_to_use": "Do not use this without confirm=true; prefer typed commands when one exists.",
+      "authentication": {
+        "required": true,
+        "roles": [
+          "authenticated_user"
+        ]
+      },
+      "risk": {
+        "level": "write",
+        "reversible": false,
+        "idempotent": false,
+        "confirmation": "always"
+      },
+      "cli": {
+        "positionals": [
+          "page_path",
+          "selector"
+        ]
+      },
+      "input_schema": {
+        "type": "object",
+        "required": [
+          "page_path",
+          "selector",
+          "fields"
+        ],
+        "properties": {
+          "page_path": {
+            "type": "string",
+            "description": "Same-site page path containing the form"
+          },
+          "selector": {
+            "type": "string",
+            "description": "CSS selector for the target form"
+          },
+          "fields": {
+            "type": "object",
+            "description": "Field name/value pairs to submit"
+          },
+          "confirm": {
+            "type": "boolean",
+            "default": false,
+            "description": "Must be true to submit the form"
+          }
+        }
+      },
+      "examples": [
+        {
+          "input": {
+            "page_path": "/posts/11227809/edit",
+            "selector": "form#post-form",
+            "fields": {
+              "comment": "Fixed typo"
+            },
+            "confirm": true
+          }
+        }
+      ],
+      "errors": [
+        {
+          "code": "confirmation_required",
+          "field": "confirm",
+          "message": "This operation changes remote state and requires confirm=true.",
+          "retryable": false,
+          "user_action": "Inspect the inputs and repeat the call with confirm set to true."
+        },
+        {
+          "code": "authentication_required",
+          "message": "This operation needs an authenticated Stack Overflow session.",
+          "retryable": false,
+          "next_operation": "stackoverflow.account_status",
+          "user_action": "Run agentweb connect stackoverflow to authorize a session once, then retry."
+        },
+        {
+          "code": "insufficient_privilege",
+          "message": "The account lacks the site reputation privilege required for this action.",
+          "retryable": false,
+          "user_action": "This action needs more reputation; it cannot be completed by this account."
+        },
+        {
+          "code": "human_verification_required",
+          "message": "Stack Overflow requires a human verification step (CAPTCHA or challenge) to proceed.",
+          "retryable": false,
+          "user_action": "Complete the verification interactively in the browser, then retry."
+        },
+        {
+          "code": "stackoverflow_rate_limited",
+          "message": "Stack Exchange applied a rate limit to this client.",
+          "retryable": true,
+          "retry_after_seconds": 30,
+          "user_action": "Wait for the window to reset, then retry the same request unchanged."
+        },
+        {
+          "code": "stackoverflow_backoff",
+          "message": "The Stack Exchange API returned a backoff instruction.",
+          "retryable": true,
+          "retry_after_seconds": 10,
+          "user_action": "Honor the backoff by waiting the requested seconds before retrying."
+        },
+        {
+          "code": "stackoverflow_unavailable",
+          "message": "Stack Overflow or the Stack Exchange API is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Wait briefly and retry the same request without changing valid inputs."
+        },
+        {
+          "code": "invalid_input",
+          "message": "One or more arguments were empty or outside their allowed range.",
+          "retryable": false,
+          "user_action": "Fix the reported field against the input schema and call again."
+        }
+      ]
+    }
+  }
+}
