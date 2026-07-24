@@ -1,0 +1,85 @@
+{
+  "captured_at_unix": 1784926168.8541713,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://open-meteo.com",
+      "before": "https://open-meteo.com"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "air_quality",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "air_quality",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "current",
+      "latitude",
+      "longitude",
+      "timezone"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "air_quality",
+        "path": "https://air-quality-api.open-meteo.com/v1/air-quality",
+        "query": {
+          "current": "{current}",
+          "latitude": "{latitude}",
+          "longitude": "{longitude}",
+          "timezone": "{timezone}"
+        }
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "openmeteo",
+  "verification": {
+    "assertions": [
+      {
+        "name": "returns latitude",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "2ec3247d3a097ece81ff4b15dfe0b9fcfc805b2c565d8d9907e730b16da7f41a",
+    "evidence_version": 2,
+    "recipe_hash": "1014246ce0f2945073d99d9e1784d8a8d822dc3c0df0e615044e653d646ee03e",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784926169.7587965
+  }
+}

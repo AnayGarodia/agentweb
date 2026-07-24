@@ -1,0 +1,74 @@
+{
+  "browserless_parity": true,
+  "capabilities": {
+    "authenticated_services": {
+      "boundary_evidence": 0,
+      "in_matrix": false,
+      "reason": "The World Bank data API is fully public; no authenticated surfaces exist to map.",
+      "roles": [
+        "account_holder"
+      ],
+      "state": "blocked",
+      "surface": "public_api"
+    },
+    "public_countries": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    },
+    "public_indicator": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "public_api"
+    }
+  },
+  "catalog_complete": true,
+  "excluded_operations": {},
+  "exhaustive": true,
+  "generated_at_unix": 1784925635.2384524,
+  "matrix": {
+    "locales": [
+      "en-US"
+    ],
+    "roles": [
+      "public"
+    ],
+    "surfaces": [
+      "public_api"
+    ]
+  },
+  "matrix_verified": true,
+  "operations": {
+    "countries": {
+      "capabilities": [
+        "public_countries"
+      ],
+      "contract_hash": "3e8ee63baf533b18846c868f7411d3d736d0de862440eda6cdfa9037b9894b13",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "indicator": {
+      "capabilities": [
+        "public_indicator"
+      ],
+      "contract_hash": "a67a8dd39b143e7cd64df08ba81246f059f3be6394be901274448ebb90346081",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    }
+  },
+  "project_hash": "e8688b3990dd96d59a9f481515f5fa23f7d2a2cf9b18ca17372f5a0ccaf848d4",
+  "publication_mode": "reviewed",
+  "schema_version": 1,
+  "tool_quality_verified": true,
+  "uncovered_verified_capabilities": []
+}

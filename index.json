@@ -3,7 +3,7 @@
   "signature": {
     "algorithm": "ed25519",
     "key_id": "d3237069b559fa7b",
-    "value": "xvkpODJ13eASl6xAUiMkLZss7P8QZvQ0y+OugmzbUY2lJySpwh8eV6TC0hCvWVRkDxrPBaNGfC272w+gmQiwAw=="
+    "value": "Jcy0j3Mnz92pDi5NbGG7zqIi1KTBbm4jfLkbp2SqXZe6zOxsHAz38X/cJeX/t0s64aEoir5F8IzTGhLA2y20Cw=="
   },
   "sites": [
     {
@@ -67,13 +67,14 @@
     {
       "files": {
         "adapter.py": "c5bca8525543940beaf4f9fdd2dbf9ae0f04b26f6a218a400d912b9ac06602a4",
-        "authoring-report.json": "10cb4e4f3721e9b3f33807c01cbed91c7305d67dbae9e8da04f04e50187a137b",
+        "authoring-report.json": "58a4de2cb9a43885917c53942ae063af0e5c1dbf94e54464d83b90626540d8fd",
         "flows/search_journals.json": "425e979320f33fc42fa11c06af19362d08ecc39d1ee113d6da89bd9f7af2d2c2",
         "flows/search_works.json": "fc534b9b2d5214ef283e05f40bcb0fc613d67b16fc9c86a62c087cdeba7aff42",
-        "manifest.json": "86a78fe573e22b452595aefe43ada2c753985a48d3cfcc67b7ec06201a77c480"
+        "flows/work.json": "ddc896a6c2c811f5904dd9000ee8a5fa1f283aee28e6726f1524ca212afb85f2",
+        "manifest.json": "15c9a1790a7dec72ea9dc6868c3fb440ea4cdde9513bbb9839c1dea4bad96c8a"
       },
       "name": "crossref",
-      "version": "0.1.0"
+      "version": "0.2.0"
     },
     {
       "files": {
@@ -265,6 +266,20 @@
     },
     {
       "files": {
+        "adapter.py": "80b8681f994c9c9490411d629986dd7d2d108f10e95bb5318169b6c9949d799c",
+        "authoring-report.json": "b900e1afef9a39568d0e1a23951389852a1b9c2939e5491d8d2b361b9dd64895",
+        "flows/breweries.json": "449c238baff77a1b657cb2752f7875610f5e701085abc25bb8c649cc3eeb4798",
+        "flows/brewery.json": "0a192513d8d9d6501725ae673f5496b5cefc4ebfdf7cb5dbb63f189c30ae056b",
+        "flows/meta.json": "24808c2ab009d6f5e752963b7f6e0f26de02b11cbeb5e21067bce05ad1409661",
+        "flows/random.json": "5d300c5f81ac0d7092ddeb58ef255016a8cc0d2246b09cb771c1d71d616e09de",
+        "flows/search.json": "0100b85cbe1f5d3184d363dab276f8ce5465a213b1f737849397b2d223a39839",
+        "manifest.json": "27df4ebc3e70bb9b42c08410a41ca638cac8c57b289857bbe666fb011483d1da"
+      },
+      "name": "openbrewerydb",
+      "version": "0.1.1"
+    },
+    {
+      "files": {
         "adapter.py": "33c8ad9244aac8033fe5ddad08a18a362521b508a82b533410e8ce86e9637c0f",
         "authoring-report.json": "b451b7e1ac994602455d44a0a436cf4c26ad9b24208877b1bad794736572b47e",
         "flows/author_get.json": "48f10fb0c257f5146286135e540732462a087f9e86f9547ee824bec1ed27d0f2",
@@ -277,14 +292,16 @@
     },
     {
       "files": {
-        "adapter.py": "b2e7a43aa31292d8052357826ddaeff61c974b881263cde8ae84373cb0eefb95",
-        "authoring-report.json": "4dcd585e0841ae53ec028d7772d782c69f3c7939a21c173f5e3def514becb882",
+        "adapter.py": "2fa56b653d3ca4aef1d0b4556f827c7a6575e3075a0a5682010e473a03be1231",
+        "authoring-report.json": "e4bc3a1c6d4cc6fcb3c48d8d78849246435cc0679c690ae8dc602ddac808aa44",
+        "flows/air_quality.json": "cc312d8ff6f3a8b492cdd5abc037c41cce44b9faa89c8ed3a1b06f02031360d5",
+        "flows/archive.json": "277b1403e6507924bb8b9a32e91da79d3472f6551dc6921e9395a9166a1738c8",
         "flows/forecast.json": "b0fb028a5a292563d1b9c73c7dce53b9d29c480e35a0d21151e297a39e659b00",
         "flows/geocode.json": "e4552d0b34e5be71fe6bcbf1364173e2b28c49663db6ee2410a61a3e36efa6a6",
-        "manifest.json": "9c6f2552fa46a80899399172fc3a79bbb7d8a98018b5f3c77961b323c85f48f4"
+        "manifest.json": "dfb7410e44cab22b864a9cbbeb2aeff1af684c48097292c411dc21aaf819c736"
       },
       "name": "openmeteo",
-      "version": "0.1.0"
+      "version": "0.2.0"
     },
     {
       "files": {
@@ -376,6 +393,17 @@
       },
       "name": "wikipedia",
       "version": "0.8.6"
+    },
+    {
+      "files": {
+        "adapter.py": "a5eb70a3899a40c713b36484c151191097fbcec5787de7d8c7000439d35dc93b",
+        "authoring-report.json": "a05bf1a3719cc4d0aa683a7e16b231dc18ddfebbe7b8bed83d25c4f6a006cba7",
+        "flows/countries.json": "8311de299db8c9454c519199ca229334d016193a9e5e0f60d057f6b019f8a548",
+        "flows/indicator.json": "2dac2b1f76bac717705e73842236cdbfe2cf1e63aa2a1a292513bbd482fc26f4",
+        "manifest.json": "cf41778be5f83a8e514d25eccfff358d0b285ff63f1b1e183a6b152ef21cf4e2"
+      },
+      "name": "worldbank",
+      "version": "0.1.0"
     }
   ]
 }

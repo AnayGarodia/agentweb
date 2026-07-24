@@ -1,0 +1,719 @@
+{
+  "aliases": [
+    "worldbank"
+  ],
+  "allowed_domains": [
+    "api.worldbank.org",
+    "worldbank.org",
+    "www.worldbank.org"
+  ],
+  "auth": {
+    "interaction": "not_required",
+    "strategy": "none"
+  },
+  "authoring": {
+    "browserless_parity": true,
+    "catalog_complete": true,
+    "exhaustive": true,
+    "matrix_verified": true,
+    "tool_quality_verified": true
+  },
+  "base_url": "https://www.worldbank.org",
+  "canonical_domain": "worldbank.org",
+  "commands": {
+    "countries": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "other",
+      "description": "Directory of World Bank country and region codes with capital and coordinates.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "per_page": 100
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "per_page": {
+            "default": 100,
+            "description": "Number of directory entries to return.",
+            "maximum": 1000,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Country and aggregate-region entries.",
+            "items": {
+              "properties": {
+                "capitalcity": {
+                  "description": "Capital city; empty for aggregate regions.",
+                  "type": "string"
+                },
+                "id": {
+                  "description": "ISO-3 code of the entry.",
+                  "type": "string"
+                },
+                "iso2code": {
+                  "description": "ISO-2 code of the entry.",
+                  "type": "string"
+                },
+                "latitude": {
+                  "description": "Capital latitude; empty for aggregates.",
+                  "type": "string"
+                },
+                "longitude": {
+                  "description": "Capital longitude; empty for aggregates.",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "Country or region name.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns the first per_page entries of the directory; the full list fits in one page of 300.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this operation for indicator data itself; use indicator with a country code.",
+      "when_to_use": "Use this operation to find the ISO code, region, or capital of a country before querying indicators."
+    },
+    "indicator": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "other",
+      "description": "Time series of a World Bank development indicator for one country (or 'all').",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "country": "IN",
+            "indicator": "NY.GDP.MKTP.CD",
+            "per_page": 10
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "country": {
+            "description": "ISO-2 or ISO-3 country code, or 'all' for every country.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          },
+          "indicator": {
+            "description": "World Bank indicator code, e.g. NY.GDP.MKTP.CD.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          },
+          "per_page": {
+            "default": 10,
+            "description": "Number of yearly observations to return, newest first.",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "country",
+          "indicator"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Yearly observations, newest first.",
+            "items": {
+              "properties": {
+                "countryiso3code": {
+                  "description": "ISO-3 code of the country observed.",
+                  "type": "string"
+                },
+                "date": {
+                  "description": "Observation year.",
+                  "type": "string"
+                },
+                "decimal": {
+                  "description": "Suggested decimal places for display.",
+                  "type": "integer"
+                },
+                "obs_status": {
+                  "description": "Observation status flag when declared.",
+                  "type": "string"
+                },
+                "unit": {
+                  "description": "Unit of measure when declared.",
+                  "type": "string"
+                },
+                "value": {
+                  "description": "Indicator value for the year; null when not yet reported.",
+                  "type": "number"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns the newest per_page yearly observations; deeper history pages are not mapped.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this operation to discover country codes (use countries) or for sub-national, monthly, or non-World-Bank data.",
+      "when_to_use": "Use this operation to get yearly values of a World Bank indicator, e.g. GDP (NY.GDP.MKTP.CD), population (SP.POP.TOTL), or inflation (FP.CPI.TOTL.ZG), for an ISO country code."
+    }
+  },
+  "cookie_domain": ".www.worldbank.org",
+  "coverage": {
+    "constraints": [
+      "Site permissions, rate limits, and anti-automation rules still apply"
+    ],
+    "human_boundaries": [
+      "The World Bank data API is fully public; no authenticated surfaces exist to map."
+    ],
+    "not_mapped": [],
+    "protocol_fallback": null,
+    "typed_fast_paths": [
+      "countries",
+      "indicator"
+    ],
+    "website_parity": "Mapping mode can inspect the remaining website while direct request recipes are compiled. Browser commands are never counted as runtime parity."
+  },
+  "description": "Complete agent interface for www.worldbank.org",
+  "entrypoint": "adapter.py",
+  "evidence_capsules": {},
+  "flow_capsules": {
+    "countries": {
+      "contract": "countries",
+      "path": "flows/countries.json"
+    },
+    "indicator": {
+      "contract": "indicator",
+      "path": "flows/indicator.json"
+    }
+  },
+  "name": "worldbank",
+  "operation_contracts": {
+    "countries": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "capitalcity": {
+              "path": "$.capitalCity"
+            },
+            "id": {
+              "path": "$.id"
+            },
+            "iso2code": {
+              "path": "$.iso2Code"
+            },
+            "latitude": {
+              "path": "$.latitude"
+            },
+            "longitude": {
+              "path": "$.longitude"
+            },
+            "name": {
+              "path": "$.name"
+            }
+          },
+          "source": "$.1"
+        },
+        "recipe_hash": "35c74bf19156976de351a15055679a9861ae241b37fc28914a1ae68537261ca4",
+        "type": "generated_recipe",
+        "variables": {
+          "per_page": {
+            "default": 100,
+            "source": "per_page"
+          }
+        }
+      },
+      "capabilities": [
+        "public_countries"
+      ],
+      "category": "other",
+      "contract_hash": "3e8ee63baf533b18846c868f7411d3d736d0de862440eda6cdfa9037b9894b13",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "per_page": 100
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "per_page": {
+            "default": 100,
+            "description": "Number of directory entries to return.",
+            "maximum": 1000,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "countries",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Country and aggregate-region entries.",
+            "items": {
+              "properties": {
+                "capitalcity": {
+                  "description": "Capital city; empty for aggregate regions.",
+                  "type": "string"
+                },
+                "id": {
+                  "description": "ISO-3 code of the entry.",
+                  "type": "string"
+                },
+                "iso2code": {
+                  "description": "ISO-2 code of the entry.",
+                  "type": "string"
+                },
+                "latitude": {
+                  "description": "Capital latitude; empty for aggregates.",
+                  "type": "string"
+                },
+                "longitude": {
+                  "description": "Capital longitude; empty for aggregates.",
+                  "type": "string"
+                },
+                "name": {
+                  "description": "Country or region name.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns the first per_page entries of the directory; the full list fits in one page of 300.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784925635.2188296,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Directory of World Bank country and region codes with capital and coordinates.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns matching records",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "3e8ee63baf533b18846c868f7411d3d736d0de862440eda6cdfa9037b9894b13",
+            "input_names": [
+              "per_page"
+            ],
+            "passed": true,
+            "recipe_hash": "35c74bf19156976de351a15055679a9861ae241b37fc28914a1ae68537261ca4",
+            "verified_at_unix": 1784925635.161655
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns matching records",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this operation for indicator data itself; use indicator with a country code.",
+      "when_to_use": "Use this operation to find the ISO code, region, or capital of a country before querying indicators."
+    },
+    "indicator": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "countryiso3code": {
+              "path": "$.countryiso3code"
+            },
+            "date": {
+              "path": "$.date"
+            },
+            "decimal": {
+              "path": "$.decimal"
+            },
+            "obs_status": {
+              "path": "$.obs_status"
+            },
+            "unit": {
+              "path": "$.unit"
+            },
+            "value": {
+              "path": "$.value"
+            }
+          },
+          "source": "$.1"
+        },
+        "recipe_hash": "1dbb01d21db63ee81669784633a11d0ad8ff5507c1a29b6df64564c93f1e7ef8",
+        "type": "generated_recipe",
+        "variables": {
+          "country": "country",
+          "indicator": "indicator",
+          "per_page": {
+            "default": 10,
+            "source": "per_page"
+          }
+        }
+      },
+      "capabilities": [
+        "public_indicator"
+      ],
+      "category": "other",
+      "contract_hash": "a67a8dd39b143e7cd64df08ba81246f059f3be6394be901274448ebb90346081",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "country": "IN",
+            "indicator": "NY.GDP.MKTP.CD",
+            "per_page": 10
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "country": {
+            "description": "ISO-2 or ISO-3 country code, or 'all' for every country.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          },
+          "indicator": {
+            "description": "World Bank indicator code, e.g. NY.GDP.MKTP.CD.",
+            "maxLength": 64,
+            "minLength": 1,
+            "type": "string"
+          },
+          "per_page": {
+            "default": 10,
+            "description": "Number of yearly observations to return, newest first.",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "country",
+          "indicator"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "indicator",
+      "output_schema": {
+        "properties": {
+          "items": {
+            "description": "Yearly observations, newest first.",
+            "items": {
+              "properties": {
+                "countryiso3code": {
+                  "description": "ISO-3 code of the country observed.",
+                  "type": "string"
+                },
+                "date": {
+                  "description": "Observation year.",
+                  "type": "string"
+                },
+                "decimal": {
+                  "description": "Suggested decimal places for display.",
+                  "type": "integer"
+                },
+                "obs_status": {
+                  "description": "Observation status flag when declared.",
+                  "type": "string"
+                },
+                "unit": {
+                  "description": "Unit of measure when declared.",
+                  "type": "string"
+                },
+                "value": {
+                  "description": "Indicator value for the year; null when not yet reported.",
+                  "type": "number"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns the newest per_page yearly observations; deeper history pages are not mapped.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 100,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784925635.2257593,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Time series of a World Bank development indicator for one country (or 'all').",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns matching records",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "a67a8dd39b143e7cd64df08ba81246f059f3be6394be901274448ebb90346081",
+            "input_names": [
+              "country",
+              "indicator",
+              "per_page"
+            ],
+            "passed": true,
+            "recipe_hash": "1dbb01d21db63ee81669784633a11d0ad8ff5507c1a29b6df64564c93f1e7ef8",
+            "verified_at_unix": 1784925635.2116675
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns matching records",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this operation to discover country codes (use countries) or for sub-national, monthly, or non-World-Bank data.",
+      "when_to_use": "Use this operation to get yearly values of a World Bank indicator, e.g. GDP (NY.GDP.MKTP.CD), population (SP.POP.TOTL), or inflation (FP.CPI.TOTL.ZG), for an ISO country code."
+    }
+  },
+  "runtime": {
+    "auth_interaction": "not_yet_mapped",
+    "browserless_replay": true
+  },
+  "url_routes": [],
+  "version": "0.1.0"
+}
