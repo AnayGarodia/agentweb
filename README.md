@@ -64,6 +64,21 @@ python3 -m pip install -e .
 agentweb setup
 ```
 
+### Upgrading an existing install
+
+Already installed? Upgrade in place with one command — it upgrades the exact
+launcher on your `PATH` (no second, drifting copy) and preserves your
+`~/.agentweb` sessions and profiles:
+
+```bash
+agentweb upgrade          # checksum-verifies and installs the latest release
+agentweb upgrade --check  # just report installed vs. latest; change nothing
+```
+
+`agentweb upgrade` re-runs the official installer after verifying it against its
+published `install.sh.sha256`. Re-running the one-line installer from
+[Try it in one minute](#try-it-in-one-minute) does the same thing.
+
 ## Just ask for what you want
 
 Once installed, prompts can be ordinary tasks:
