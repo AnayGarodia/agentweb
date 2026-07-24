@@ -3,7 +3,7 @@
   "signature": {
     "algorithm": "ed25519",
     "key_id": "d3237069b559fa7b",
-    "value": "Zfmbe6oWsGJIB0J/H0XyA47RUsaCYIEfQ14Ksq57bu2MDJQ70CBbPMznAvGtjUsuXEmIJLYNVu9gYYwAfdgQBQ=="
+    "value": "/8/bqj1XeZLl+O4n7isiLvy/xpGX4Z7oVdozep+S3ZPgXJiF/r5psI/P9aFnmJB2arWPk16BkGy+zEegbDdBCA=="
   },
   "sites": [
     {
@@ -218,14 +218,15 @@
     },
     {
       "files": {
-        "adapter.py": "da347faa61d4ff50de7233fcaa463c9529ed516a3c5b67c91f91b101b72d0626",
-        "authoring-report.json": "a326d06e29983f17b2be0ee132d8c23967624e5890d5c8d5e8b5b485c062c388",
-        "flows/page.json": "1102147b58bdbbc6d896da5c2f65dd9a01adc62e1e63778890486bebee298072",
-        "flows/search.json": "66d4bf1f76744e4dcf9aac25967c3a45b18ac40859c61d615f14b4fcac7cdca8",
-        "manifest.json": "93d5df22b0b81a2980c44f9362a748aba3848d90ad64933135dcfc5627c4df97"
+        "adapter.py": "81f2b5ff7738f780f202416d904f738357a51c0753a4b99b2dc2ae1ea85f673a",
+        "authoring-report.json": "7957c7dee473db5e4a980b0634b482a1c4f2f8167776653cdb860582dde3b832",
+        "flows/compat.json": "a59651d556dde59879a82656ad5241b35cb7c548d5d747c753b670c9658394a9",
+        "flows/page.json": "ff7a3e2edbd141366bd8923b65b3776b164fc690a5b0f71e2fe40a332d17631b",
+        "flows/search.json": "94c1e7e6a602819e7391e99736a31ff68eb939eeb26bb7706b973c357c4904a0",
+        "manifest.json": "5c68223921c9dce657720694643fa12e8a817259609bd3c4816c5598fc0fc8b3"
       },
       "name": "mdn",
-      "version": "0.1.0"
+      "version": "0.2.0"
     },
     {
       "files": {
@@ -359,13 +360,15 @@
     {
       "files": {
         "adapter.py": "17f95ee63ab57ed19d09a32ef829fbdf2f76639c73b73ea2ae02bd729c349704",
-        "authoring-report.json": "041ac68b201bc6b438d16ca77d3b84c37bf4ebd315a86a651b5985039cd8b6e1",
-        "flows/project.json": "31e86afccb5ada6a681a7537ecc47a48ab1c041cebd11c802a6023d59db5f356",
-        "flows/search.json": "1dd7fe8760ced81f85554cd92f40aee2e77c7cbcab0104a9f6bec7869ddaf15a",
-        "manifest.json": "d8a415430c27c1d76a84eef0ecf0589101170dbf38e92e79d6ec7c3639a05157"
+        "authoring-report.json": "38dd5e955107d517a414715431ad4c06f2eacdb9adf3e8cb6851b969633b051c",
+        "flows/builds.json": "0d95b0cb20f3b54d34c5f83ad90aa42c561b68f8da7003644d5181a7f301e598",
+        "flows/project.json": "540fc690c9039567ea28177f5334881c32916cd8001d767c24b6d7ea0bf0887a",
+        "flows/search.json": "f7381e117a8f3b4f7155dd0cb77266e9a0bc3d8f2a25e4f330813576de18960b",
+        "flows/versions.json": "f068b4917cbc1a4ca433b22cbebe830a031d8909b288f76f31f8e22415446cf8",
+        "manifest.json": "6230f94980713fba679d799860e1d74c37517e22d4d9cd0369a343caf99b5180"
       },
       "name": "readthedocs",
-      "version": "0.1.0"
+      "version": "0.2.0"
     },
     {
       "files": {

@@ -1,0 +1,81 @@
+{
+  "captured_at_unix": 1784934334.863976,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {},
+    "page_transition": {
+      "after": "https://readthedocs.org",
+      "before": "https://readthedocs.org"
+    },
+    "source": "reviewed_mapping_specification",
+    "steps": [
+      {
+        "name": "search",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "search",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "project",
+      "query"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "search",
+        "path": "https://readthedocs.org/api/v3/search/",
+        "query": {
+          "format": "json",
+          "q": "project:{project} {query}"
+        }
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "readthedocs",
+  "verification": {
+    "assertions": [
+      {
+        "name": "finds documentation pages",
+        "passed": true,
+        "type": "non_empty"
+      },
+      {
+        "name": "matches reviewed output schema",
+        "passed": true,
+        "problems": [],
+        "type": "output_schema"
+      }
+    ],
+    "cases": [
+      "success"
+    ],
+    "contract_hash": "727fc9b9179e68afe60d5f08f57858810e089723e14784e04701b5e1db314c57",
+    "evidence_version": 2,
+    "recipe_hash": "4797b5e4674e1d62aeae1460964e95f13be5e8126de8a1c29106100a71047d8b",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "interfaces": [
+        "semantic_direct_replay",
+        "agentweb_cli",
+        "agentweb_mcp"
+      ],
+      "name": "agentweb_author_release_gate",
+      "version": 1
+    },
+    "status": "passed",
+    "verified_at_unix": 1784934335.6197426
+  }
+}

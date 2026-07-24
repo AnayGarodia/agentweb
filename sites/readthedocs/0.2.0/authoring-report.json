@@ -1,0 +1,100 @@
+{
+  "browserless_parity": true,
+  "capabilities": {
+    "builds": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "website"
+    },
+    "project": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "website"
+    },
+    "search": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "website"
+    },
+    "versions": {
+      "boundary_evidence": 0,
+      "in_matrix": true,
+      "reason": null,
+      "roles": [
+        "public"
+      ],
+      "state": "verified",
+      "surface": "website"
+    }
+  },
+  "catalog_complete": true,
+  "excluded_operations": {},
+  "exhaustive": true,
+  "generated_at_unix": 1784934453.578276,
+  "matrix": {
+    "locales": [
+      "en-US"
+    ],
+    "roles": [
+      "public"
+    ],
+    "surfaces": [
+      "website"
+    ]
+  },
+  "matrix_verified": true,
+  "operations": {
+    "builds": {
+      "capabilities": [
+        "builds"
+      ],
+      "contract_hash": "0df06ccac4986338b68cf66387f9dcb67e264fd185b24a016619788ecfa70b53",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "project": {
+      "capabilities": [
+        "project"
+      ],
+      "contract_hash": "9c6ebe2784d585308262ceb813b4cb25e59211c1c4bfb4d265eb4e5b7b7a56d5",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "search": {
+      "capabilities": [
+        "search"
+      ],
+      "contract_hash": "727fc9b9179e68afe60d5f08f57858810e089723e14784e04701b5e1db314c57",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    },
+    "versions": {
+      "capabilities": [
+        "versions"
+      ],
+      "contract_hash": "dc5d56034a9163fdfde0bb67bf32c615d0aeaa06f59e5b9703be4e18d8bc9414",
+      "implementation_artifact_sha256": null,
+      "verification_status": "passed"
+    }
+  },
+  "project_hash": "f61eefccff7aa2e53235fd0674d966450f131bd603be771bc9eabfe28e99a399",
+  "publication_mode": "reviewed",
+  "schema_version": 1,
+  "tool_quality_verified": true,
+  "uncovered_verified_capabilities": []
+}

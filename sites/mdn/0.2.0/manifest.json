@@ -1,0 +1,1116 @@
+{
+  "aliases": [
+    "mdn"
+  ],
+  "allowed_domains": [
+    "bcd.developer.mozilla.org",
+    "developer.mozilla.org",
+    "mozilla.org"
+  ],
+  "auth": {
+    "interaction": "not_required",
+    "strategy": "none"
+  },
+  "authoring": {
+    "browserless_parity": true,
+    "catalog_complete": true,
+    "exhaustive": true,
+    "matrix_verified": true,
+    "tool_quality_verified": true
+  },
+  "base_url": "https://developer.mozilla.org",
+  "canonical_domain": "developer.mozilla.org",
+  "commands": {
+    "compat": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "discovery",
+      "description": "Browser compatibility data for one web platform feature from MDN's BCD dataset.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "feature": "api.fetch"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "feature": {
+            "description": "BCD feature path in dot notation, such as api.fetch, css.properties.grid, or javascript.builtins.Array.reduce.",
+            "maxLength": 200,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.@-]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "feature"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Browser support summary for one feature.",
+        "properties": {
+          "chrome": {
+            "description": "First chrome version with support; true when supported with an unknown version, false when unsupported, null when the record uses a partial-support shape."
+          },
+          "chrome_android": {
+            "description": "First chrome android version with support; true when supported with an unknown version, false when unsupported, null when the record uses a partial-support shape."
+          },
+          "deprecated": {
+            "description": "True when the feature is deprecated.",
+            "type": "boolean"
+          },
+          "edge": {
+            "description": "First edge version with support; true when supported with an unknown version, false when unsupported, null when the record uses a partial-support shape."
+          },
+          "experimental": {
+            "description": "True when the feature is experimental.",
+            "type": "boolean"
+          },
+          "feature": {
+            "description": "BCD source file identifying the feature.",
+            "type": "string"
+          },
+          "firefox": {
+            "description": "First firefox version with support; true when supported with an unknown version, false when unsupported, null when the record uses a partial-support shape."
+          },
+          "firefox_android": {
+            "description": "First firefox android version with support; true when supported with an unknown version, false when unsupported, null when the record uses a partial-support shape."
+          },
+          "mdn_url": {
+            "description": "Relative MDN URL documenting the feature; null when none exists.",
+            "type": "string"
+          },
+          "safari": {
+            "description": "First safari version with support; true when supported with an unknown version, false when unsupported, null when the record uses a partial-support shape."
+          },
+          "safari_ios": {
+            "description": "First safari ios version with support; true when supported with an unknown version, false when unsupported, null when the record uses a partial-support shape."
+          },
+          "spec_url": {
+            "description": "URL of the defining specification; null when none exists.",
+            "type": "string"
+          },
+          "standard_track": {
+            "description": "True when the feature is on the standards track.",
+            "type": "boolean"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns one feature's support summary.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this to read documentation prose; use page. Feature paths use BCD dot notation, not page slugs.",
+      "when_to_use": "Use this to check which browser versions support a web feature, such as api.fetch or css.properties.grid."
+    },
+    "page": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "discovery",
+      "description": "Read one MDN documentation page as plain-text sections by its slug.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "slug": "Web/API/Fetch_API"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque cursor from a previous call to continue reading sections.",
+            "maxLength": 100,
+            "type": "string"
+          },
+          "limit": {
+            "default": 10,
+            "description": "Maximum sections to return in one call.",
+            "maximum": 50,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "locale": {
+            "default": "en-US",
+            "description": "Documentation locale, such as en-US.",
+            "maxLength": 10,
+            "type": "string"
+          },
+          "slug": {
+            "description": "Page slug from search results, such as Web/API/Fetch_API.",
+            "maxLength": 300,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_./:*-]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "slug"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "One MDN page split into readable sections.",
+        "properties": {
+          "sections": {
+            "description": "Page body sections in reading order.",
+            "items": {
+              "properties": {
+                "content": {
+                  "description": "Section content as plain text; empty for non-prose sections.",
+                  "type": "string"
+                },
+                "heading": {
+                  "description": "Section heading; empty for the lead section.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "summary": {
+            "description": "One-paragraph page summary; null when MDN provides none.",
+            "type": "string"
+          },
+          "title": {
+            "description": "Page title.",
+            "type": "string"
+          },
+          "url": {
+            "description": "Relative MDN URL of the page.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "sections"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Local cursor pagination over page sections; pass limit and the returned next_cursor.",
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not guess slugs; find them with search first.",
+      "when_to_use": "Use this after search to read the actual documentation content of a page."
+    },
+    "search": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "discovery",
+      "description": "Full-text search across MDN Web Docs for web platform documentation.",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "query": "fetch abort"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "locale": {
+            "default": "en-US",
+            "description": "Documentation locale, such as en-US or fr.",
+            "maxLength": 10,
+            "type": "string"
+          },
+          "query": {
+            "description": "Search terms, such as 'fetch abort' or 'css grid template'.",
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "MDN search results for the query.",
+        "properties": {
+          "items": {
+            "description": "Matching MDN pages, best match first.",
+            "items": {
+              "properties": {
+                "slug": {
+                  "description": "Page slug usable with the page operation, such as Web/API/Fetch_API.",
+                  "type": "string"
+                },
+                "summary": {
+                  "description": "One-paragraph summary of the page; null when MDN provides none.",
+                  "type": "string"
+                },
+                "title": {
+                  "description": "Page title, such as 'Fetch API'.",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "Relative MDN URL of the page.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns MDN's first page of results (10 best matches).",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "when_not_to_use": "Do not use this for Python or non-web library docs; use readthedocs. Fetch a known page with page.",
+      "when_to_use": "Use this to find the MDN page for a web API, JavaScript method, CSS property, or HTML element."
+    }
+  },
+  "cookie_domain": ".developer.mozilla.org",
+  "coverage": {
+    "constraints": [
+      "Site permissions, rate limits, and anti-automation rules still apply"
+    ],
+    "human_boundaries": [],
+    "not_mapped": [],
+    "protocol_fallback": null,
+    "typed_fast_paths": [
+      "compat",
+      "page",
+      "search"
+    ],
+    "website_parity": "Mapping mode can inspect the remaining website while direct request recipes are compiled. Browser commands are never counted as runtime parity."
+  },
+  "description": "Complete agent interface for developer.mozilla.org",
+  "entrypoint": "adapter.py",
+  "evidence_capsules": {},
+  "flow_capsules": {
+    "compat": {
+      "contract": "compat",
+      "path": "flows/compat.json"
+    },
+    "page": {
+      "contract": "page",
+      "path": "flows/page.json"
+    },
+    "search": {
+      "contract": "search",
+      "path": "flows/search.json"
+    }
+  },
+  "name": "mdn",
+  "operation_contracts": {
+    "compat": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "404": "not_found"
+        },
+        "output": {
+          "fields": {
+            "chrome": {
+              "default": null,
+              "path": "$.support.chrome.0.version_added"
+            },
+            "chrome_android": {
+              "default": null,
+              "path": "$.support.chrome_android.0.version_added"
+            },
+            "deprecated": {
+              "default": null,
+              "path": "$.status.deprecated"
+            },
+            "edge": {
+              "default": null,
+              "path": "$.support.edge.0.version_added"
+            },
+            "experimental": {
+              "default": null,
+              "path": "$.status.experimental"
+            },
+            "feature": {
+              "default": null,
+              "path": "$.source_file"
+            },
+            "firefox": {
+              "default": null,
+              "path": "$.support.firefox.0.version_added"
+            },
+            "firefox_android": {
+              "default": null,
+              "path": "$.support.firefox_android.0.version_added"
+            },
+            "mdn_url": {
+              "default": null,
+              "path": "$.mdn_url"
+            },
+            "safari": {
+              "default": null,
+              "path": "$.support.safari.0.version_added"
+            },
+            "safari_ios": {
+              "default": null,
+              "path": "$.support.safari_ios.0.version_added"
+            },
+            "spec_url": {
+              "default": null,
+              "path": "$.spec_url"
+            },
+            "standard_track": {
+              "default": null,
+              "path": "$.status.standard_track"
+            }
+          },
+          "source": "$.data.__compat"
+        },
+        "recipe_hash": "dde8dbe7437ab8d65b05b1a052f323da94ee74895dc1aed8d90fb413229a86bd",
+        "type": "generated_recipe",
+        "variables": {
+          "feature": "feature"
+        }
+      },
+      "capabilities": [
+        "compat"
+      ],
+      "category": "discovery",
+      "contract_hash": "f41e7ece6a19a9ba65d1443b87ca04eeaa1fa6e7486baa070f266fe6c517919f",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "feature": "api.fetch"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "feature": {
+            "description": "BCD feature path in dot notation, such as api.fetch, css.properties.grid, or javascript.builtins.Array.reduce.",
+            "maxLength": 200,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.@-]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "feature"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "compat",
+      "output_schema": {
+        "description": "Browser support summary for one feature.",
+        "properties": {
+          "chrome": {
+            "description": "First chrome version with support; true when supported with an unknown version, false when unsupported, null when the record uses a partial-support shape."
+          },
+          "chrome_android": {
+            "description": "First chrome android version with support; true when supported with an unknown version, false when unsupported, null when the record uses a partial-support shape."
+          },
+          "deprecated": {
+            "description": "True when the feature is deprecated.",
+            "type": "boolean"
+          },
+          "edge": {
+            "description": "First edge version with support; true when supported with an unknown version, false when unsupported, null when the record uses a partial-support shape."
+          },
+          "experimental": {
+            "description": "True when the feature is experimental.",
+            "type": "boolean"
+          },
+          "feature": {
+            "description": "BCD source file identifying the feature.",
+            "type": "string"
+          },
+          "firefox": {
+            "description": "First firefox version with support; true when supported with an unknown version, false when unsupported, null when the record uses a partial-support shape."
+          },
+          "firefox_android": {
+            "description": "First firefox android version with support; true when supported with an unknown version, false when unsupported, null when the record uses a partial-support shape."
+          },
+          "mdn_url": {
+            "description": "Relative MDN URL documenting the feature; null when none exists.",
+            "type": "string"
+          },
+          "safari": {
+            "description": "First safari version with support; true when supported with an unknown version, false when unsupported, null when the record uses a partial-support shape."
+          },
+          "safari_ios": {
+            "description": "First safari ios version with support; true when supported with an unknown version, false when unsupported, null when the record uses a partial-support shape."
+          },
+          "spec_url": {
+            "description": "URL of the defining specification; null when none exists.",
+            "type": "string"
+          },
+          "standard_track": {
+            "description": "True when the feature is on the standards track.",
+            "type": "boolean"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns one feature's support summary.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 1,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784934320.2579348,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Browser compatibility data for one web platform feature from MDN's BCD dataset.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns the feature's MDN link",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "f41e7ece6a19a9ba65d1443b87ca04eeaa1fa6e7486baa070f266fe6c517919f",
+            "input_names": [
+              "feature"
+            ],
+            "passed": true,
+            "recipe_hash": "dde8dbe7437ab8d65b05b1a052f323da94ee74895dc1aed8d90fb413229a86bd",
+            "verified_at_unix": 1784934320.1642866
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns the feature's MDN link",
+            "path": "$.data.mdn_url",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this to read documentation prose; use page. Feature paths use BCD dot notation, not page slugs.",
+      "when_to_use": "Use this to check which browser versions support a web feature, such as api.fetch or css.properties.grid."
+    },
+    "page": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "404": "not_found"
+        },
+        "output": {
+          "collection": "sections",
+          "fields": {
+            "sections": {
+              "item_fields": {
+                "content": {
+                  "default": "",
+                  "path": "$.value.content",
+                  "transform": "html_to_text"
+                },
+                "heading": {
+                  "default": "",
+                  "path": "$.value.title"
+                }
+              },
+              "path": "$.body"
+            },
+            "summary": {
+              "default": null,
+              "path": "$.summary"
+            },
+            "title": {
+              "path": "$.title"
+            },
+            "url": {
+              "path": "$.mdn_url"
+            }
+          },
+          "pagination": {
+            "cursor_input": "cursor",
+            "default_limit": 10,
+            "limit_input": "limit",
+            "max_limit": 50
+          },
+          "source": "$.doc"
+        },
+        "recipe_hash": "f2f6f498fef6ecde29259c136aed91e6cb492d0433a1e538b29cc9b2170d5acd",
+        "type": "generated_recipe",
+        "variables": {
+          "locale": {
+            "default": "en-US",
+            "source": "locale"
+          },
+          "slug": "slug"
+        }
+      },
+      "capabilities": [
+        "page"
+      ],
+      "category": "discovery",
+      "contract_hash": "fb19b46b759a8110f1137b46bad64c317686ac168f84c203db3591fc5fbdffc9",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "slug": "Web/API/Fetch_API"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque cursor from a previous call to continue reading sections.",
+            "maxLength": 100,
+            "type": "string"
+          },
+          "limit": {
+            "default": 10,
+            "description": "Maximum sections to return in one call.",
+            "maximum": 50,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "locale": {
+            "default": "en-US",
+            "description": "Documentation locale, such as en-US.",
+            "maxLength": 10,
+            "type": "string"
+          },
+          "slug": {
+            "description": "Page slug from search results, such as Web/API/Fetch_API.",
+            "maxLength": 300,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_./:*-]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "slug"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "page",
+      "output_schema": {
+        "description": "One MDN page split into readable sections.",
+        "properties": {
+          "sections": {
+            "description": "Page body sections in reading order.",
+            "items": {
+              "properties": {
+                "content": {
+                  "description": "Section content as plain text; empty for non-prose sections.",
+                  "type": "string"
+                },
+                "heading": {
+                  "description": "Section heading; empty for the lead section.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "summary": {
+            "description": "One-paragraph page summary; null when MDN provides none.",
+            "type": "string"
+          },
+          "title": {
+            "description": "Page title.",
+            "type": "string"
+          },
+          "url": {
+            "description": "Relative MDN URL of the page.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "sections"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Local cursor pagination over page sections; pass limit and the returned next_cursor.",
+        "supported": true
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 50,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784934320.2686093,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Read one MDN documentation page as plain-text sections by its slug.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "returns page sections",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "returns the page title",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "fb19b46b759a8110f1137b46bad64c317686ac168f84c203db3591fc5fbdffc9",
+            "input_names": [
+              "limit",
+              "locale",
+              "slug"
+            ],
+            "passed": true,
+            "recipe_hash": "f2f6f498fef6ecde29259c136aed91e6cb492d0433a1e538b29cc9b2170d5acd",
+            "verified_at_unix": 1784934320.21177
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "returns page sections",
+            "path": "$.data.sections",
+            "type": "non_empty"
+          },
+          {
+            "name": "returns the page title",
+            "path": "$.data.title",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not guess slugs; find them with search first.",
+      "when_to_use": "Use this after search to read the actual documentation content of a page."
+    },
+    "search": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "http_errors": {
+          "404": "not_found"
+        },
+        "output": {
+          "collection": "items",
+          "item_fields": {
+            "slug": {
+              "path": "$.slug"
+            },
+            "summary": {
+              "default": null,
+              "path": "$.summary"
+            },
+            "title": {
+              "path": "$.title"
+            },
+            "url": {
+              "path": "$.mdn_url"
+            }
+          },
+          "source": "$.documents"
+        },
+        "recipe_hash": "d4487c677a96bdf49d2bc346692f8095924d3088e82f360af96f17f06bc22685",
+        "type": "generated_recipe",
+        "variables": {
+          "locale": {
+            "default": "en-US",
+            "source": "locale"
+          },
+          "query": "query"
+        }
+      },
+      "capabilities": [
+        "search"
+      ],
+      "category": "discovery",
+      "contract_hash": "2a7a090e6dd3f64e4fbf7e5e67771e9bc58fa39eb0e9329e7230c2d8f229a49b",
+      "errors": [
+        {
+          "code": "invalid_input",
+          "message": "One or more operation inputs are missing or invalid.",
+          "retryable": false,
+          "user_action": "Correct the named input using the operation schema and retry."
+        },
+        {
+          "code": "not_found",
+          "message": "The requested public resource does not exist or is unavailable.",
+          "retryable": false,
+          "user_action": "Check the resource identifier with a discovery operation before retrying."
+        },
+        {
+          "code": "rate_limited",
+          "message": "The website is temporarily rate limiting this operation.",
+          "retryable": true,
+          "user_action": "Wait for the reported retry interval before calling the operation again."
+        },
+        {
+          "code": "upstream_unavailable",
+          "message": "The website is temporarily unavailable or returned an invalid response.",
+          "retryable": true,
+          "user_action": "Retry once, then check the website's service status if the error continues."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "query": "fetch abort"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "locale": {
+            "default": "en-US",
+            "description": "Documentation locale, such as en-US or fr.",
+            "maxLength": 10,
+            "type": "string"
+          },
+          "query": {
+            "description": "Search terms, such as 'fetch abort' or 'css grid template'.",
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "search",
+      "output_schema": {
+        "description": "MDN search results for the query.",
+        "properties": {
+          "items": {
+            "description": "Matching MDN pages, best match first.",
+            "items": {
+              "properties": {
+                "slug": {
+                  "description": "Page slug usable with the page operation, such as Web/API/Fetch_API.",
+                  "type": "string"
+                },
+                "summary": {
+                  "description": "One-paragraph summary of the page; null when MDN provides none.",
+                  "type": "string"
+                },
+                "title": {
+                  "description": "Page title, such as 'Fetch API'.",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "Relative MDN URL of the page.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns MDN's first page of results (10 best matches).",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Fetched live when the operation runs.",
+        "max_items": 10,
+        "truncation": "Declared result bounds and pagination are reported explicitly."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784934320.2724864,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": false
+      },
+      "schema_version": 1,
+      "summary": "Full-text search across MDN Web Docs for web platform documentation.",
+      "verification": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "finds documentation pages",
+                "passed": true,
+                "type": "non_empty"
+              },
+              {
+                "name": "matches reviewed output schema",
+                "passed": true,
+                "problems": [],
+                "type": "output_schema"
+              }
+            ],
+            "case": "success",
+            "cleanup": null,
+            "contract_hash": "2a7a090e6dd3f64e4fbf7e5e67771e9bc58fa39eb0e9329e7230c2d8f229a49b",
+            "input_names": [
+              "locale",
+              "query"
+            ],
+            "passed": true,
+            "recipe_hash": "d4487c677a96bdf49d2bc346692f8095924d3088e82f360af96f17f06bc22685",
+            "verified_at_unix": 1784934320.2476282
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "finds documentation pages",
+            "path": "$.data.items",
+            "type": "non_empty"
+          }
+        ],
+        "required_cases": [
+          "success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for Python or non-web library docs; use readthedocs. Fetch a known page with page.",
+      "when_to_use": "Use this to find the MDN page for a web API, JavaScript method, CSS property, or HTML element."
+    }
+  },
+  "runtime": {
+    "auth_interaction": "not_yet_mapped",
+    "browserless_replay": true
+  },
+  "url_routes": [],
+  "version": "0.2.0"
+}
