@@ -1,0 +1,76 @@
+{
+  "captured_at_unix": 1784707908.735871,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {
+      "bytes": 789,
+      "fields": [
+        {
+          "path": "data.0.c",
+          "sensitive": false,
+          "type": "str"
+        },
+        {
+          "path": "data.0.n",
+          "sensitive": false,
+          "type": "str"
+        }
+      ],
+      "format": "json",
+      "truncated": false
+    },
+    "page_transition": {
+      "after": "https://services.gst.gov.in/services/searchhsnsac",
+      "before": "https://services.gst.gov.in/services/searchhsnsac"
+    },
+    "steps": [
+      {
+        "mime_type": "application/json",
+        "name": "qsearch",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "search_hsn_sac",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [
+      "inputtext",
+      "selectedtype"
+    ],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "headers": {
+          "Accept": "application/json, text/plain, */*",
+          "Referer": "https://services.gst.gov.in/services/searchhsnsac"
+        },
+        "method": "GET",
+        "name": "qsearch",
+        "path": "https://services.gst.gov.in/commonservices/hsn/search/qsearch",
+        "query": {
+          "category": "null",
+          "inputText": "{inputtext}",
+          "selectedType": "{selectedtype}"
+        }
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "gst",
+  "verification": {
+    "contract_hash": "d23a9b7be397bf003fb3e8ae140ccb78bbfbd8683441d0da061eca25e2e72cfd",
+    "recipe_hash": "e27dcc5ea536baaeb616e503a44b760bfd53fe41abfd44a773c772809a1104ce",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784709079.326507
+  }
+}

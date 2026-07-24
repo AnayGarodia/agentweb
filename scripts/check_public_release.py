@@ -11,7 +11,16 @@ PRIVATE_MODULES = {
     "agentweb/authoring.py",
     "agentweb/workbench.py",
 }
-PUBLIC_ADAPTERS = {"arxiv", "npm", "wikipedia"}
+PUBLIC_ADAPTERS = {
+    "arxiv",
+    "github",
+    "gst",
+    "hn",
+    "huggingface",
+    "npm",
+    "pypi",
+    "wikipedia",
+}
 FORBIDDEN_PARTS = {
     "authoring",
     "captures",

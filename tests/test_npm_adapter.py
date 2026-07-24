@@ -45,7 +45,12 @@ def test_npm_manifest_is_a_public_reference_adapter(tmp_path: Path) -> None:
 
     assert {entry["name"] for entry in index["sites"]} == {
         "arxiv",
+        "github",
+        "gst",
+        "hn",
+        "huggingface",
         "npm",
+        "pypi",
         "wikipedia",
     }
     assert audit["exhaustive"] is True

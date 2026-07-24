@@ -1,0 +1,42 @@
+{
+  "observed": {
+    "cases": [
+      "success",
+      "live_direct_success"
+    ],
+    "paths": [
+      "https://pypi.org/pypi/{project}/json"
+    ],
+    "source": "reviewed PyPI public capability mapping with live direct replay"
+  },
+  "operation": "get_vulnerabilities",
+  "recipe": {
+    "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+    "operation": "get_vulnerabilities",
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "evidence_1",
+        "path": "https://pypi.org/pypi/{project}/json"
+      }
+    ],
+    "type": "reviewed_python_binding"
+  },
+  "schema_version": 1,
+  "verification": {
+    "assertions": [
+      {
+        "name": "vulnerability lookup returns an advisory collection",
+        "passed": true,
+        "path": "$.data.advisories"
+      }
+    ],
+    "contract_hash": "8452c93964e00dc4b545a5b657157a7c4d7c8e3339c67750f9ecb90bc3b33bda",
+    "recipe_hash": "45b33b0635c0d841bf7b35935d743f805f530edfdf7ee43ec125ab9ca8d14c43",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784834400.0
+  }
+}

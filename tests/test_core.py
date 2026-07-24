@@ -53,10 +53,24 @@ def test_reference_registry_contains_only_public_adapters(tmp_path: Path) -> Non
     paths = StatePaths(tmp_path)
     result = Registry(paths).sync(str(bundled_registry()))
 
-    assert result["available"] == ["arxiv", "npm", "wikipedia"]
+    assert result["available"] == [
+        "arxiv",
+        "github",
+        "gst",
+        "hn",
+        "huggingface",
+        "npm",
+        "pypi",
+        "wikipedia",
+    ]
     assert {item["name"] for item in Runtime(paths).sites()} == {
         "arxiv",
+        "github",
+        "gst",
+        "hn",
+        "huggingface",
         "npm",
+        "pypi",
         "wikipedia",
     }
 
@@ -73,7 +87,17 @@ def test_sync_preserves_adapters_from_other_registries(tmp_path: Path) -> None:
     result = Registry(paths).sync(str(bundled_registry()))
 
     assert result["removed"] == []
-    assert set(result["available"]) == {"arxiv", "example", "npm", "wikipedia"}
+    assert set(result["available"]) == {
+        "arxiv",
+        "example",
+        "github",
+        "gst",
+        "hn",
+        "huggingface",
+        "npm",
+        "pypi",
+        "wikipedia",
+    }
     assert "example" in {item["name"] for item in Runtime(paths).sites()}
 
 
@@ -89,7 +113,16 @@ def test_sync_prune_explicitly_removes_adapters_not_in_source(tmp_path: Path) ->
     result = Registry(paths).sync(str(bundled_registry()), prune=True)
 
     assert result["removed"] == ["example"]
-    assert set(result["available"]) == {"arxiv", "npm", "wikipedia"}
+    assert set(result["available"]) == {
+        "arxiv",
+        "github",
+        "gst",
+        "hn",
+        "huggingface",
+        "npm",
+        "pypi",
+        "wikipedia",
+    }
 
 
 def test_domains_aliases_and_urls_resolve(tmp_path: Path) -> None:
@@ -462,7 +495,16 @@ def test_public_registry_audit_reports_real_state() -> None:
     audit = audit_registry(bundled_registry())
     sites = {item["name"]: item for item in audit["sites"]}
 
-    assert set(sites) == {"arxiv", "npm", "wikipedia"}
+    assert set(sites) == {
+        "arxiv",
+        "github",
+        "gst",
+        "hn",
+        "huggingface",
+        "npm",
+        "pypi",
+        "wikipedia",
+    }
     assert sites["arxiv"]["exhaustive"] is True
     assert sites["npm"]["exhaustive"] is True
     assert sites["wikipedia"]["browserless_replay"] is True

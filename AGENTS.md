@@ -27,4 +27,8 @@ PYTHONPATH=src python -m agentweb.cli audit
 ```
 
 For package-boundary changes, also inspect the wheel and confirm that it contains
-only the public modules and the three active reference adapters.
+only the public modules and the bundled open adapters (see the allowlist in
+`scripts/check_public_release.py`). The private adapter factory (`workbench`,
+`authoring`, `author_mcp`) must never appear in the wheel. Login-required sites
+that depend on a signed-in browser session (Amazon, LinkedIn, Spotify, Stack
+Overflow) are distributed separately and are not bundled here.

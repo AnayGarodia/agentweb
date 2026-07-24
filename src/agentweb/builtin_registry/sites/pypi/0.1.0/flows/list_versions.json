@@ -1,0 +1,42 @@
+{
+  "observed": {
+    "cases": [
+      "success",
+      "live_direct_success"
+    ],
+    "paths": [
+      "https://pypi.org/simple/{project}/"
+    ],
+    "source": "reviewed PyPI public capability mapping with live direct replay"
+  },
+  "operation": "list_versions",
+  "recipe": {
+    "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+    "operation": "list_versions",
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "evidence_1",
+        "path": "https://pypi.org/simple/{project}/"
+      }
+    ],
+    "type": "reviewed_python_binding"
+  },
+  "schema_version": 1,
+  "verification": {
+    "assertions": [
+      {
+        "name": "simple index returns bounded versions",
+        "passed": true,
+        "path": "$.data.versions"
+      }
+    ],
+    "contract_hash": "014ed148ac26aaf7be14c914ef714d7ab90a152989909fc03fc8d723dbaae9db",
+    "recipe_hash": "bc3a3b48ecc475efcbe71d0bbb5c9399e4c0d0eb5726269c97a99f425131ccef",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784834400.0
+  }
+}

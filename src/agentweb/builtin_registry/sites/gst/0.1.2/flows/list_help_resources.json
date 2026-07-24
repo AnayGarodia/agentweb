@@ -1,0 +1,69 @@
+{
+  "captured_at_unix": 1784712539.397414,
+  "kind": "agentweb_flow_capsule",
+  "observed": {
+    "final_response_shape": {
+      "bytes": 2,
+      "fields": [],
+      "format": "json",
+      "truncated": false
+    },
+    "page_transition": {
+      "after": "https://services.gst.gov.in/services/HelpandTaxpayer/HelpandTaxpayerfacilities",
+      "before": "https://payment.gst.gov.in/payment/"
+    },
+    "steps": [
+      {
+        "mime_type": "text/html",
+        "name": "helpandtaxpayerfacilities_html",
+        "status": 200
+      }
+    ]
+  },
+  "operation": "list_help_resources",
+  "recipe": {
+    "dependencies": [],
+    "human_inputs": [],
+    "required_inputs": [],
+    "session_cookies": false,
+    "steps": [
+      {
+        "classification": "read",
+        "context_selector": ".cards",
+        "context_text_selector": ".card-body",
+        "headers": {
+          "Accept": "application/json, text/plain, */*",
+          "Referer": "https://services.gst.gov.in/services/HelpandTaxpayer/HelpandTaxpayerfacilities"
+        },
+        "link_attributes": [
+          "href",
+          "data-ng-href"
+        ],
+        "link_replacements": {
+          "{{servers.GST_CONTENT_R1_URL}}": "https://www.gst.gov.in",
+          "{{servers.GST_SERVICES_R1_URL}}": "https://services.gst.gov.in"
+        },
+        "method": "GET",
+        "name": "helpandtaxpayerfacilities_html",
+        "path": "https://services.gst.gov.in/pages/services/HelpandTaxpayerfacilities.html",
+        "response_mode": "html_links",
+        "selector": ".cards:not([data-ng-show]) a, .cards[data-ng-show=\"!udata\"] a"
+      }
+    ]
+  },
+  "risk": {
+    "human_inputs": [],
+    "mutating": false,
+    "uses_session_cookies": false
+  },
+  "schema_version": 1,
+  "site": "gst",
+  "verification": {
+    "contract_hash": "95a6f150b8a9278af8fdb6a8d15f4b5e9be7fa160680af217da32367ffb826aa",
+    "recipe_hash": "e1051e66699088a6ac3c3178bfd0bad8e6aaaa682ffa69a26a2d5cab0d4c8cc3",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784713091.9373481
+  }
+}

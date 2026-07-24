@@ -1,0 +1,42 @@
+{
+  "observed": {
+    "cases": [
+      "success",
+      "live_direct_success"
+    ],
+    "paths": [
+      "https://pypi.org/stats/"
+    ],
+    "source": "reviewed PyPI public capability mapping with live direct replay"
+  },
+  "operation": "get_stats",
+  "recipe": {
+    "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+    "operation": "get_stats",
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "evidence_1",
+        "path": "https://pypi.org/stats/"
+      }
+    ],
+    "type": "reviewed_python_binding"
+  },
+  "schema_version": 1,
+  "verification": {
+    "assertions": [
+      {
+        "name": "stats returns the largest projects",
+        "passed": true,
+        "path": "$.data.top_packages"
+      }
+    ],
+    "contract_hash": "b9f87e0891196cc0323452ce44938049fe0f721654fea8875945b009bb42bb93",
+    "recipe_hash": "2644eff340b37c3cfc9f07810e8e06fe937891918f5ccbdfc78b6ab8ccf57c8a",
+    "review_required": [],
+    "reviewed": true,
+    "status": "passed",
+    "verified_at_unix": 1784834400.0
+  }
+}

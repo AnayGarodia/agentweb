@@ -18,6 +18,11 @@ def test_only_reference_adapters_are_bundled() -> None:
     sites = Path(__file__).parents[1] / "src/agentweb/builtin_registry/sites"
     assert {path.name for path in sites.iterdir() if path.is_dir()} == {
         "arxiv",
+        "github",
+        "gst",
+        "hn",
+        "huggingface",
         "npm",
+        "pypi",
         "wikipedia",
     }

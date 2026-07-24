@@ -1,0 +1,53 @@
+{
+  "observed": {
+    "cases": [
+      "success",
+      "invalid_input",
+      "not_found_or_private",
+      "rate_limit_contract"
+    ],
+    "source": "official API documentation plus live public probes"
+  },
+  "operation": "hub_search",
+  "recipe": {
+    "implementation_hash": "9bf19642efa54219d33952be7875ba301712049b05e2ab873347291cc7dfa805",
+    "operation": "hub_search",
+    "steps": [
+      {
+        "classification": "read",
+        "method": "GET",
+        "name": "typed_read",
+        "path": "reviewed:hub_search"
+      }
+    ],
+    "type": "reviewed_python_binding"
+  },
+  "schema_version": 1,
+  "verification": {
+    "assertions": [
+      {
+        "name": "bounded agent-readable data envelope",
+        "passed": true
+      }
+    ],
+    "contract_hash": "dfb0109ed3e770e04923b744b203e66a91ddeac8337c6d70d39ebec64f04b09a",
+    "recipe_hash": "5ca9b53639de7c928984198408d1d7e24c77a3d3dc345c4d1cdd324403b9d839",
+    "review_required": [],
+    "reviewed": true,
+    "runner": {
+      "exit_code": 0,
+      "interfaces": [
+        "domain_first_cli",
+        "generic_cli",
+        "mcp_site_call"
+      ],
+      "name": "agentweb-huggingface-release-gate",
+      "runtime_versions": [
+        "0.16.6"
+      ],
+      "version": "1"
+    },
+    "status": "passed",
+    "verified_at_unix": 1784767808
+  }
+}

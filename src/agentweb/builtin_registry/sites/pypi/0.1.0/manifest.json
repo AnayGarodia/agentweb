@@ -1,0 +1,5281 @@
+{
+  "aliases": [
+    "pypi",
+    "pypi.org",
+    "python package index"
+  ],
+  "allowed_domains": [
+    "files.pythonhosted.org",
+    "pypi.org"
+  ],
+  "auth": {
+    "interaction": "not_required",
+    "strategy": "none"
+  },
+  "authoring": {
+    "browserless_parity": true,
+    "catalog_complete": true,
+    "exhaustive": true,
+    "matrix_verified": true,
+    "tool_quality_verified": true
+  },
+  "base_url": "https://pypi.org",
+  "canonical_domain": "pypi.org",
+  "commands": {
+    "download_distribution": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "distributions",
+      "description": "Download one public distribution file and return a private local file receipt with its SHA-256 digest.",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "filename": "requests-2.32.3-py3-none-any.whl",
+            "project": "requests",
+            "version": "2.32.3"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "filename": {
+            "description": "Exact distribution filename returned by list_files, such as requests-2.31.0-py3-none-any.whl.",
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          },
+          "version": {
+            "description": "Exact PEP 440 release version such as 2.31.0.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "version",
+          "filename"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "bytes": {
+            "description": "Exact downloaded byte count.",
+            "type": "integer"
+          },
+          "filename": {
+            "description": "Saved distribution filename.",
+            "type": "string"
+          },
+          "path": {
+            "description": "Private local path where AgentWeb saved the file.",
+            "type": "string"
+          },
+          "sha256": {
+            "description": "SHA-256 digest of the downloaded file.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "filename",
+          "path",
+          "bytes",
+          "sha256"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call downloads one exact distribution file.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this merely for metadata; get_release and get_core_metadata return smaller results.",
+      "when_to_use": "Use this when a local tool needs the complete wheel or sdist archive."
+    },
+    "get_core_metadata": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "distributions",
+      "description": "Read the PEP 658 core metadata (the packaged METADATA file) for one distribution without downloading the whole archive.",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "filename": "requests-2.32.3-py3-none-any.whl",
+            "project": "requests",
+            "version": "2.32.3"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "filename": {
+            "description": "Exact distribution filename returned by list_files, such as requests-2.31.0-py3-none-any.whl.",
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "max_bytes": {
+            "default": 200000,
+            "description": "Maximum metadata bytes to return.",
+            "maximum": 1000000,
+            "minimum": 1000,
+            "type": "integer"
+          },
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          },
+          "version": {
+            "description": "Exact PEP 440 release version such as 2.31.0.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "version",
+          "filename"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "bytes": {
+            "description": "Untruncated metadata byte length.",
+            "type": "integer"
+          },
+          "content": {
+            "description": "Bounded core metadata text.",
+            "type": "string"
+          },
+          "filename": {
+            "description": "Distribution filename.",
+            "type": "string"
+          },
+          "project": {
+            "description": "Canonical project name.",
+            "type": "string"
+          },
+          "truncated": {
+            "description": "Whether the metadata was shortened.",
+            "type": "boolean"
+          },
+          "version": {
+            "description": "Resolved release version.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "version",
+          "filename",
+          "content",
+          "bytes",
+          "truncated"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Raise max_bytes to read more of the metadata file.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this for files without core metadata; download_distribution returns the full archive instead.",
+      "when_to_use": "Use this to read a wheel's exact metadata cheaply when the file advertises core metadata."
+    },
+    "get_description": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "documentation",
+      "description": "Read a project's long description (README) as bounded text with its declared content type.",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "max_chars": 8000,
+            "project": "requests"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "max_chars": {
+            "default": 20000,
+            "description": "Maximum description characters to return.",
+            "maximum": 200000,
+            "minimum": 1000,
+            "type": "integer"
+          },
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          },
+          "version": {
+            "description": "Optional exact PEP 440 release version; omit to use the project's latest release.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "project"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "characters": {
+            "description": "Untruncated description length.",
+            "type": "integer"
+          },
+          "content": {
+            "description": "Bounded description text.",
+            "type": "string"
+          },
+          "content_type": {
+            "description": "Declared description content type.",
+            "type": "string"
+          },
+          "project": {
+            "description": "Canonical project name.",
+            "type": "string"
+          },
+          "truncated": {
+            "description": "Whether the description was shortened.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "project",
+          "content",
+          "characters",
+          "truncated"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Raise max_chars to read more of a long description.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this for structured metadata such as classifiers; get_project returns those.",
+      "when_to_use": "Use this to read a project's rendered documentation body without opening the website."
+    },
+    "get_ownership": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "metadata",
+      "description": "List a project's owners and maintainers and its owning organization when present.",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "project": "requests"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "organization": {
+            "description": "Owning organization when present.",
+            "type": "string"
+          },
+          "owner_count": {
+            "description": "Number of roles returned.",
+            "type": "integer"
+          },
+          "owners": {
+            "description": "Owner and maintainer roles.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "project": {
+            "description": "Canonical project name.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "owners",
+          "owner_count"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call returns the project's full bounded role list.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this to change roles; ownership changes are a declared human boundary.",
+      "when_to_use": "Use this to see who controls a project's releases."
+    },
+    "get_project": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "metadata",
+      "description": "Fetch a public PyPI project's normalized metadata: latest version, summary, license, classifiers, project URLs, owners, and release count.",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "project": "requests"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "latest_files": {
+            "description": "Distribution files for the latest release.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "name": {
+            "description": "Canonical project name.",
+            "type": "string"
+          },
+          "owners": {
+            "description": "Project owners and their roles.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "release_count": {
+            "description": "Number of published releases.",
+            "type": "integer"
+          },
+          "summary": {
+            "description": "Short project summary.",
+            "type": "string"
+          },
+          "version": {
+            "description": "Latest published version.",
+            "type": "string"
+          },
+          "vulnerability_count": {
+            "description": "Count of known OSV advisories affecting the latest release.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name",
+          "release_count",
+          "latest_files"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns one bounded metadata record for the project's latest release.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this to enumerate every historical version; list_releases and list_versions are bounded and paginated.",
+      "when_to_use": "Use this first when the project name is known to read its current metadata and latest distribution files."
+    },
+    "get_project_release_feed": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "feeds",
+      "description": "List a single project's recent releases from its public RSS feed.",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 20,
+            "project": "requests"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "limit": {
+            "default": 40,
+            "description": "Maximum feed items to return.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "project": {
+            "description": "Canonical project name.",
+            "type": "string"
+          },
+          "releases": {
+            "description": "Recent release feed items.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "project",
+          "releases"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for the next page.",
+        "default_limit": 40,
+        "maximum_limit": 100,
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this for the complete history; list_releases paginates every version.",
+      "when_to_use": "Use this for a lightweight recent-release feed for one project."
+    },
+    "get_provenance": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "security",
+      "description": "Return the PEP 740 provenance attestation bundles for one distribution file when the uploader published them.",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "filename": "requests-2.32.3-py3-none-any.whl",
+            "project": "requests",
+            "version": "2.32.3"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "filename": {
+            "description": "Exact distribution filename returned by list_files, such as requests-2.31.0-py3-none-any.whl.",
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          },
+          "version": {
+            "description": "Exact PEP 440 release version such as 2.31.0.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "version",
+          "filename"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "attestation_bundles": {
+            "description": "Summarized attestation bundles.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "filename": {
+            "description": "Distribution filename.",
+            "type": "string"
+          },
+          "has_provenance": {
+            "description": "Whether any provenance bundle was published.",
+            "type": "boolean"
+          },
+          "project": {
+            "description": "Canonical project name.",
+            "type": "string"
+          },
+          "version": {
+            "description": "Resolved release version.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "version",
+          "filename",
+          "attestation_bundles",
+          "has_provenance"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call returns the bounded provenance for one file.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not treat a missing bundle as tampering; most releases do not yet publish provenance.",
+      "when_to_use": "Use this to verify that a distribution file has trusted-publisher attestations."
+    },
+    "get_release": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "metadata",
+      "description": "Fetch metadata and distribution files for one exact PyPI release version.",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "project": "requests",
+            "version": "2.31.0"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          },
+          "version": {
+            "description": "Exact PEP 440 release version such as 2.31.0.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "version"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "file_count": {
+            "description": "Number of distribution files.",
+            "type": "integer"
+          },
+          "files": {
+            "description": "Distribution files with digests and sizes.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "name": {
+            "description": "Canonical project name.",
+            "type": "string"
+          },
+          "requires_dist": {
+            "description": "Raw PEP 508 requirement strings.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "requires_python": {
+            "description": "Python version requirement for the release.",
+            "type": "string"
+          },
+          "version": {
+            "description": "Resolved release version.",
+            "type": "string"
+          },
+          "yanked": {
+            "description": "Whether the release is yanked.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "version",
+          "files",
+          "file_count"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns one bounded record for the exact release.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this for the latest release without a version; get_project already returns the latest files.",
+      "when_to_use": "Use this to inspect a specific version's files, requirements, yank status, and vulnerabilities."
+    },
+    "get_stats": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "service_health",
+      "description": "Return PyPI's public storage statistics: total index size and the largest projects by stored bytes.",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 20
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "limit": {
+            "default": 100,
+            "description": "Maximum top projects to return.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "top_packages": {
+            "description": "Largest projects by stored size.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "total_packages_size": {
+            "description": "Total stored size of all distributions in bytes.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "top_packages"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for the next page.",
+        "default_limit": 100,
+        "maximum_limit": 100,
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this for per-project download counts; PyPI does not serve those from its public API.",
+      "when_to_use": "Use this to understand overall index size or find the largest projects."
+    },
+    "get_vulnerabilities": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "security",
+      "description": "Return the OSV security advisories PyPI records for a project or exact release.",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "project": "requests",
+            "version": "2.19.0"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          },
+          "version": {
+            "description": "Optional exact PEP 440 release version; omit to use the project's latest release.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "project"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "advisories": {
+            "description": "Normalized OSV advisories.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "advisory_count": {
+            "description": "Number of advisories returned.",
+            "type": "integer"
+          },
+          "project": {
+            "description": "Canonical project name.",
+            "type": "string"
+          },
+          "version": {
+            "description": "Resolved release version when provided.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "advisories",
+          "advisory_count"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call returns the bounded advisory set for the resolved release.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not treat an empty result as a security guarantee; it only reflects advisories PyPI has ingested.",
+      "when_to_use": "Use this to check whether a project or version has known published vulnerabilities."
+    },
+    "list_all_projects": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "discovery",
+      "description": "List public PyPI project names from the PEP 691 simple index, optionally filtered by a normalized name prefix.",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 25,
+            "prefix": "flask-"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "limit": {
+            "default": 100,
+            "description": "Maximum project names to return.",
+            "maximum": 500,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "prefix": {
+            "description": "Optional normalized name prefix to filter the index.",
+            "maxLength": 214,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "prefix": {
+            "description": "Prefix filter that was applied, if any.",
+            "type": "string"
+          },
+          "projects": {
+            "description": "Bounded project names.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "projects"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for the next page.",
+        "default_limit": 100,
+        "maximum_limit": 500,
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this for keyword or description search; it matches only on the start of the normalized project name.",
+      "when_to_use": "Use this for programmatic discovery when full-text web search is unavailable to non-browser clients."
+    },
+    "list_dependencies": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "dependencies",
+      "description": "Parse a release's PEP 508 requirements into normalized name, specifier, extra, and marker fields.",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "project": "requests"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "extra": {
+            "description": "Optional extra name to return only that extra's requirements.",
+            "maxLength": 128,
+            "type": "string"
+          },
+          "limit": {
+            "default": 100,
+            "description": "Maximum requirements to return.",
+            "maximum": 500,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          },
+          "version": {
+            "description": "Optional exact PEP 440 release version; omit to use the project's latest release.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "project"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "dependencies": {
+            "description": "Normalized requirement records.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "project": {
+            "description": "Canonical project name.",
+            "type": "string"
+          },
+          "requires_python": {
+            "description": "Python version requirement.",
+            "type": "string"
+          },
+          "version": {
+            "description": "Resolved release version.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "dependencies"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for the next page.",
+        "default_limit": 100,
+        "maximum_limit": 500,
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this to resolve a full transitive dependency tree; it returns only declared direct requirements.",
+      "when_to_use": "Use this to inspect what a project depends on, optionally filtered to one extra."
+    },
+    "list_files": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "distributions",
+      "description": "List the distribution files (wheels and sdists) for one exact release with digests, sizes, and yank status.",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "project": "requests",
+            "version": "2.31.0"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          },
+          "version": {
+            "description": "Exact PEP 440 release version such as 2.31.0.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "version"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "files": {
+            "description": "Distribution files with digests, sizes, and types.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "project": {
+            "description": "Canonical project name.",
+            "type": "string"
+          },
+          "version": {
+            "description": "Resolved release version.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "version",
+          "files"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call returns every file for the exact release.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this to download file bytes; download_distribution returns a local file receipt.",
+      "when_to_use": "Use this before download_distribution, get_core_metadata, or get_provenance to pick an exact filename."
+    },
+    "list_recent_packages": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "feeds",
+      "description": "List the newest projects published to PyPI from its public RSS feed.",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 20
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "limit": {
+            "default": 40,
+            "description": "Maximum feed items to return.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "packages": {
+            "description": "Newest project feed items.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "packages"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for the next page.",
+        "default_limit": 40,
+        "maximum_limit": 100,
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this for updates to existing projects; list_recent_updates covers those.",
+      "when_to_use": "Use this to monitor brand-new projects on the index."
+    },
+    "list_recent_updates": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "feeds",
+      "description": "List the most recent release updates across PyPI from its public RSS feed.",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 20
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "limit": {
+            "default": 40,
+            "description": "Maximum feed items to return.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "updates": {
+            "description": "Recent release feed items.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "updates"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for the next page.",
+        "default_limit": 40,
+        "maximum_limit": 100,
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this for a single project's history; get_project_release_feed or list_releases are scoped.",
+      "when_to_use": "Use this to monitor recently published releases across the index."
+    },
+    "list_releases": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "discovery",
+      "description": "List a project's release versions newest first, with upload time, file count, and yank status.",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 25,
+            "project": "requests"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "include_prerelease": {
+            "default": true,
+            "description": "Include prerelease versions.",
+            "type": "boolean"
+          },
+          "limit": {
+            "default": 50,
+            "description": "Maximum releases to return.",
+            "maximum": 500,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "project": {
+            "description": "Canonical project name.",
+            "type": "string"
+          },
+          "releases": {
+            "description": "Bounded release summaries newest first.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "project",
+          "releases"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for the next page.",
+        "default_limit": 50,
+        "maximum_limit": 500,
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this to read a single release's files; get_release is more complete.",
+      "when_to_use": "Use this to page through release history or find when versions were published."
+    },
+    "list_versions": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "discovery",
+      "description": "List all version strings for a project from the PEP 691 simple index, newest first.",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 50,
+            "project": "requests"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "include_prerelease": {
+            "default": true,
+            "description": "Include prerelease versions.",
+            "type": "boolean"
+          },
+          "limit": {
+            "default": 100,
+            "description": "Maximum versions to return.",
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "project": {
+            "description": "Canonical project name.",
+            "type": "string"
+          },
+          "status": {
+            "description": "Project lifecycle status such as active, quarantined, or archived.",
+            "type": "string"
+          },
+          "versions": {
+            "description": "Bounded version strings newest first.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "project",
+          "versions"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for the next page.",
+        "default_limit": 100,
+        "maximum_limit": 1000,
+        "supported": true
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use this for upload times or file details; list_releases and list_files include those.",
+      "when_to_use": "Use this for a fast complete version list without the heavier JSON metadata payload."
+    },
+    "read_site_resource": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "category": "documentation",
+      "description": "Read a bounded public pypi.org informational page (help, policy, or project page) as visible text and links.",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "max_chars": 12000,
+            "url": "https://pypi.org/help/"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "max_chars": {
+            "default": 30000,
+            "description": "Maximum visible page characters to return.",
+            "maximum": 100000,
+            "minimum": 1000,
+            "type": "integer"
+          },
+          "url": {
+            "description": "Absolute HTTPS URL on pypi.org.",
+            "maxLength": 2000,
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "characters": {
+            "description": "Untruncated visible character count.",
+            "type": "integer"
+          },
+          "links": {
+            "description": "Up to one hundred labeled links from the page.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "text": {
+            "description": "Bounded visible page text.",
+            "type": "string"
+          },
+          "truncated": {
+            "description": "Whether text was shortened.",
+            "type": "boolean"
+          },
+          "url": {
+            "description": "Final page URL after safe redirects.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url",
+          "text",
+          "characters",
+          "truncated",
+          "links"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Follow a returned link with another bounded call when needed.",
+        "supported": false
+      },
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "when_not_to_use": "Do not use it for full-text web search, which is protected by a browser challenge; use list_all_projects instead.",
+      "when_to_use": "Use this for PyPI help, policy, and project pages that are not covered by the JSON API."
+    }
+  },
+  "compatibility": {
+    "adapter_import_tested": true,
+    "cli_tested": true,
+    "mcp_tested": true,
+    "minimum_runtime": "0.16.0",
+    "tested_runtimes": [
+      "0.16.0",
+      "0.16.3",
+      "0.16.4",
+      "0.16.5"
+    ]
+  },
+  "cookie_domain": ".pypi.org",
+  "coverage": {
+    "capability": {
+      "coverage_ratio": 0.5,
+      "discovered_route_count": 24,
+      "excluded_count": 12,
+      "exhaustive": true,
+      "mapped_count": 12,
+      "open_count": 0,
+      "read": {
+        "coverage_ratio": 0.9231,
+        "discovered_route_count": 13,
+        "excluded_count": 1,
+        "mapped_count": 12,
+        "open_count": 0
+      },
+      "remaining": [],
+      "schema_version": 1,
+      "write": {
+        "coverage_ratio": 0.0,
+        "discovered_route_count": 11,
+        "excluded_count": 11,
+        "mapped_count": 0,
+        "open_count": 0
+      }
+    },
+    "constraints": [
+      "PyPI rate limits, project availability, and service policies still apply",
+      "Distribution downloads and core metadata are bounded by the selected byte limits",
+      "Full-text web search is served only through a browser challenge and is intentionally not mapped"
+    ],
+    "human_boundaries": [
+      "Account creation, login, passkeys, and two-factor challenges require the user's credentials and human authorization.",
+      "Adding or removing project owners and maintainers grants publication authority and requires privileged account access.",
+      "Changing account email, profile, or password requires the authenticated account holder.",
+      "Configuring TOTP or WebAuthn two-factor devices requires the account holder and cannot be automated.",
+      "Creating or revoking API tokens exposes publishing credentials and requires authenticated human authorization.",
+      "Deleting a project is destructive and requires project ownership plus explicit human confirmation.",
+      "Organization members, teams, roles, and billing require organization-owner access unavailable to the public matrix.",
+      "PyPI's full-text web search is protected by a browser challenge; programmatic discovery uses list_all_projects and the JSON metadata API.",
+      "Uploading a distribution changes the public Python supply chain and requires an authenticated API token plus narrowly scoped human confirmation.",
+      "Yanking or deleting a release changes what users install and requires project ownership plus explicit confirmation."
+    ],
+    "not_mapped": [],
+    "protocol_fallback": null,
+    "typed_fast_paths": [
+      "download_distribution",
+      "get_core_metadata",
+      "get_description",
+      "get_ownership",
+      "get_project",
+      "get_project_release_feed",
+      "get_provenance",
+      "get_release",
+      "get_stats",
+      "get_vulnerabilities",
+      "list_all_projects",
+      "list_dependencies",
+      "list_files",
+      "list_recent_packages",
+      "list_recent_updates",
+      "list_releases",
+      "list_versions",
+      "read_site_resource"
+    ],
+    "website_parity": "All anonymous public PyPI JSON, simple-index, integrity, RSS, statistics, and informational surfaces in the declared en-US matrix have reviewed browserless operations. Publishing, project and account management, and web full-text search remain declared human or authenticated boundaries outside that matrix."
+  },
+  "description": "Complete browserless interface for PyPI's anonymous public API surface: project and release metadata, versions, dependencies, distribution files and downloads, PEP 658 core metadata, PEP 740 provenance, vulnerabilities, ownership, discovery, RSS feeds, storage statistics, and informational pages.",
+  "entrypoint": "adapter.py",
+  "evidence_capsules": {
+    "download_distribution": {
+      "contract": "download_distribution",
+      "path": "flows/download_distribution.json"
+    },
+    "get_core_metadata": {
+      "contract": "get_core_metadata",
+      "path": "flows/get_core_metadata.json"
+    },
+    "get_description": {
+      "contract": "get_description",
+      "path": "flows/get_description.json"
+    },
+    "get_ownership": {
+      "contract": "get_ownership",
+      "path": "flows/get_ownership.json"
+    },
+    "get_project": {
+      "contract": "get_project",
+      "path": "flows/get_project.json"
+    },
+    "get_project_release_feed": {
+      "contract": "get_project_release_feed",
+      "path": "flows/get_project_release_feed.json"
+    },
+    "get_provenance": {
+      "contract": "get_provenance",
+      "path": "flows/get_provenance.json"
+    },
+    "get_release": {
+      "contract": "get_release",
+      "path": "flows/get_release.json"
+    },
+    "get_stats": {
+      "contract": "get_stats",
+      "path": "flows/get_stats.json"
+    },
+    "get_vulnerabilities": {
+      "contract": "get_vulnerabilities",
+      "path": "flows/get_vulnerabilities.json"
+    },
+    "list_all_projects": {
+      "contract": "list_all_projects",
+      "path": "flows/list_all_projects.json"
+    },
+    "list_dependencies": {
+      "contract": "list_dependencies",
+      "path": "flows/list_dependencies.json"
+    },
+    "list_files": {
+      "contract": "list_files",
+      "path": "flows/list_files.json"
+    },
+    "list_recent_packages": {
+      "contract": "list_recent_packages",
+      "path": "flows/list_recent_packages.json"
+    },
+    "list_recent_updates": {
+      "contract": "list_recent_updates",
+      "path": "flows/list_recent_updates.json"
+    },
+    "list_releases": {
+      "contract": "list_releases",
+      "path": "flows/list_releases.json"
+    },
+    "list_versions": {
+      "contract": "list_versions",
+      "path": "flows/list_versions.json"
+    },
+    "read_site_resource": {
+      "contract": "read_site_resource",
+      "path": "flows/read_site_resource.json"
+    }
+  },
+  "flow_capsules": {},
+  "name": "pypi",
+  "operation_contracts": {
+    "download_distribution": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+        "method": "download_distribution",
+        "type": "python"
+      },
+      "capabilities": [
+        "download_distribution"
+      ],
+      "category": "distributions",
+      "contract_hash": "5ced1e85606638aede007de735b72377a5e14eb49a14b140afdf47a4852ac46a",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "filename": "requests-2.32.3-py3-none-any.whl",
+            "project": "requests",
+            "version": "2.32.3"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "filename": {
+            "description": "Exact distribution filename returned by list_files, such as requests-2.31.0-py3-none-any.whl.",
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          },
+          "version": {
+            "description": "Exact PEP 440 release version such as 2.31.0.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "version",
+          "filename"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "download_distribution",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "bytes": {
+            "description": "Exact downloaded byte count.",
+            "type": "integer"
+          },
+          "filename": {
+            "description": "Saved distribution filename.",
+            "type": "string"
+          },
+          "path": {
+            "description": "Private local path where AgentWeb saved the file.",
+            "type": "string"
+          },
+          "sha256": {
+            "description": "SHA-256 digest of the downloaded file.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "filename",
+          "path",
+          "bytes",
+          "sha256"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call downloads one exact distribution file.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Live public PyPI data with bounded local caching appropriate to the resource.",
+        "max_items": 1,
+        "truncation": "Collections, feeds, descriptions, metadata, and downloads report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784834400.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Download one public distribution file and return a private local file receipt with its SHA-256 digest.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "5ced1e85606638aede007de735b72377a5e14eb49a14b140afdf47a4852ac46a",
+            "input_names": [
+              "filename",
+              "project",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_direct_success",
+            "input_names": [
+              "filename",
+              "project",
+              "version"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "distribution download returns a local file receipt",
+            "path": "$.data",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_direct_success"
+        ]
+      },
+      "when_not_to_use": "Do not use this merely for metadata; get_release and get_core_metadata return smaller results.",
+      "when_to_use": "Use this when a local tool needs the complete wheel or sdist archive."
+    },
+    "get_core_metadata": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+        "method": "get_core_metadata",
+        "type": "python"
+      },
+      "capabilities": [
+        "read_core_metadata"
+      ],
+      "category": "distributions",
+      "contract_hash": "c5f06a29353408ecd686c417454d6eee49610ed02cad01750a76bc965546740f",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "filename": "requests-2.32.3-py3-none-any.whl",
+            "project": "requests",
+            "version": "2.32.3"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "filename": {
+            "description": "Exact distribution filename returned by list_files, such as requests-2.31.0-py3-none-any.whl.",
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "max_bytes": {
+            "default": 200000,
+            "description": "Maximum metadata bytes to return.",
+            "maximum": 1000000,
+            "minimum": 1000,
+            "type": "integer"
+          },
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          },
+          "version": {
+            "description": "Exact PEP 440 release version such as 2.31.0.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "version",
+          "filename"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "get_core_metadata",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "bytes": {
+            "description": "Untruncated metadata byte length.",
+            "type": "integer"
+          },
+          "content": {
+            "description": "Bounded core metadata text.",
+            "type": "string"
+          },
+          "filename": {
+            "description": "Distribution filename.",
+            "type": "string"
+          },
+          "project": {
+            "description": "Canonical project name.",
+            "type": "string"
+          },
+          "truncated": {
+            "description": "Whether the metadata was shortened.",
+            "type": "boolean"
+          },
+          "version": {
+            "description": "Resolved release version.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "version",
+          "filename",
+          "content",
+          "bytes",
+          "truncated"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Raise max_bytes to read more of the metadata file.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Live public PyPI data with bounded local caching appropriate to the resource.",
+        "max_items": 1,
+        "truncation": "Collections, feeds, descriptions, metadata, and downloads report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784834400.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Read the PEP 658 core metadata (the packaged METADATA file) for one distribution without downloading the whole archive.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "c5f06a29353408ecd686c417454d6eee49610ed02cad01750a76bc965546740f",
+            "input_names": [
+              "filename",
+              "project",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_direct_success",
+            "input_names": [
+              "filename",
+              "project",
+              "version"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "core metadata read returns bounded content",
+            "path": "$.data.content",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_direct_success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for files without core metadata; download_distribution returns the full archive instead.",
+      "when_to_use": "Use this to read a wheel's exact metadata cheaply when the file advertises core metadata."
+    },
+    "get_description": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+        "method": "get_description",
+        "type": "python"
+      },
+      "capabilities": [
+        "read_documentation"
+      ],
+      "category": "documentation",
+      "contract_hash": "056e7886968efd7418e4f9e24378529e219e61d685eb900ab6961fe66bd0a7a5",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "max_chars": 8000,
+            "project": "requests"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "max_chars": {
+            "default": 20000,
+            "description": "Maximum description characters to return.",
+            "maximum": 200000,
+            "minimum": 1000,
+            "type": "integer"
+          },
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          },
+          "version": {
+            "description": "Optional exact PEP 440 release version; omit to use the project's latest release.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "project"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "get_description",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "characters": {
+            "description": "Untruncated description length.",
+            "type": "integer"
+          },
+          "content": {
+            "description": "Bounded description text.",
+            "type": "string"
+          },
+          "content_type": {
+            "description": "Declared description content type.",
+            "type": "string"
+          },
+          "project": {
+            "description": "Canonical project name.",
+            "type": "string"
+          },
+          "truncated": {
+            "description": "Whether the description was shortened.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "project",
+          "content",
+          "characters",
+          "truncated"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Raise max_chars to read more of a long description.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Live public PyPI data with bounded local caching appropriate to the resource.",
+        "max_items": 1,
+        "truncation": "Collections, feeds, descriptions, metadata, and downloads report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784834400.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Read a project's long description (README) as bounded text with its declared content type.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "056e7886968efd7418e4f9e24378529e219e61d685eb900ab6961fe66bd0a7a5",
+            "input_names": [
+              "max_chars",
+              "project"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_direct_success",
+            "input_names": [
+              "max_chars",
+              "project"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "description read reports bounded content",
+            "path": "$.data.content",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_direct_success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for structured metadata such as classifiers; get_project returns those.",
+      "when_to_use": "Use this to read a project's rendered documentation body without opening the website."
+    },
+    "get_ownership": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+        "method": "get_ownership",
+        "type": "python"
+      },
+      "capabilities": [
+        "read_owners"
+      ],
+      "category": "metadata",
+      "contract_hash": "30df0f190d995a46bf1f92548a62132efb6ae200003c2eff6d4b6f1cc3b7ff55",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "project": "requests"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "get_ownership",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "organization": {
+            "description": "Owning organization when present.",
+            "type": "string"
+          },
+          "owner_count": {
+            "description": "Number of roles returned.",
+            "type": "integer"
+          },
+          "owners": {
+            "description": "Owner and maintainer roles.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "project": {
+            "description": "Canonical project name.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "owners",
+          "owner_count"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call returns the project's full bounded role list.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Live public PyPI data with bounded local caching appropriate to the resource.",
+        "max_items": 200,
+        "truncation": "Collections, feeds, descriptions, metadata, and downloads report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784834400.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List a project's owners and maintainers and its owning organization when present.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "30df0f190d995a46bf1f92548a62132efb6ae200003c2eff6d4b6f1cc3b7ff55",
+            "input_names": [
+              "project"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_direct_success",
+            "input_names": [
+              "project"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "ownership lookup returns roles",
+            "path": "$.data.owners",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_direct_success"
+        ]
+      },
+      "when_not_to_use": "Do not use this to change roles; ownership changes are a declared human boundary.",
+      "when_to_use": "Use this to see who controls a project's releases."
+    },
+    "get_project": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+        "method": "get_project",
+        "type": "python"
+      },
+      "capabilities": [
+        "read_project_metadata",
+        "read_project_urls",
+        "read_owners"
+      ],
+      "category": "metadata",
+      "contract_hash": "03aa5cffa53079ed82b4614f8d0646a16bf31f138e36f9faa08e8ef493679a18",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "project": "requests"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "get_project",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "latest_files": {
+            "description": "Distribution files for the latest release.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "name": {
+            "description": "Canonical project name.",
+            "type": "string"
+          },
+          "owners": {
+            "description": "Project owners and their roles.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "release_count": {
+            "description": "Number of published releases.",
+            "type": "integer"
+          },
+          "summary": {
+            "description": "Short project summary.",
+            "type": "string"
+          },
+          "version": {
+            "description": "Latest published version.",
+            "type": "string"
+          },
+          "vulnerability_count": {
+            "description": "Count of known OSV advisories affecting the latest release.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name",
+          "release_count",
+          "latest_files"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns one bounded metadata record for the project's latest release.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Live public PyPI data with bounded local caching appropriate to the resource.",
+        "max_items": 1,
+        "truncation": "Collections, feeds, descriptions, metadata, and downloads report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784834400.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Fetch a public PyPI project's normalized metadata: latest version, summary, license, classifiers, project URLs, owners, and release count.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "03aa5cffa53079ed82b4614f8d0646a16bf31f138e36f9faa08e8ef493679a18",
+            "input_names": [
+              "project"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_direct_success",
+            "input_names": [
+              "project"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "project lookup resolves canonical metadata",
+            "path": "$.data.name",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_direct_success"
+        ]
+      },
+      "when_not_to_use": "Do not use this to enumerate every historical version; list_releases and list_versions are bounded and paginated.",
+      "when_to_use": "Use this first when the project name is known to read its current metadata and latest distribution files."
+    },
+    "get_project_release_feed": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+        "method": "get_project_release_feed",
+        "type": "python"
+      },
+      "capabilities": [
+        "browse_project_feed"
+      ],
+      "category": "feeds",
+      "contract_hash": "e6fc0a68767787f9c1d9cb8aa74d80fe1ea3d886cd444343720b0cb67bdedf4f",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 20,
+            "project": "requests"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "limit": {
+            "default": 40,
+            "description": "Maximum feed items to return.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "get_project_release_feed",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "project": {
+            "description": "Canonical project name.",
+            "type": "string"
+          },
+          "releases": {
+            "description": "Recent release feed items.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "project",
+          "releases"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for the next page.",
+        "default_limit": 40,
+        "maximum_limit": 100,
+        "supported": true
+      },
+      "result": {
+        "freshness": "Live public PyPI data with bounded local caching appropriate to the resource.",
+        "max_items": 100,
+        "truncation": "Collections, feeds, descriptions, metadata, and downloads report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784834400.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List a single project's recent releases from its public RSS feed.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "e6fc0a68767787f9c1d9cb8aa74d80fe1ea3d886cd444343720b0cb67bdedf4f",
+            "input_names": [
+              "limit",
+              "project"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_direct_success",
+            "input_names": [
+              "limit",
+              "project"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "project feed returns bounded release items",
+            "path": "$.data.releases",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_direct_success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for the complete history; list_releases paginates every version.",
+      "when_to_use": "Use this for a lightweight recent-release feed for one project."
+    },
+    "get_provenance": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+        "method": "get_provenance",
+        "type": "python"
+      },
+      "capabilities": [
+        "read_provenance"
+      ],
+      "category": "security",
+      "contract_hash": "b54bb65e6d96e52d1d095da28d565f19325ed40d3754f39559cacf1446e17755",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "filename": "requests-2.32.3-py3-none-any.whl",
+            "project": "requests",
+            "version": "2.32.3"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "filename": {
+            "description": "Exact distribution filename returned by list_files, such as requests-2.31.0-py3-none-any.whl.",
+            "maxLength": 256,
+            "minLength": 1,
+            "type": "string"
+          },
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          },
+          "version": {
+            "description": "Exact PEP 440 release version such as 2.31.0.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "version",
+          "filename"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "get_provenance",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "attestation_bundles": {
+            "description": "Summarized attestation bundles.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "filename": {
+            "description": "Distribution filename.",
+            "type": "string"
+          },
+          "has_provenance": {
+            "description": "Whether any provenance bundle was published.",
+            "type": "boolean"
+          },
+          "project": {
+            "description": "Canonical project name.",
+            "type": "string"
+          },
+          "version": {
+            "description": "Resolved release version.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "version",
+          "filename",
+          "attestation_bundles",
+          "has_provenance"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call returns the bounded provenance for one file.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Live public PyPI data with bounded local caching appropriate to the resource.",
+        "max_items": 50,
+        "truncation": "Collections, feeds, descriptions, metadata, and downloads report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784834400.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Return the PEP 740 provenance attestation bundles for one distribution file when the uploader published them.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "b54bb65e6d96e52d1d095da28d565f19325ed40d3754f39559cacf1446e17755",
+            "input_names": [
+              "filename",
+              "project",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_direct_success",
+            "input_names": [
+              "filename",
+              "project",
+              "version"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "provenance lookup returns an attestation collection",
+            "path": "$.data.attestation_bundles",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_direct_success"
+        ]
+      },
+      "when_not_to_use": "Do not treat a missing bundle as tampering; most releases do not yet publish provenance.",
+      "when_to_use": "Use this to verify that a distribution file has trusted-publisher attestations."
+    },
+    "get_release": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+        "method": "get_release",
+        "type": "python"
+      },
+      "capabilities": [
+        "read_release_metadata",
+        "read_release_files"
+      ],
+      "category": "metadata",
+      "contract_hash": "e28e8d4a349a6d34bdbc5c2969a451b3c914a0e237dfdbac688a26bff0aaeb47",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "project": "requests",
+            "version": "2.31.0"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          },
+          "version": {
+            "description": "Exact PEP 440 release version such as 2.31.0.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "version"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "get_release",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "file_count": {
+            "description": "Number of distribution files.",
+            "type": "integer"
+          },
+          "files": {
+            "description": "Distribution files with digests and sizes.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "name": {
+            "description": "Canonical project name.",
+            "type": "string"
+          },
+          "requires_dist": {
+            "description": "Raw PEP 508 requirement strings.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "requires_python": {
+            "description": "Python version requirement for the release.",
+            "type": "string"
+          },
+          "version": {
+            "description": "Resolved release version.",
+            "type": "string"
+          },
+          "yanked": {
+            "description": "Whether the release is yanked.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "version",
+          "files",
+          "file_count"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Returns one bounded record for the exact release.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Live public PyPI data with bounded local caching appropriate to the resource.",
+        "max_items": 1,
+        "truncation": "Collections, feeds, descriptions, metadata, and downloads report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784834400.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Fetch metadata and distribution files for one exact PyPI release version.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "e28e8d4a349a6d34bdbc5c2969a451b3c914a0e237dfdbac688a26bff0aaeb47",
+            "input_names": [
+              "project",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_direct_success",
+            "input_names": [
+              "project",
+              "version"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "release lookup resolves a concrete published version",
+            "path": "$.data.version",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_direct_success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for the latest release without a version; get_project already returns the latest files.",
+      "when_to_use": "Use this to inspect a specific version's files, requirements, yank status, and vulnerabilities."
+    },
+    "get_stats": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+        "method": "get_stats",
+        "type": "python"
+      },
+      "capabilities": [
+        "read_stats"
+      ],
+      "category": "service_health",
+      "contract_hash": "b9f87e0891196cc0323452ce44938049fe0f721654fea8875945b009bb42bb93",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 20
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "limit": {
+            "default": 100,
+            "description": "Maximum top projects to return.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "get_stats",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "top_packages": {
+            "description": "Largest projects by stored size.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "total_packages_size": {
+            "description": "Total stored size of all distributions in bytes.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "top_packages"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for the next page.",
+        "default_limit": 100,
+        "maximum_limit": 100,
+        "supported": true
+      },
+      "result": {
+        "freshness": "Live public PyPI data with bounded local caching appropriate to the resource.",
+        "max_items": 100,
+        "truncation": "Collections, feeds, descriptions, metadata, and downloads report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784834400.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Return PyPI's public storage statistics: total index size and the largest projects by stored bytes.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "b9f87e0891196cc0323452ce44938049fe0f721654fea8875945b009bb42bb93",
+            "input_names": [
+              "limit"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_direct_success",
+            "input_names": [
+              "limit"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "stats returns the largest projects",
+            "path": "$.data.top_packages",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_direct_success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for per-project download counts; PyPI does not serve those from its public API.",
+      "when_to_use": "Use this to understand overall index size or find the largest projects."
+    },
+    "get_vulnerabilities": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+        "method": "get_vulnerabilities",
+        "type": "python"
+      },
+      "capabilities": [
+        "read_vulnerabilities"
+      ],
+      "category": "security",
+      "contract_hash": "8452c93964e00dc4b545a5b657157a7c4d7c8e3339c67750f9ecb90bc3b33bda",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "project": "requests",
+            "version": "2.19.0"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          },
+          "version": {
+            "description": "Optional exact PEP 440 release version; omit to use the project's latest release.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "project"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "get_vulnerabilities",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "advisories": {
+            "description": "Normalized OSV advisories.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "advisory_count": {
+            "description": "Number of advisories returned.",
+            "type": "integer"
+          },
+          "project": {
+            "description": "Canonical project name.",
+            "type": "string"
+          },
+          "version": {
+            "description": "Resolved release version when provided.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "advisories",
+          "advisory_count"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call returns the bounded advisory set for the resolved release.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Live public PyPI data with bounded local caching appropriate to the resource.",
+        "max_items": 200,
+        "truncation": "Collections, feeds, descriptions, metadata, and downloads report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784834400.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Return the OSV security advisories PyPI records for a project or exact release.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "8452c93964e00dc4b545a5b657157a7c4d7c8e3339c67750f9ecb90bc3b33bda",
+            "input_names": [
+              "project",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_direct_success",
+            "input_names": [
+              "project",
+              "version"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "vulnerability lookup returns an advisory collection",
+            "path": "$.data.advisories",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_direct_success"
+        ]
+      },
+      "when_not_to_use": "Do not treat an empty result as a security guarantee; it only reflects advisories PyPI has ingested.",
+      "when_to_use": "Use this to check whether a project or version has known published vulnerabilities."
+    },
+    "list_all_projects": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+        "method": "list_all_projects",
+        "type": "python"
+      },
+      "capabilities": [
+        "browse_projects",
+        "discover_projects"
+      ],
+      "category": "discovery",
+      "contract_hash": "5c51c630cf515de37d30506162c26da816944a611068833b8252a14373878566",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 25,
+            "prefix": "flask-"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "limit": {
+            "default": 100,
+            "description": "Maximum project names to return.",
+            "maximum": 500,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "prefix": {
+            "description": "Optional normalized name prefix to filter the index.",
+            "maxLength": 214,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_all_projects",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "prefix": {
+            "description": "Prefix filter that was applied, if any.",
+            "type": "string"
+          },
+          "projects": {
+            "description": "Bounded project names.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "projects"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for the next page.",
+        "default_limit": 100,
+        "maximum_limit": 500,
+        "supported": true
+      },
+      "result": {
+        "freshness": "Live public PyPI data with bounded local caching appropriate to the resource.",
+        "max_items": 500,
+        "truncation": "Collections, feeds, descriptions, metadata, and downloads report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784834400.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List public PyPI project names from the PEP 691 simple index, optionally filtered by a normalized name prefix.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "5c51c630cf515de37d30506162c26da816944a611068833b8252a14373878566",
+            "input_names": [
+              "limit",
+              "prefix"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_direct_success",
+            "input_names": [
+              "limit",
+              "prefix"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "simple root returns a bounded project collection",
+            "path": "$.data.projects",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_direct_success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for keyword or description search; it matches only on the start of the normalized project name.",
+      "when_to_use": "Use this for programmatic discovery when full-text web search is unavailable to non-browser clients."
+    },
+    "list_dependencies": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+        "method": "list_dependencies",
+        "type": "python"
+      },
+      "capabilities": [
+        "read_dependencies"
+      ],
+      "category": "dependencies",
+      "contract_hash": "30751a2f7a97c432736179db909f803bc90a2fd79a5f4b08cbc27e19746b3540",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "project": "requests"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "extra": {
+            "description": "Optional extra name to return only that extra's requirements.",
+            "maxLength": 128,
+            "type": "string"
+          },
+          "limit": {
+            "default": 100,
+            "description": "Maximum requirements to return.",
+            "maximum": 500,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          },
+          "version": {
+            "description": "Optional exact PEP 440 release version; omit to use the project's latest release.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "project"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_dependencies",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "dependencies": {
+            "description": "Normalized requirement records.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "project": {
+            "description": "Canonical project name.",
+            "type": "string"
+          },
+          "requires_python": {
+            "description": "Python version requirement.",
+            "type": "string"
+          },
+          "version": {
+            "description": "Resolved release version.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "dependencies"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for the next page.",
+        "default_limit": 100,
+        "maximum_limit": 500,
+        "supported": true
+      },
+      "result": {
+        "freshness": "Live public PyPI data with bounded local caching appropriate to the resource.",
+        "max_items": 500,
+        "truncation": "Collections, feeds, descriptions, metadata, and downloads report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784834400.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Parse a release's PEP 508 requirements into normalized name, specifier, extra, and marker fields.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "30751a2f7a97c432736179db909f803bc90a2fd79a5f4b08cbc27e19746b3540",
+            "input_names": [
+              "project"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_direct_success",
+            "input_names": [
+              "project"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "dependency listing returns normalized requirements",
+            "path": "$.data.dependencies",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_direct_success"
+        ]
+      },
+      "when_not_to_use": "Do not use this to resolve a full transitive dependency tree; it returns only declared direct requirements.",
+      "when_to_use": "Use this to inspect what a project depends on, optionally filtered to one extra."
+    },
+    "list_files": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+        "method": "list_files",
+        "type": "python"
+      },
+      "capabilities": [
+        "read_release_files"
+      ],
+      "category": "distributions",
+      "contract_hash": "acedf87bf445e195673d91a2b57e07df25032be706b7056e02365557b62da2f1",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "project": "requests",
+            "version": "2.31.0"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          },
+          "version": {
+            "description": "Exact PEP 440 release version such as 2.31.0.",
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "version"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_files",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "files": {
+            "description": "Distribution files with digests, sizes, and types.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "project": {
+            "description": "Canonical project name.",
+            "type": "string"
+          },
+          "version": {
+            "description": "Resolved release version.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project",
+          "version",
+          "files"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Each call returns every file for the exact release.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Live public PyPI data with bounded local caching appropriate to the resource.",
+        "max_items": 200,
+        "truncation": "Collections, feeds, descriptions, metadata, and downloads report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784834400.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List the distribution files (wheels and sdists) for one exact release with digests, sizes, and yank status.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "acedf87bf445e195673d91a2b57e07df25032be706b7056e02365557b62da2f1",
+            "input_names": [
+              "project",
+              "version"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_direct_success",
+            "input_names": [
+              "project",
+              "version"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "file listing returns distribution records",
+            "path": "$.data.files",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_direct_success"
+        ]
+      },
+      "when_not_to_use": "Do not use this to download file bytes; download_distribution returns a local file receipt.",
+      "when_to_use": "Use this before download_distribution, get_core_metadata, or get_provenance to pick an exact filename."
+    },
+    "list_recent_packages": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+        "method": "list_recent_packages",
+        "type": "python"
+      },
+      "capabilities": [
+        "browse_new_packages"
+      ],
+      "category": "feeds",
+      "contract_hash": "2a55ee07a30c55f73032e01f53b5cda5d0ee52cd0e90067d9d2dea0d18238dc9",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 20
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "limit": {
+            "default": 40,
+            "description": "Maximum feed items to return.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_recent_packages",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "packages": {
+            "description": "Newest project feed items.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "packages"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for the next page.",
+        "default_limit": 40,
+        "maximum_limit": 100,
+        "supported": true
+      },
+      "result": {
+        "freshness": "Live public PyPI data with bounded local caching appropriate to the resource.",
+        "max_items": 100,
+        "truncation": "Collections, feeds, descriptions, metadata, and downloads report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784834400.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List the newest projects published to PyPI from its public RSS feed.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "2a55ee07a30c55f73032e01f53b5cda5d0ee52cd0e90067d9d2dea0d18238dc9",
+            "input_names": [
+              "limit"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_direct_success",
+            "input_names": [
+              "limit"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "newest-package feed returns bounded items",
+            "path": "$.data.packages",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_direct_success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for updates to existing projects; list_recent_updates covers those.",
+      "when_to_use": "Use this to monitor brand-new projects on the index."
+    },
+    "list_recent_updates": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+        "method": "list_recent_updates",
+        "type": "python"
+      },
+      "capabilities": [
+        "browse_recent_updates"
+      ],
+      "category": "feeds",
+      "contract_hash": "a3debfc5bd8753dba2cff9e086873ce03061a191d4ecb1f370d9de589ea0f0b4",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 20
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "limit": {
+            "default": 40,
+            "description": "Maximum feed items to return.",
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_recent_updates",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "updates": {
+            "description": "Recent release feed items.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "updates"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for the next page.",
+        "default_limit": 40,
+        "maximum_limit": 100,
+        "supported": true
+      },
+      "result": {
+        "freshness": "Live public PyPI data with bounded local caching appropriate to the resource.",
+        "max_items": 100,
+        "truncation": "Collections, feeds, descriptions, metadata, and downloads report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784834400.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List the most recent release updates across PyPI from its public RSS feed.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "a3debfc5bd8753dba2cff9e086873ce03061a191d4ecb1f370d9de589ea0f0b4",
+            "input_names": [
+              "limit"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_direct_success",
+            "input_names": [
+              "limit"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "recent-updates feed returns bounded items",
+            "path": "$.data.updates",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_direct_success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for a single project's history; get_project_release_feed or list_releases are scoped.",
+      "when_to_use": "Use this to monitor recently published releases across the index."
+    },
+    "list_releases": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+        "method": "list_releases",
+        "type": "python"
+      },
+      "capabilities": [
+        "browse_release_history"
+      ],
+      "category": "discovery",
+      "contract_hash": "6db50742f6e8b4f2f09808cb9723fd8453d1b33d63bb8e22fba0ae62972662d4",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 25,
+            "project": "requests"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "include_prerelease": {
+            "default": true,
+            "description": "Include prerelease versions.",
+            "type": "boolean"
+          },
+          "limit": {
+            "default": 50,
+            "description": "Maximum releases to return.",
+            "maximum": 500,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_releases",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "project": {
+            "description": "Canonical project name.",
+            "type": "string"
+          },
+          "releases": {
+            "description": "Bounded release summaries newest first.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "project",
+          "releases"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for the next page.",
+        "default_limit": 50,
+        "maximum_limit": 500,
+        "supported": true
+      },
+      "result": {
+        "freshness": "Live public PyPI data with bounded local caching appropriate to the resource.",
+        "max_items": 500,
+        "truncation": "Collections, feeds, descriptions, metadata, and downloads report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784834400.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List a project's release versions newest first, with upload time, file count, and yank status.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "6db50742f6e8b4f2f09808cb9723fd8453d1b33d63bb8e22fba0ae62972662d4",
+            "input_names": [
+              "limit",
+              "project"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_direct_success",
+            "input_names": [
+              "limit",
+              "project"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "release history returns bounded normalized versions",
+            "path": "$.data.releases",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_direct_success"
+        ]
+      },
+      "when_not_to_use": "Do not use this to read a single release's files; get_release is more complete.",
+      "when_to_use": "Use this to page through release history or find when versions were published."
+    },
+    "list_versions": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+        "method": "list_versions",
+        "type": "python"
+      },
+      "capabilities": [
+        "browse_versions"
+      ],
+      "category": "discovery",
+      "contract_hash": "014ed148ac26aaf7be14c914ef714d7ab90a152989909fc03fc8d723dbaae9db",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "limit": 50,
+            "project": "requests"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "cursor": {
+            "description": "Opaque pagination cursor returned by the preceding call; omit it for the first page.",
+            "type": "string"
+          },
+          "include_prerelease": {
+            "default": true,
+            "description": "Include prerelease versions.",
+            "type": "boolean"
+          },
+          "limit": {
+            "default": 100,
+            "description": "Maximum versions to return.",
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "project": {
+            "description": "Exact public PyPI project name such as requests or ruamel.yaml; case and separator differences are normalized.",
+            "maxLength": 214,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "list_versions",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "project": {
+            "description": "Canonical project name.",
+            "type": "string"
+          },
+          "status": {
+            "description": "Project lifecycle status such as active, quarantined, or archived.",
+            "type": "string"
+          },
+          "versions": {
+            "description": "Bounded version strings newest first.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "project",
+          "versions"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Pass next_cursor unchanged for the next page.",
+        "default_limit": 100,
+        "maximum_limit": 1000,
+        "supported": true
+      },
+      "result": {
+        "freshness": "Live public PyPI data with bounded local caching appropriate to the resource.",
+        "max_items": 1000,
+        "truncation": "Collections, feeds, descriptions, metadata, and downloads report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784834400.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "List all version strings for a project from the PEP 691 simple index, newest first.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "014ed148ac26aaf7be14c914ef714d7ab90a152989909fc03fc8d723dbaae9db",
+            "input_names": [
+              "limit",
+              "project"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_direct_success",
+            "input_names": [
+              "limit",
+              "project"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "simple index returns bounded versions",
+            "path": "$.data.versions",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_direct_success"
+        ]
+      },
+      "when_not_to_use": "Do not use this for upload times or file details; list_releases and list_files include those.",
+      "when_to_use": "Use this for a fast complete version list without the heavier JSON metadata payload."
+    },
+    "read_site_resource": {
+      "authentication": {
+        "required": false,
+        "roles": [
+          "public"
+        ]
+      },
+      "binding": {
+        "implementation_hash": "e4eab2181f735a17e734a069ec056d7929094b70f88e6eb43ae59296ef22c33a",
+        "method": "read_site_resource",
+        "type": "python"
+      },
+      "capabilities": [
+        "read_documentation",
+        "read_policies"
+      ],
+      "category": "documentation",
+      "contract_hash": "e8e9b765a78e2e883b7f4e759e34d71948927c73d1aef51e1bf00d58874f61aa",
+      "errors": [
+        {
+          "code": "project_not_found",
+          "field": "project",
+          "message": "PyPI has no project with that exact normalized name.",
+          "next_operation": "pypi.list_all_projects",
+          "retryable": false,
+          "user_action": "Check the name with list_all_projects and retry with a published project."
+        },
+        {
+          "code": "pypi_rate_limited",
+          "message": "PyPI is asking this client to slow down.",
+          "retry_after_seconds": 10,
+          "retryable": true,
+          "user_action": "Wait at least ten seconds, then retry the same operation once."
+        },
+        {
+          "code": "pypi_unavailable",
+          "message": "A PyPI public service is temporarily unavailable.",
+          "retryable": true,
+          "user_action": "Retry after a short delay if PyPI is temporarily unavailable."
+        },
+        {
+          "code": "invalid_pypi_response",
+          "message": "PyPI returned malformed or unexpectedly encoded public data.",
+          "retryable": true,
+          "user_action": "Retry once; the payload is usually transient."
+        }
+      ],
+      "examples": [
+        {
+          "input": {
+            "max_chars": 12000,
+            "url": "https://pypi.org/help/"
+          }
+        }
+      ],
+      "input_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "max_chars": {
+            "default": 30000,
+            "description": "Maximum visible page characters to return.",
+            "maximum": 100000,
+            "minimum": 1000,
+            "type": "integer"
+          },
+          "url": {
+            "description": "Absolute HTTPS URL on pypi.org.",
+            "maxLength": 2000,
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "type": "object"
+      },
+      "kind": "agentweb_operation_contract",
+      "name": "read_site_resource",
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "characters": {
+            "description": "Untruncated visible character count.",
+            "type": "integer"
+          },
+          "links": {
+            "description": "Up to one hundred labeled links from the page.",
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "text": {
+            "description": "Bounded visible page text.",
+            "type": "string"
+          },
+          "truncated": {
+            "description": "Whether text was shortened.",
+            "type": "boolean"
+          },
+          "url": {
+            "description": "Final page URL after safe redirects.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url",
+          "text",
+          "characters",
+          "truncated",
+          "links"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "behavior": "Follow a returned link with another bounded call when needed.",
+        "supported": false
+      },
+      "result": {
+        "freshness": "Live public PyPI data with bounded local caching appropriate to the resource.",
+        "max_items": 100,
+        "truncation": "Collections, feeds, descriptions, metadata, and downloads report explicit bounds or pagination."
+      },
+      "reviewed": true,
+      "reviewed_at_unix": 1784834400.0,
+      "risk": {
+        "confirmation": "never",
+        "idempotent": true,
+        "level": "read",
+        "reversible": true
+      },
+      "schema_version": 1,
+      "summary": "Read a bounded public pypi.org informational page (help, policy, or project page) as visible text and links.",
+      "verification": {
+        "cases": [
+          {
+            "case": "success",
+            "contract_hash": "e8e9b765a78e2e883b7f4e759e34d71948927c73d1aef51e1bf00d58874f61aa",
+            "input_names": [
+              "max_chars",
+              "url"
+            ],
+            "passed": true
+          },
+          {
+            "case": "live_direct_success",
+            "input_names": [
+              "max_chars",
+              "url"
+            ],
+            "passed": true
+          }
+        ],
+        "status": "passed"
+      },
+      "verification_plan": {
+        "assertions": [
+          {
+            "name": "site resource read returns bounded visible text",
+            "path": "$.data.text",
+            "type": "path_exists"
+          }
+        ],
+        "required_cases": [
+          "success",
+          "live_direct_success"
+        ]
+      },
+      "when_not_to_use": "Do not use it for full-text web search, which is protected by a browser challenge; use list_all_projects instead.",
+      "when_to_use": "Use this for PyPI help, policy, and project pages that are not covered by the JSON API."
+    }
+  },
+  "runtime": {
+    "auth_interaction": "not_required",
+    "browserless_replay": true
+  },
+  "url_routes": [
+    {
+      "arguments": {
+        "project": {
+          "group": "project"
+        }
+      },
+      "operation": "get_project",
+      "path_regex": "/project/(?P<project>[^/]+)/?"
+    },
+    {
+      "arguments": {
+        "project": {
+          "group": "project"
+        },
+        "version": {
+          "group": "version"
+        }
+      },
+      "operation": "get_release",
+      "path_regex": "/project/(?P<project>[^/]+)/(?P<version>[^/]+)/?"
+    },
+    {
+      "arguments": {
+        "project": {
+          "group": "project"
+        }
+      },
+      "operation": "list_versions",
+      "path_regex": "/simple/(?P<project>[^/]+)/?"
+    },
+    {
+      "arguments": {
+        "url": {
+          "url": true
+        }
+      },
+      "host_regex": "pypi\\.org",
+      "operation": "read_site_resource",
+      "path_regex": "/(help|policy|about|sponsors|security|stats)(/.*)?"
+    }
+  ],
+  "version": "0.1.0"
+}
