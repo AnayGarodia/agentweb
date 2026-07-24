@@ -489,6 +489,16 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Allow capturing a mutating operation (records its read-back, not the mutation)",
     )
+    capture_oracle.add_argument(
+        "--via-browser",
+        dest="via_browser",
+        action="store_true",
+        help=(
+            "Run the read inside the site's already-authenticated Chrome via CDP "
+            "(for anti-bot sites that refuse browserless replay). Requires a prior "
+            "`agentweb connect SITE`."
+        ),
+    )
     verify_capture = subparsers.add_parser(
         "verify-capture",
         help="Replay a captured response oracle and report capture_verified or drift",
@@ -507,6 +517,15 @@ def build_parser() -> argparse.ArgumentParser:
         "--strict",
         action="store_true",
         help="Exit non-zero when the replay drifts from the oracle (for CI/schedules)",
+    )
+    verify_capture.add_argument(
+        "--via-browser",
+        dest="via_browser",
+        action="store_true",
+        help=(
+            "Replay the read inside the site's authenticated Chrome via CDP. "
+            "Implied automatically when the oracle was captured with --via-browser."
+        ),
     )
     return parser
 
@@ -833,11 +852,15 @@ def main(argv: list[str] | None = None) -> int:
                     "record this operation's own response as the oracle.",
                     code="oracle_capture_mutating",
                 )
-            envelope = runtime.execute(
-                args.site,
-                args.operation,
-                {**arguments, "confirm": True} if mutating else arguments,
-            )
+            capture_args = {**arguments, "confirm": True} if mutating else arguments
+            if args.via_browser:
+                from .browser_readback import browser_execute
+
+                envelope = browser_execute(
+                    runtime, args.site, args.operation, capture_args
+                )
+            else:
+                envelope = runtime.execute(args.site, args.operation, capture_args)
             oracle = build_response_oracle(
                 site,
                 args.operation,
@@ -846,6 +869,8 @@ def main(argv: list[str] | None = None) -> int:
                 mutating=mutating,
                 assert_paths=args.assert_paths or [],
             )
+            if args.via_browser:
+                oracle["execution"] = "browser_assisted"
             if args.out:
                 args.out.parent.mkdir(parents=True, exist_ok=True)
                 args.out.write_text(json.dumps(oracle, indent=2, sort_keys=True) + "\n")
@@ -856,6 +881,9 @@ def main(argv: list[str] | None = None) -> int:
                 oracle = json.loads(args.oracle.read_text())
             except (OSError, json.JSONDecodeError) as exc:
                 raise AgentWebError(f"Could not read response oracle: {exc}") from exc
+            via_browser = (
+                args.via_browser or oracle.get("execution") == "browser_assisted"
+            )
             structural = verify_response_oracle(oracle)
             if not structural["passed"] or args.offline:
                 result = structural
@@ -875,10 +903,27 @@ def main(argv: list[str] | None = None) -> int:
                     if args.input is not None
                     else (oracle.get("input") or {})
                 )
-                envelope = runtime.execute(
-                    oracle["site"], oracle["operation"], arguments
-                )
+                if via_browser:
+                    from .browser_readback import browser_execute
+
+                    envelope = browser_execute(
+                        runtime, oracle["site"], oracle["operation"], arguments
+                    )
+                else:
+                    envelope = runtime.execute(
+                        oracle["site"], oracle["operation"], arguments
+                    )
                 result = verify_response_oracle(oracle, envelope)
+                if via_browser:
+                    result = {
+                        **result,
+                        "execution": "browser_assisted",
+                        "evidence": (
+                            "browser_capture_verified"
+                            if result.get("passed")
+                            else result.get("status")
+                        ),
+                    }
             if args.strict and not result.get("passed"):
                 emit(result, not args.compact)
                 return 1

@@ -7,6 +7,7 @@ import os
 import re
 import threading
 import time
+from collections.abc import Callable
 from copy import deepcopy
 from pathlib import Path
 from typing import Any
@@ -320,6 +321,11 @@ class Runtime:
         )
         self.registry = Registry(self.paths)
         self.analytics = Analytics(self.paths)
+        # Optional per-call hook to bind adapters to an alternate transport
+        # (e.g. a CDP-backed browser session for read-back verification). Only
+        # set by explicit browser-assisted paths; ordinary operations leave it
+        # ``None`` and never launch a browser.
+        self._session_override: Callable[[str], Any] | None = None
 
     def ensure_registry(self) -> None:
         installed = self.registry.installed()
@@ -1077,7 +1083,12 @@ class Runtime:
             fresh=self.fresh,
             cancellation=self.cancellation,
         )
-        return module.Adapter(context)
+        adapter = module.Adapter(context)
+        if self._session_override is not None:
+            # Bind to the adapter's own site_name so the session's cookie jar
+            # matches the one the adapter would otherwise build for itself.
+            adapter._session = self._session_override(adapter.site_name)
+        return adapter
 
     def call(self, operation: str, arguments: dict[str, Any]) -> dict[str, Any]:
         started = time.monotonic()

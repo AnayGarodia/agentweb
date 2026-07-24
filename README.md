@@ -209,6 +209,29 @@ the oracle records the read-back that confirms the effect, not the mutation, so
 replaying it never re-changes account state — `capture-oracle` refuses a mutating
 op unless you pass `--confirm`.
 
+#### Browser-assisted read-back (`--via-browser`)
+
+A few sites actively refuse browserless replay: their anti-bot layer bounces a
+plain HTTP request into a redirect/challenge loop even with a valid session, so
+they can never earn a browserless `capture_verified`. For these, run the read
+*inside* the site's already-authenticated Chrome via CDP:
+
+```bash
+agentweb capture-oracle SITE OP --via-browser --assert '$.data.x' --out o.json
+agentweb verify-capture o.json --strict   # or --via-browser
+```
+
+The adapter builds and parses the request exactly as usual; only the transport
+changes — the request is issued with `fetch(url, {credentials:"include"})` from a
+page on the site's own origin, so first-party cookies and anti-bot context apply.
+The response flows back through the normal envelope, so the oracle still stores
+**only** the response shape and assertion types — never response values, cookies,
+or the browser profile. Such an oracle records `"execution": "browser_assisted"`,
+`verify-capture` re-runs it in the browser automatically, and a passing replay is
+reported as `browser_capture_verified` to keep it distinct from browserless
+`capture_verified`. This path is explicit-only (ordinary typed operations never
+launch a browser), requires a prior `agentweb connect SITE`, and is **read-only**.
+
 ### Why Spotify uses the desktop app
 
 This is a Spotify-specific path built into its AgentWeb adapter. For simple

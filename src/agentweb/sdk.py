@@ -979,6 +979,33 @@ class HttpSession:
                         from_cache=True,
                         transport=envelope.get("transport", "urllib"),
                     )
+        response = self._perform_request(
+            method=method,
+            url=url,
+            data=data,
+            content_type=content_type,
+            headers=headers,
+            referer=referer,
+            impersonate=impersonate,
+            allowed_redirect_domains=allowed_redirect_domains,
+            timeout_seconds=timeout_seconds,
+        )
+        self._cache_store(cache_key, cache_ttl, response)
+        return response
+
+    def _perform_request(
+        self,
+        *,
+        method: str,
+        url: str,
+        data: bytes | None,
+        content_type: str | None,
+        headers: dict[str, str] | None,
+        referer: str | None,
+        impersonate: str | None,
+        allowed_redirect_domains: tuple[str, ...] | None,
+        timeout_seconds: float,
+    ) -> Response:
         request_headers = {
             "User-Agent": str(self.browser_identity.get("user_agent") or USER_AGENT),
             "Accept-Language": "en-US,en;q=0.9",
@@ -1140,6 +1167,11 @@ class HttpSession:
             transport=transport,
         )
         self.save_cookies()
+        return response
+
+    def _cache_store(
+        self, cache_key: str | None, cache_ttl: int, response: Response
+    ) -> None:
         if cache_key and response.status == 200:
             self.cache.put(
                 cache_key,
@@ -1155,7 +1187,6 @@ class HttpSession:
                 ).encode(),
                 cache_ttl,
             )
-        return response
 
     def import_netscape_cookies(self, source: Path) -> int:
         incoming = MozillaCookieJar(str(source))
