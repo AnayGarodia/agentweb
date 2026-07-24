@@ -159,7 +159,27 @@ are JSON, so agents do not need site-specific parsing code.
 
 ## What is included today?
 
-The installer currently ships these 11 mapped websites:
+This open-core installer bundles **three fully open reference adapters**, and
+`agentweb setup` (run for you by the one-line installer) registers exactly those
+three on first run:
+
+| Reference adapter | Domain | Examples |
+| --- | --- | --- |
+| npm | `npmjs.com` | Search packages, versions, downloads, dependencies, provenance, and files |
+| arXiv | `arxiv.org` | Search papers, metadata, authors, categories, BibTeX, PDFs, and source |
+| Wikipedia | `wikipedia.org` | Search, pages, links, categories, revisions, images, and pageviews |
+
+Run `agentweb sites` to see exactly what is installed and `agentweb capabilities
+DOMAIN` for a site's operation list and any declared gaps.
+
+AgentWeb's larger maintained website catalog (the 11 sites below) is **distributed
+separately** and is not bundled in this open-core installer; installing it points
+`agentweb` at that signed registry. This repository is the open core: the
+command-line tool, runtime, login/session system, adapter format, signed updater,
+tests, and the three reference adapters above. The automatic system used to map and
+repair the official catalog is not in this repository.
+
+### The larger maintained catalog (distributed separately)
 
 | Website | Domain | What an agent can do |
 | --- | --- | --- |
@@ -175,24 +195,8 @@ The installer currently ships these 11 mapped websites:
 | Stack Overflow | `stackoverflow.com` | Search and read questions, answers, comments, users, and tags; ask, answer, comment, and vote when signed in |
 | Wikipedia | `wikipedia.org` | Search and read pages, links, categories, revisions, languages, images, nearby pages, and pageviews; edit or upload when signed in |
 
-The installer registers this catalog on first run (the one-line installer runs
-`agentweb setup` for you). If a site is missing, or to pull the latest adapters
-later, run `agentweb sync`. Use `agentweb sites` to see what is currently
-installed and `agentweb capabilities DOMAIN` for a site's exact operation list and
-any declared gaps.
-
-This public repository also includes three fully open reference adapters:
-
-| Reference adapter | Examples |
-| --- | --- |
-| npm | Search packages, versions, downloads, dependencies, provenance, and files |
-| arXiv | Search papers, metadata, authors, categories, BibTeX, PDFs, and source |
-| Wikipedia | Search, pages, links, categories, revisions, images, and pageviews |
-
-AgentWeb's larger maintained website catalog is distributed separately. This
-repository is the open core: the command-line tool, runtime, login/session system,
-adapter format, signed updater, tests, and reference adapters. The automatic system
-used to map and repair the official catalog is not in this repository.
+Once that catalog is configured, `agentweb sync` pulls the latest signed adapters
+and `agentweb sites` shows what is currently installed.
 
 ## How it works
 

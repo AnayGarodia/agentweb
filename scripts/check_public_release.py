@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import zipfile
 from pathlib import Path, PurePosixPath
@@ -61,6 +62,30 @@ def check_wheel(path: Path) -> None:
         if not required.issubset(source_modules):
             missing = sorted(required - source_modules)
             raise SystemExit(f"public core modules missing from wheel: {missing}")
+
+        # Every site the index advertises must be installable from the wheel
+        # alone: the exact name/version bundle and every hashed file it declares
+        # must be present with a matching hash. This is what keeps a fresh
+        # install from silently registering fewer sites than the catalog claims.
+        for entry in index.get("sites", []):
+            name = str(entry["name"])
+            version = str(entry["version"])
+            prefix = f"agentweb/builtin_registry/sites/{name}/{version}"
+            files = entry.get("files") or {}
+            if not files:
+                raise SystemExit(f"index entry {name}/{version} declares no files")
+            for relative, expected_hash in files.items():
+                member = f"{prefix}/{relative}"
+                if member not in names:
+                    raise SystemExit(
+                        f"index references missing wheel file: {member}"
+                    )
+                actual = hashlib.sha256(wheel.read(member)).hexdigest()
+                if actual != expected_hash:
+                    raise SystemExit(
+                        f"hash mismatch for {member}: "
+                        f"index={expected_hash} wheel={actual}"
+                    )
 
     print(f"public release boundary passed: {path}")
 
